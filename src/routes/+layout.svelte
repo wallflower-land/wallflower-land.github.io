@@ -7,9 +7,13 @@
 
 	onNavigate((navigation) => {
 		if (!document.startViewTransition) return;
-
 		const newIndex = getTabIndex(new URL(navigation.to?.url ?? location.href));
-		if (newIndex === -1 || currentIndex === -1 || newIndex === currentIndex) {
+		if (
+			newIndex === -1 || 
+			currentIndex === -1 || 
+			newIndex === currentIndex ||
+			navigation.to?.url.pathname === navigation.from?.url.pathname
+		) {
 			document.documentElement.dataset.direction = "none";
 			currentIndex = newIndex;
 		} else {
