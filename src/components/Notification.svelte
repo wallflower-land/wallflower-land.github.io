@@ -11,7 +11,7 @@
 	let isHidden = $state(true);
 </script>
 
-<section style:bottom={isHidden ? "-5rem" : "5rem"} class="notification">
+<section style:bottom={isHidden ? "-4rem" : "5rem"} class="notification">
 	{message}
 </section>
 

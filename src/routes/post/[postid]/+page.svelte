@@ -16,7 +16,7 @@
 
 	let reply: HTMLTextAreaElement = $state(null!);
 
-	let replyState: "contracted" | "expanded" = "contracted";
+	let replyState: "contracted" | "expanded" = $state("contracted");
 
 	let replies = $derived(thePost.then(post => getReplies(post!)));
 	let newReplies: InternalPost[] = $state([]);
@@ -63,6 +63,7 @@
 		}
 	});
 
+	let characterLimitStyle = $derived.by(() => replyState === "expanded" ? "flex" : "none");
 	let mainPost: HTMLElement = $state(null!);
 	let container: HTMLElement;
 	
@@ -125,7 +126,7 @@
 							</button>
 						</div>
 
-						<CharacterLimitMeter limit={144} bind:text={replyBody} />
+						<CharacterLimitMeter display={characterLimitStyle} limit={144} bind:text={replyBody} />
 					</div>
 				</div>
 			{/if}

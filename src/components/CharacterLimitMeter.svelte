@@ -4,6 +4,7 @@
 		threshold = 0.2, 
 		text = $bindable(), 
 		padding = "0.5rem",
+		display = "flex",
 		...rest 
 	} = $props();
 
@@ -23,7 +24,8 @@
 	style:--percent={100 * (1 - (limit - text.length) / limit)} 
 	style:right={padding}
 	style:bottom={padding}
-	{...rest} >
+	style:display
+	{...rest}>
 	{limit - text.length}
 </div>
 
@@ -36,7 +38,6 @@
 		height: 70%;
 		aspect-ratio: 1;
 		color: var(--color);
-		display: flex;
 		align-items: center;
 		justify-content: center;
 		max-height: 2rem;

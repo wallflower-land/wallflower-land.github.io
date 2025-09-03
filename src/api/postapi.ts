@@ -330,7 +330,7 @@ export async function format(text: string): Promise<string> {
 
 	text = await replaceAllAsync(text, /@(\d{13})/g, async (_match, isbn) => {
 		const book = await getBook(isbn);
-		return `<a style="text-decoration: none;" href="/book/${isbn}"><i>${escapeHTML(book.title)}</i></a>`;
+		return `<a style="text-decoration: none;" href="/book/${isbn}">${escapeHTML(book.title)}</a>`;
 	});
 
 	return text
@@ -345,7 +345,6 @@ export async function format(text: string): Promise<string> {
 		})
 		.replaceAll(/\\\*/g, "*")
 		.replaceAll(/\\`/g, "`")
-		.replaceAll("`", "&#x60;")
 		.replaceAll("`", "&#x60;");
 }
 
