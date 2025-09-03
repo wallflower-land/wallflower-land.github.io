@@ -46,43 +46,23 @@
 		}		
 
 		if (url.pathname.startsWith("/interactions")) {
-			const term = url.searchParams.get("view") ?? "viewed";
-			if (term === "viewed") return 100;
-			if (term === "likes") return 101;
-			if (term === "replies") return 102;
-			if (term === "saved") return 103;
-			if (term === "shared") return 104;
-			return -1;
+			return 100;
 		}
 
 		if (url.pathname === "/") {
-			const term = url.searchParams.get("view") ?? "following";
-			if (term === "following") return 100;
-			if (term === "for you") return 101;
-			return -1;
+			return 100;
 		}
 
 		if (url.pathname.startsWith("/search")) {
-			const term = url.searchParams.get("view") ?? "posts";
-			if (term === "posts") return 200;
-			if (term === "books") return 201;
-			if (term === "authors") return 202;
-			if (term === "people") return 203;
-			return -1;
+			return 200;
 		}
 
 		if (url.pathname.startsWith("/author")) {
-			const view = url.searchParams.get("view") ?? "info";
-			if (view === "info") return 250;
-			if (view === "discussion") return 251;
-			return -1;
+			return 250;
 		}
 
 		if (url.pathname.startsWith("/book")) {
-			const view = url.searchParams.get("view") ?? "info";
-			if (view === "info") return 250;
-			if (view === "discussion") return 251;
-			return -1;
+			return 250;
 		}
 
 		if (url.pathname.match(/\/new\/(general|update|rating)/)) {
@@ -94,21 +74,11 @@
 		}
 
 		if (url.pathname.startsWith("/inbox")) {
-			const view = url.searchParams.get("view") ?? "mentions";
-			if (view === "mentions") return 400;
-			if (view === "replies") return 401;
-			if (view === "following") return 402;
-			return -1;
+			return 400;
 		}
 
 		if (url.pathname.startsWith("/profile")) {
-			const term = url.searchParams.get("view") ?? "all";
-			if (term === "all") return 500;
-			if (term === "books") return 501;
-			if (term === "activity") return 502;
-			if (term === "list") return 503;
-			if (term === "discussion") return 504;
-			return -1;
+			return 500;
 		}
 
 		return -1;
