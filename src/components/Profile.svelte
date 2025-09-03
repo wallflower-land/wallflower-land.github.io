@@ -20,7 +20,6 @@
 	import Sidebar from "./Sidebar.svelte";
 	import ClickableImage from "./ClickableImage.svelte";
 	import PostBody from "./posts/PostBody.svelte";
-	import Discussion from "./posts/Discussion.svelte";
 
 	let { sidebar, user: profileUser }: { sidebar: Sidebar, user: User } = $props();
 
@@ -88,6 +87,7 @@
 		return function() {
 			goto(`${window.location.origin}${window.location.pathname}?${new URLSearchParams({ view: viewName })}`);
 			view = viewName as any;
+			pageLeft = `${["all", "books", "activity", "list", "discussion"].indexOf(view) * -100}dvw`;
 		}
 	}
 
@@ -125,6 +125,9 @@
 		}[view];
 	});
 
+	// svelte-ignore state_referenced_locally
+	let pageLeft = $state(`${["all", "books", "activity", "list", "discussion"].indexOf(view) * -100}dvw`);
+
 	onMount(() => {
 		document.addEventListener("scroll", () => {
 			ratingSortMenu?.close();
@@ -158,18 +161,18 @@
 		document.addEventListener("touchend", () => {
 			const swipeDistance = touchEndX - touchStartX;
 			const swipeDistanceY = touchEndY - touchStartY;
-			console.log(swipeDistanceY);
+
 			if (Math.abs(swipeDistanceY) < SWIPE_THRESHOLD) {
 				if (swipeDistance < -SWIPE_THRESHOLD) {
-					if (view === "all") view = "books";
-					else if (view === "books") view = "activity";
-					else if (view === "activity") view = "list";
-					else if (view === "list") view = "discussion";
+					if (view === "all") gotoView("books")();
+					else if (view === "books") gotoView("activity")();
+					else if (view === "activity") gotoView("list")();
+					else if (view === "list") gotoView("discussion")();
 				} else if (swipeDistance > SWIPE_THRESHOLD) {
-					if (view === "books") view = "all";
-					else if (view === "activity") view = "books";
-					else if (view === "list") view = "activity";
-					else if (view === "discussion") view = "list";
+					if (view === "books") gotoView("all")();
+					else if (view === "activity") gotoView("books")();
+					else if (view === "list") gotoView("activity")();
+					else if (view === "discussion") gotoView("list")();
 				}
 			}
 		});
@@ -256,7 +259,7 @@
 				{/if}
 
 				<!-- Number of books read -->
-				<a onclick={() => view = "books"} href="/profile/{profileUser.username}?view=books" title="{profileUser.displayName} has read {booksRead} book{booksRead === 1 ? '' : 's'}">
+				<a onclick={gotoView("books")} href="/profile/{profileUser.username}?view=books" title="{profileUser.displayName} has read {booksRead} book{booksRead === 1 ? '' : 's'}">
 					<BookIcon stroke="var(--overlay-1)" style="width: 1rem; height: 1rem;" />
 					<span>{booksRead}</span>
 				</a>
@@ -315,11 +318,16 @@
 			<p>We promise Wallflower will be faster soon.</p>
 		</div>
 	{:then posts}
-		{#if view === "discussion"}
-			{#each posts.filter(post => post.type === "general") as post}
-				<AnyPost {post} />
-			{/each}
-		{:else if view === "books"}
+		<div class="posts" style:left={pageLeft}>
+	
+			<!-- All -->
+			<div class="wrapper">
+				{#each posts as post}
+					<AnyPost {post} />
+				{/each}
+			</div>
+
+			<!-- Books -->
 			<div class="ratings">
 				<div bind:this={ratingOptions} class="rating-options">
 					<span style:color="var(--overlay-1)">
@@ -353,11 +361,15 @@
 					{/each}
 				{/await}
 			</div>
-		{:else if view === "activity"}
-			{#each posts.filter(post => post.type === "update") as post}
-				<AnyPost {post} />
-			{/each}
-		{:else if view === "list"}
+
+			<!-- Activity -->
+			<div class="wrapper">
+				{#each posts.filter(post => post.type === "update") as post}
+					<AnyPost {post} />
+				{/each}
+			</div>
+
+			<!-- List -->
 			<div class="ratings">
 				{#await readingList then readingList}
 					{#each readingList as book}
@@ -365,15 +377,26 @@
 					{/each}
 				{/await}
 			</div>
-		{:else if view === "all"}
-			{#each posts as post}
-				<AnyPost {post} />
-			{/each}
-		{/if}
+
+			<!-- Discussion -->
+			<div class="wrapper">
+				{#each posts.filter(post => post.type === "general") as post}
+					<AnyPost {post} />
+				{/each}
+			</div>
+		</div>
 	{/await}
 </section>
 
 <style>
+	.posts {
+		display: grid;
+		width: 500dvw;
+		grid-template-columns: repeat(5, 1fr);
+		position: relative;
+		transition: left 0.2s;
+	}
+
 	.pronouns {
 		display: flex;
 		align-items: center;

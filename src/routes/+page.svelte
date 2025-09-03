@@ -10,6 +10,7 @@
 	import { getFile } from "../api/storageapi";
 	import BellIcon from "../assets/images/icons/BellIcon.svelte";
 	import { goto } from "$app/navigation";
+	import { onMount } from "svelte";
 
 	let view: "following" | "for you" = $state(
 		user() ? 
@@ -31,13 +32,56 @@
 		}
 	}
 
+	let viewbarLeft = $derived.by(() => {
+		return {
+			following: "2.3rem",
+			"for you": "13.2rem",
+		}[view];
+	});
+
 	function setView(newView: "following" | "for you") {
 		return function() {
 			view = newView;
 			const params = new URLSearchParams({ view });
 			goto(`/?${params}`);
+			pageLeft = `${["following", "for you"].indexOf(view) * -100}dvw`;
 		}
 	}
+
+	// svelte-ignore state_referenced_locally
+	let pageLeft = $state(`${["following", "for you"].indexOf(view) * -100}dvw`);
+
+	onMount(() => {
+		let touchStartX = 0;
+		let touchEndX = 0;
+		let touchStartY = 0;
+		let touchEndY = 0;
+
+		const SWIPE_THRESHOLD = 30;
+
+		document.addEventListener("touchstart", (event) => {
+			touchStartX = event.touches[0].clientX;
+			touchStartY = event.touches[0].clientY;
+		});
+
+		document.addEventListener("touchmove", (event) => {
+			touchEndX = event.touches[0].clientX;
+			touchEndY = event.touches[0].clientY;
+		});
+
+		document.addEventListener("touchend", () => {
+			const swipeDistance = touchEndX - touchStartX;
+			const swipeDistanceY = touchEndY - touchStartY;
+
+			if (Math.abs(swipeDistanceY) < SWIPE_THRESHOLD) {
+				if (swipeDistance < -SWIPE_THRESHOLD) {
+					if (view === "following") setView("for you")();
+				} else if (swipeDistance > SWIPE_THRESHOLD) {
+					if (view === "for you") setView("following")();
+				}
+			}
+		});
+	});
 </script>
 
 <Page bind:sidebar type="home">
@@ -68,7 +112,6 @@
 			{#if user()}
 				<button
 					style:color={view === "following" ? "var(--lavender)" : "var(--overlay-1)"}
-					style:border-bottom-color={view === "following" ? "var(--lavender)" : "transparent"}
 					onclick={setView("following")}
 				>
 					Following
@@ -76,37 +119,59 @@
 			{/if}
 			<button
 				style:color={view === "for you" ? "var(--lavender)" : "var(--overlay-1)"}
-				style:border-bottom-color={view === "for you" ? "var(--lavender)" : "transparent"}
 				onclick={setView("for you")}
 			>
 				Discover
 			</button>
+			<div class="viewline" style:left={viewbarLeft}></div>
 		</div>
 
-		{#if view === "following"}
-			{#await followedPosts then followedPosts}
-				{#if followedPosts.length === 0}
-					<div class="nofollowing">
-						<h1>You're not following anyone.</h1>
-						<p>When you follow people, their posts will appear here.</p>
-						<CatIcon style="width: 10rem;" stroke="var(--mantle)" />
-					</div>
-				{/if}
-				{#each followedPosts as post}
-					<AnyPost {post} />
-				{/each}
-			{/await}
-		{:else if view === "for you"}
-			{#await forYouPosts then forYouPosts}
-				{#each forYouPosts as post}
-					<AnyPost {post} />
-				{/each}
-			{/await}
-		{/if}
+		<!-- Following -->
+		<div class="posts" style:left={pageLeft}>
+			<div class="wrapper">
+				{#await followedPosts then followedPosts}
+					{#if followedPosts.length === 0}
+						<div class="nofollowing">
+							<h1>You're not following anyone.</h1>
+							<p>When you follow people, their posts will appear here.</p>
+							<CatIcon style="width: 10rem;" stroke="var(--mantle)" />
+						</div>
+					{/if}
+					{#each followedPosts as post}
+						<AnyPost {post} />
+					{/each}
+				{/await}
+			</div>
+			<div class="wrapper">
+				{#await forYouPosts then forYouPosts}
+					{#each forYouPosts as post}
+						<AnyPost {post} />
+					{/each}
+				{/await}
+			</div>
+		</div>
 	</section>
 </Page>
 
 <style>
+	.posts {
+		display: grid;
+		width: 200dvw;
+		grid-template-columns: repeat(2, 1fr);
+		position: relative;
+		transition: left 0.2s;
+	}
+
+	.viewline {
+		position: absolute;
+		background-color: var(--lavender);
+		bottom: 0px;
+		height: 3px;
+		width: 9rem;
+		border-radius: 100vmax;
+		transition: left 0.2s;
+	}
+
 	.nofollowing {
 		display: flex;
 		flex-direction: column;
@@ -144,6 +209,7 @@
 	}
 
 	.views {
+		position: relative;
 		display: flex;
 		padding-right: 2rem;
 		padding-left: 2rem;
@@ -159,8 +225,6 @@
 		}
 
 		button {
-			border-bottom-width: 2px;
-			border-bottom-style: solid;
 			padding-left: 3rem;
 			padding-right: 3rem;
 			font-weight: normal;
