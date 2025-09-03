@@ -1,1 +1,0 @@
-import"../chunks/Bzak7iHL.js";import"../chunks/69_IOA4Y.js";import{H as r}from"../chunks/Ss9NBGu5.js";import{P as e}from"../chunks/CtVMfCXD.js";function l(o){e(o,{children:(t,a)=>{r(t,{title:"Moderator Tools"})},$$slots:{default:!0}})}export{l as component};
