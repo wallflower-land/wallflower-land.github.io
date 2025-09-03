@@ -1,3 +1,11 @@
+<script lang="ts" module>
+	let innerWidth = $state(window.innerWidth);
+
+	function alwaysShowSidebar() {
+		return innerWidth > 700;
+	}
+</script>
+
 <script lang="ts">
 	import { goto } from "$app/navigation";
 	import { onMount } from "svelte";
@@ -14,19 +22,17 @@
 	import BarChartIcon from "../assets/images/icons/BarChartIcon.svelte";
 	import WrenchIcon from "../assets/images/icons/WrenchIcon.svelte";
 
-	let innerWidth = $state(window.innerWidth);
 	let innerHeight = $state(window.innerHeight);
-	let aspectRatio = $derived(innerWidth / innerHeight);let sidebar: HTMLElement;
 
 	// svelte-ignore state_referenced_locally
-	let visible = $state(aspectRatio > 1);
+	let visible = $state(alwaysShowSidebar());
 
 	// svelte-ignore state_referenced_locally
-	let left = $derived(visible ? "0px" : aspectRatio > 1 ? "-17rem" : "-23rem");
+	let left = $derived(visible ? "0px" : alwaysShowSidebar() ? "-17rem" : "-23rem");
 	let overlayOpacity = $derived(visible ? 0.5 : 0);
 
 	$effect(() => {
-		if (aspectRatio > 1) show();
+		if (alwaysShowSidebar()) show();
 		else hide();
 	});
 
@@ -86,10 +92,10 @@
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-{#if aspectRatio < 1}
+{#if !alwaysShowSidebar()}
 	<div onclick={hide} class="overlay" style:opacity={overlayOpacity} style:display={overlayDisplay}></div>
 {/if}
-<section style:left bind:this={sidebar}>
+<section style:left>
 	<div class="profile">
 		<a class="profile-picture" href="/profile" aria-label="Go to profile">
 			{#if user()}
@@ -113,7 +119,7 @@
 			{/if}
 		</div>
 
-		{#if aspectRatio < 1}
+		{#if !alwaysShowSidebar()}
 			<button onclick={hide}>
 				<CloseIcon stroke="var(--text)" style="width: 1.5rem; height: 1.5rem; position: absolute; top: 1.5rem; right: 1.5rem;" />
 			</button>
@@ -239,14 +245,14 @@
 		}
 	}
 
-	@media (orientation: portrait) {
+	@media (max-width: 700px) {
 		section {
 			box-shadow: 0px 0px 10px black;
 			width: 15rem;
 		}
 	}
 
-	@media (orientation: landscape) {
+	@media (min-width: 700px) {
 		section {
 			width: 20rem;
 		}

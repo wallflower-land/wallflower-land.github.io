@@ -64,7 +64,7 @@
 	 * `elapsedTime` above), so we set this to `"absolute"` and call `toggleTimeFormat()` once
 	 * to get the initial relative text.
 	 */
-	let timeFormat: "relative" | "absolute" = "absolute";
+	let timeFormat: "relative" | "absolute" = $state("absolute");
 
 	/**
 	 * Switches the timestamp on the post between relative time (like "3h ago") and
@@ -75,7 +75,7 @@
 		// Switch from relative to absolute
 		if (timeFormat == "relative") {
 			let date = new Date(post.timestamp);
-			elapsedTime = `${date.toLocaleDateString()} @ ${date.toLocaleTimeString().replace(/(.*)\D\d+/, "$1")}`;
+			elapsedTime = `&lrm;${date.toLocaleDateString()} &lrm;@ ${date.toLocaleTimeString().replace(/(.*)\D\d+/, "$1")}`;
 			timeFormat = "absolute";
 		}
 
@@ -210,8 +210,14 @@
 	 */
 	async function share() {
 		actionsMenu.close();
-		navigator.clipboard.writeText(`https://wallflower.land/post/${post.id}`);
-		shareNotification.show();
+		if (navigator.share) {
+			navigator.share({
+				url: `https://wallflower.land/post/${post.id}`
+			});
+		} else {
+			navigator.clipboard.writeText(`https://wallflower.land/post/${post.id}`);
+			shareNotification.show();
+		}
 
 		if (!user()) {
 			let shared = localStorage.getItem("shared-posts");
@@ -269,13 +275,13 @@
 			<span class="user">
 				<span class="missing-username"></span>
 				<button class="timestamp" onclick={toggleTimeFormat}>
-					{elapsedTime}
+					{@html elapsedTime}
 				</button>
 			</span>
 		{:then poster}
 			<span class="user">
 				<div class="name">
-					<a href="/@{poster.username}" class="display-name">{poster.displayName}</a>
+					<a href="/@{poster.username}" class="display-name {timeFormat === "absolute" ? "absolute-timestamp" : ""}">{poster.displayName}</a>
 					<a href="/@{poster.username}" class="username">{`@${poster.username}`}</a>
 				</div>
 
@@ -289,7 +295,7 @@
 				{/if}
 
 				<button class="timestamp" onclick={toggleTimeFormat}>
-					{elapsedTime}
+					{@html elapsedTime}
 				</button>
 			</span>
 		{/await}
@@ -429,6 +435,7 @@
 	}
 
 	section {
+		position: relative;
 		padding-top: 1rem;
 		padding-right: 1rem;
 		padding-bottom: 0.5rem;
@@ -438,16 +445,11 @@
 		top: 0px;
 	}
 
-	.name {
-		display: flex;
-		gap: 0.5rem;
-		max-width: 50%;
-	}
-
 	.content-outer {
 		display: flex;
 		flex-direction: column;
 		width: 100%;
+		overflow: hidden;
 	}
 
 	.profile {
@@ -475,6 +477,7 @@
 		gap: 0.5rem;
 		width: 100%;
 		margin-bottom: 0.25rem;
+		overflow: hidden;
 
 		a {
 			text-decoration: none;
@@ -484,6 +487,19 @@
 			font-size: 1rem;
 			color: var(--text);
 			font-size: 0.85rem;
+
+			&.absolute-timestamp {
+				flex-shrink: 1;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+		}
+
+		.name {
+			display: flex;
+			gap: 0.5rem;
+			flex-shrink: 1;
+			overflow: hidden;
 		}
 
 		.username {
@@ -491,6 +507,7 @@
 			font-size: 0.85rem;
 			text-overflow: ellipsis;
 			overflow: hidden;
+			flex-shrink: 2;
 		}
 
 		button {
@@ -507,11 +524,14 @@
 
 		.timestamp {
 			font-size: 0.85rem;
-			margin-left: auto;
+			top: 1rem;
+			right: 1rem;
 			cursor: pointer;
 			color: var(--surface-2);
 			white-space: nowrap;
-			max-width: 25%;
+			flex-grow: 1;
+			text-align: right;
+			padding-left: 1rem;
 		}
 	}
 

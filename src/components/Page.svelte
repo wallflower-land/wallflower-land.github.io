@@ -21,8 +21,8 @@
 	<main {...rest}>
 		{@render children?.()}
 	</main>
+	<Footer selected={type} />
 </div>
-<Footer selected={type} />
 
 <style>
 	.outer {
@@ -36,7 +36,7 @@
 		}
 	}
 
-	@media (orientation: landscape) {
+	@media (min-width: 700px) {
 		main {
 			margin-left: 20rem;
 			width: max(calc(100% - 40rem), 25rem);
@@ -44,7 +44,7 @@
 		}
 	}
 
-	@media (orientation: portrait) {
+	@media (max-width: 700px) {
 		main {
 			width: 100%;
 		}

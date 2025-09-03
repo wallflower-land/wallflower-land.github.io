@@ -40,11 +40,6 @@
 </footer>
 
 <style>
-	.padding {
-		height: 3rem;
-		width: 100%;
-	}
-
 	footer {
 		position: fixed;
 		bottom: 0px;
@@ -53,6 +48,7 @@
 		max-width: var(--max-width);
 		background: var(--crust);
 		view-transition-name: footer;
+		width: 100%;
 
 		a {
 			padding-top: 0.5rem;
@@ -72,16 +68,10 @@
 		}
 	}
 
-	@media (orientation: portrait) {
-		footer {
-			width: 100%;
-		}
-	}
-
-	@media (orientation: landscape) {
+	@media (min-width: 700px) {
 		footer {
 			margin-left: 20rem;
-			width: calc(0.714 * (100% - 20rem));
+			width: max(calc(100% - 40rem), 25rem);
 		}
 	}
 

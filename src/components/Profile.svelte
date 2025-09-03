@@ -2,7 +2,7 @@
 	import { goto } from "$app/navigation";
 	import { onMount } from "svelte";
 	import { getBook } from "../api/bookapi";
-	import { format, type InternalPost } from "../api/postapi";
+	import { type InternalPost } from "../api/postapi";
 	import { getFavoriteBook, getFollowers, getUserPosts, type User } from "../api/userapi";
 	import BookIcon from "../assets/images/icons/BookIcon.svelte";
 	import ClockIcon from "../assets/images/icons/ClockIcon.svelte";
@@ -20,10 +20,9 @@
 	import Sidebar from "./Sidebar.svelte";
 	import ClickableImage from "./ClickableImage.svelte";
 	import PostBody from "./posts/PostBody.svelte";
+	import Discussion from "./posts/Discussion.svelte";
 
-	let props = $props();
-	let profileUser: User = props.user;
-	let sidebar: Sidebar = props.sidebar;
+	let { sidebar, user: profileUser }: { sidebar: Sidebar, user: User } = $props();
 
 	let view: "all" | "books" | "discussion" | "activity" | "list" = $state(new URLSearchParams(window.location.search).get("view") as any ?? "all");
 
@@ -116,6 +115,16 @@
 		}
 	}
 
+	let viewbarLeft = $derived.by(() => {
+		return {
+			all: "0px",
+			books: "5.6rem",
+			activity: "12.2rem",
+			list: "18.2rem",
+			discussion: "24.8rem",
+		}[view];
+	});
+
 	onMount(() => {
 		document.addEventListener("scroll", () => {
 			ratingSortMenu?.close();
@@ -128,7 +137,43 @@
 				ratingOptions.style.background = `rgb(${r}, ${g}, ${b})`
 			}
 		}, true); // me when true
-	})
+
+		let touchStartX = 0;
+		let touchEndX = 0;
+		let touchStartY = 0;
+		let touchEndY = 0;
+
+		const SWIPE_THRESHOLD = 30;
+
+		document.addEventListener("touchstart", (event) => {
+			touchStartX = event.touches[0].clientX;
+			touchStartY = event.touches[0].clientY;
+		});
+
+		document.addEventListener("touchmove", (event) => {
+			touchEndX = event.touches[0].clientX;
+			touchEndY = event.touches[0].clientY;
+		});
+
+		document.addEventListener("touchend", () => {
+			const swipeDistance = touchEndX - touchStartX;
+			const swipeDistanceY = touchEndY - touchStartY;
+			console.log(swipeDistanceY);
+			if (Math.abs(swipeDistanceY) < SWIPE_THRESHOLD) {
+				if (swipeDistance < -SWIPE_THRESHOLD) {
+					if (view === "all") view = "books";
+					else if (view === "books") view = "activity";
+					else if (view === "activity") view = "list";
+					else if (view === "list") view = "discussion";
+				} else if (swipeDistance > SWIPE_THRESHOLD) {
+					if (view === "books") view = "all";
+					else if (view === "activity") view = "books";
+					else if (view === "list") view = "activity";
+					else if (view === "discussion") view = "list";
+				}
+			}
+		});
+	});
 </script>
 
 <section>
@@ -232,39 +277,35 @@
 		<div class="views">
 			<button
 				style:color={view === "all" ? "var(--subtext-1)" : "var(--overlay-1)"}
-				style:border-bottom={view === "all" ? `3px solid var(--lavender)` : "3px solid transparent"}
 				onclick={gotoView("all")}
 			>
 				All
 			</button>
 			<button
 				style:color={view === "books" ? "var(--subtext-1)" : "var(--overlay-1)"}
-				style:border-bottom={view === "books" ? `3px solid var(--lavender)` : "3px solid transparent"}
 				onclick={gotoView("books")}
 			>
 				Books
 			</button>
 			<button
 				style:color={view === "activity" ? "var(--subtext-1)" : "var(--overlay-1)"}
-				style:border-bottom={view === "activity" ? `3px solid var(--lavender)` : "3px solid transparent"}
 				onclick={gotoView("activity")}
 			>
 				Activity
 			</button>
 			<button
 				style:color={view === "list" ? "var(--subtext-1)" : "var(--overlay-1)"}
-				style:border-bottom={view === "list" ? `3px solid var(--lavender)` : "3px solid transparent"}
 				onclick={gotoView("list")}
 			>
 				List
 			</button>
 			<button
 				style:color={view === "discussion" ? "var(--subtext-1)" : "var(--overlay-1)"}
-				style:border-bottom={view === "discussion" ? `3px solid var(--lavender)` : "3px solid transparent"}
 				onclick={gotoView("discussion")}
 			>
 				Discussion
 			</button>
+			<div class="viewline" style:left={viewbarLeft}></div>
 		</div>
 	</div>
 
@@ -337,6 +378,16 @@
 		display: flex;
 		align-items: center;
 		color: var(--surface-2);
+	}
+	
+	.viewline {
+		position: absolute;
+		background-color: var(--lavender);
+		bottom: 0px;
+		height: 3px;
+		width: 5rem;
+		border-radius: 100vmax;
+		transition: left 0.2s;
 	}
 
 	.rating-options {
@@ -444,6 +495,7 @@
 		display: flex;
 		width: 100%;
 		overflow-x: auto;
+		position: relative;
 
 		button {
 			font-size: 0.85rem;
@@ -470,14 +522,12 @@
 			z-index: 2;
 			border: 0.5rem solid var(--crust);
 		}
-
 	}
 
 	.profile-line-2 {
 		display: flex;
 		align-items: center;
 		gap: 1.0rem;
-		padding-bottom: 0.5rem;
 		margin-left: 1rem;
 
 		> a {

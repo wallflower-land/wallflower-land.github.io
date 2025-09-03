@@ -4,6 +4,35 @@ All rights reserved. See [the license](./LICENSE.md) for details.
 
 ## Installation
 
+### Linux
+
+<details>
+<summary>Arch</summary>
+
+```bash
+yay -S wallflower-land
+```
+
+</details>
+
+<details>
+<summary>Endeavour</summary>
+
+```bash
+yay -S wallflower-land
+```
+
+</details>
+
+<details>
+<summary>Manjaro</summary>
+
+```bash
+yay -S wallflower-land
+```
+
+</details>
+
 ### Building From Source
 
 You can build wallflower.land from source:

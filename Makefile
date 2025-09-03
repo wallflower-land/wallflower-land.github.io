@@ -1,5 +1,5 @@
-NPM := "$(shell command -v bun 2>/dev/null || command -v pnpm 2>/dev/null || command -v npm 2>/dev/null || command -v yarn 2>/dev/null)"
-TAURI := "$(shell command -v cargo-tauri 2>/dev/null)"
+NPM ?= "$(shell command -v bun 2>/dev/null || command -v pnpm 2>/dev/null || command -v npm 2>/dev/null || command -v yarn 2>/dev/null)"
+TAURI ?= "$(shell command -v cargo-tauri 2>/dev/null)"
 TAURI ?= $(NPM) tauri
 
 .PHONY: all build-site deploy dev-site dev-app build-linux-app clean build-windows-app-from-linux bump-patch-version bump-minor-version build-windows-app build-from-source
@@ -86,9 +86,9 @@ build-from-source:
 
 # Builds the app for production as a native executable for the current system
 build-debian-app:
+	@clear
 	@mkdir -p cache
 	@echo "" > cache/build.log
-	@clear
 	@echo ""
 	@echo -e "\e[1;33mwallflower.land\e[0m version \e[1;36m$(call version)\e[0m"
 	@echo ""
@@ -99,7 +99,7 @@ build-debian-app:
 	@echo -en "    \e[1;32mCompiling\e[0m Tauri project... "
 	@if NO_STRIP=true $(TAURI) build --verbose &>cache/build.log ; then echo -e "\e[1;32mDone!\e[0m" ; else echo -e "\e[1;31mError:\e[0m\n\n$$(<cache/build.log)\n\n\e[1;31mError:\e[0m Aborting due to the error above."; exit 1; fi
 	@echo -en "    \e[1;32mMoving\e[0m files... "
-	@mkdir -p build/$(call version)/linux/debian
+	@mkdir -p build/$(call version)/linux
 	@[ -d build/$(call version)/linux/debian ] && rm build/$(call version)/debian -rf
 	@[ -d src-tauri/target/release/bundle/deb ] && cp -r src-tauri/target/release/bundle/deb build/$(call version)/linux/debian
 	@echo -e "\e[1;32mDone!\e[0m"
@@ -114,11 +114,28 @@ clean:
 	$(NPM) install
 
 # Build a native windows app
-build-windows-app: icon
-	$(TAURI) build
-	mkdir -p build/windows
-	[ -d src-tauri/target/release/bundle/nsis ] && cp -r src-tauri/target/release/bundle/nsis/* build/windows/$(call version)
-	[ -d src-tauri/target/release/bundle/msi ] && cp -r src-tauri/target/release/bundle/msi/* build/windows/$(call version)
+build-windows-app:
+	@clear
+	@mkdir -p cache
+	@echo "" > cache/build.log
+	@echo ""
+	@echo -e "\e[1;33mwallflower.land\e[0m version \e[1;36m$(call version)\e[0m"
+	@echo ""
+	@echo -e "\e[1;32mBuilding\e[0m Windows app..."
+	@echo -en "    \e[1;32mGenerating\e[0m app icons... "
+	@$(MAKE) --no-print-directory icon
+	@echo -e "\e[1;32mDone!\e[0m"
+	@echo -en "    \e[1;32mCompiling\e[0m Tauri project... "
+	@if $(TAURI) build --verbose &>cache/build.log ; then echo -e "\e[1;32mDone!\e[0m" ; else echo -e "\e[1;31mError:\e[0m\n\n$$(<cache/build.log)\n\n\e[1;31mError:\e[0m Aborting due to the error above."; exit 1; fi
+	@echo -en "    \e[1;32mMoving\e[0m files... "
+	@mkdir -p build/$(call version)
+	@[ -d build/$(call version)/windows ] && rm build/$(call version)/windows -rf
+	@mkdir -p build/$(call version)/windows
+	@[ -d src-tauri/target/release/bundle/nsis ] && cp -r src-tauri/target/release/bundle/nsis/* build/windows/$(call version)
+	@[ -d src-tauri/target/release/bundle/msi ] && cp -r src-tauri/target/release/bundle/msi/* build/windows/$(call version)
+	@echo -e "\e[1;32mDone!\e[0m"
+	@echo -e "\e[1;32mDone!\e[0m Windows app written to \e[1;36m/build/$(call version)/windows\e[0m"
+	@echo ""
 
 # Increment patch version
 bump-patch-version:
