@@ -172,6 +172,10 @@
 		transition: left 0.2s;
 	}
 
+	.wrapper {
+		width: 100dvw;
+	}
+
 	.nofollowing {
 		display: flex;
 		flex-direction: column;
