@@ -87,7 +87,7 @@
 		return function() {
 			goto(`${window.location.origin}${window.location.pathname}?${new URLSearchParams({ view: viewName })}`);
 			view = viewName as any;
-			pageLeft = `${["all", "books", "activity", "list", "discussion"].indexOf(view) * -100}dvw`;
+			pageLeft = `${["all", "books", "activity", "list", "discussion"].indexOf(view) * -window.innerWidth}px`;
 		}
 	}
 
@@ -145,7 +145,6 @@
 		let touchEndX = 0;
 		let touchStartY = 0;
 		let touchEndY = 0;
-
 		const SWIPE_THRESHOLD = 30;
 
 		document.addEventListener("touchstart", (event) => {
@@ -154,6 +153,10 @@
 		});
 
 		document.addEventListener("touchmove", (event) => {
+			if (touchEndX) {
+				const delta = touchEndX - event.touches[0].clientX;
+				pageLeft = `${Math.min(0, parseInt(pageLeft) - delta * 1.5)}px`;
+			}
 			touchEndX = event.touches[0].clientX;
 			touchEndY = event.touches[0].clientY;
 		});
@@ -163,18 +166,28 @@
 			const swipeDistanceY = touchEndY - touchStartY;
 
 			if (Math.abs(swipeDistanceY) < SWIPE_THRESHOLD) {
+
+				// Swipe forward
 				if (swipeDistance < -SWIPE_THRESHOLD) {
 					if (view === "all") gotoView("books")();
 					else if (view === "books") gotoView("activity")();
 					else if (view === "activity") gotoView("list")();
 					else if (view === "list") gotoView("discussion")();
-				} else if (swipeDistance > SWIPE_THRESHOLD) {
+				} 
+
+				// Swipe back
+				else if (swipeDistance > SWIPE_THRESHOLD) {
 					if (view === "books") gotoView("all")();
 					else if (view === "activity") gotoView("books")();
 					else if (view === "list") gotoView("activity")();
 					else if (view === "discussion") gotoView("list")();
 				}
 			}
+
+			const left = parseInt(pageLeft);
+			const newLeft = left % innerWidth < innerWidth / 2 ? left - left % innerWidth : left + (innerWidth - left % innerWidth);
+			pageLeft = `${newLeft}px`;
+			touchEndX = 0;
 		});
 	});
 </script>
@@ -401,6 +414,10 @@
 		display: flex;
 		align-items: center;
 		color: var(--surface-2);
+	}
+
+	.wrapper {
+		border-right: 1px solid var(--surface-0);
 	}
 	
 	.viewline {
