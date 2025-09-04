@@ -214,7 +214,6 @@
 		padding-right: 2rem;
 		padding-left: 2rem;
 		background-color: var(--crust);
-		view-transition-name: home-views;
 
 		&:not(:has(> *:nth-child(2))) {
 			justify-content: center;
@@ -265,6 +264,5 @@
 		width: 100%;
 		max-width: var(--max-width);
 		background: var(--crust);
-		view-transition-name: home-nav;
 	}
 </style>
