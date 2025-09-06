@@ -56,5 +56,7 @@
 		overflow-x: hidden;
 		position: relative;
 		background-color: var(--base);
+		flex-grow: 0;
+		flex-shrink: 0;
 	}
 </style>

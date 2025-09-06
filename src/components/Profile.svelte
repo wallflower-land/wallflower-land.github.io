@@ -404,7 +404,7 @@
 <style>
 	.posts {
 		display: grid;
-		width: 500dvw;
+		width: 500%;
 		grid-template-columns: repeat(5, 1fr);
 		position: relative;
 		transition: left 0.2s;

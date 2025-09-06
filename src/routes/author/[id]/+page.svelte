@@ -19,6 +19,8 @@
 	<div class="content">
 		<ClickableImage src={author.picture} class="picture" />
 
+		<p>{author.bio}</p>
+
 		<h2>Books</h2>
 		<div class="books">
 			{#each books as book}
@@ -47,13 +49,18 @@
 		}
 	}
 
+	p {
+		color: var(--overlay-1);
+		padding: 2rem;
+		font-size: 0.85rem;
+	}
+
 	h2 {
 		width: 100%;
 		color: var(--text);
 		font-weight: normal;
 		padding-bottom: 1rem;
 		margin-left: 2rem;
-		margin-top: 2rem;
 	}
 
 	.books {

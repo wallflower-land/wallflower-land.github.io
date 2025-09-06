@@ -28,7 +28,8 @@
 			<code>description: string</code> - A description for the book
 		</li>
 		<li>
-			<code>authors: string[]</code> - The title of the book
+			<code>authorKey: string</code> - An author key, which can be used to fetch
+			author data at the <code>/api/author/&lt;key&gt;</code> endpoint.
 		</li>
 		<li>
 			<code>pageCount: number</code> - The number of pages in the book

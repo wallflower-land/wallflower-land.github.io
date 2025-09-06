@@ -31,7 +31,7 @@
 		and
 		<Link href="https://svelte.dev/docs/kit/introduction">Sveltekit</Link>
 		for the web (flavored with
-		<Link href="https://www.typescriptlang.org/">TypeScript</Link>, 
+		<Link href="https://www.typescriptlang.org/">TypeScript</Link>), 
 		and ported to mobile with
 		<Link href="https://v2.tauri.app/">Tauri</Link>.
 	</p>

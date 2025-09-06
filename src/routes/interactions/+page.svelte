@@ -136,7 +136,6 @@
 		grid-template-columns: repeat(5, 1fr);
 		padding-left: 1rem;
 		padding-right: 1rem;
-		view-transition-name: interactions-views;
 
 		> * {
 			padding-bottom: 0.75rem;
@@ -172,13 +171,18 @@
 	}
 
 	nav {
-		view-transition-name: interactions-nav;
 		display: flex;
 		flex-direction: column;
 		width: 100%;
-		max-width: var(--max-width);
+		width: inherit;
 		background: var(--crust);
 		position: fixed;
 		top: 0px;
+	}
+
+	@media(min-width: 700px) {
+		nav {
+			border-right: 1px var(--surface-0);
+		}
 	}
 </style>

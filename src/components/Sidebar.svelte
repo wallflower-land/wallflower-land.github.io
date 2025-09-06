@@ -42,6 +42,7 @@
 	}
 
 	export function hide() {
+		if (alwaysShowSidebar()) return;
 		visible = false;
 		setTimeout(() => {
 			overlayDisplay = "none";
@@ -51,7 +52,7 @@
 	function nav(to: string) {
 		return function () {
 			goto(to);
-			if (window.innerWidth < window.innerHeight) hide();
+			hide();
 		};
 	}
 
@@ -141,12 +142,12 @@
 			Interactions
 		</button>
 	{/if}
-	{#if user() && user()!.tags.includes("mod")}
-		<button class="listing" style:color="var(--subtext-1)" onclick={nav("/moderator-tools")}>
-			<WrenchIcon stroke="var(--subtext-1)" style="width: 1.5rem;" />
-			Moderator Tools
-		</button>
-	{/if}
+	<!-- {#if user() && user()!.tags.includes("mod")} -->
+	<!-- 	<button class="listing" style:color="var(--subtext-1)" onclick={nav("/moderator-tools")}> -->
+	<!-- 		<WrenchIcon stroke="var(--subtext-1)" style="width: 1.5rem;" /> -->
+	<!-- 		Moderator Tools -->
+	<!-- 	</button> -->
+	<!-- {/if} -->
 	<button class="listing" style:color="var(--subtext-1)" onclick={nav("/settings")}>
 		<GearIcon stroke="var(--subtext-1)" style="width: 1.5rem;" />
 		Settings
@@ -200,6 +201,8 @@
 			&:last-child {
 				margin-top: auto;
 				background: var(--crust);
+				padding-top: 0.75rem;
+				padding-bottom: 0.75rem;
 			}
 		}
 	}
@@ -221,9 +224,9 @@
 	}
 
 	.profile {
-		padding-top: 2rem;
+		padding-top: 1.75rem;
 		border-bottom: 1px solid var(--surface-0);
-		padding-bottom: 2rem;
+		padding-bottom: 1.75rem;
 		display: flex;
 		align-items: center;
 		background: var(--crust);

@@ -48,7 +48,6 @@
 		max-width: var(--max-width);
 		background: var(--crust);
 		view-transition-name: footer;
-		width: 100%;
 
 		a {
 			padding-top: 0.5rem;
@@ -71,7 +70,14 @@
 	@media (min-width: 700px) {
 		footer {
 			margin-left: 20rem;
-			width: max(calc(100% - 40rem), 25rem);
+			border-right: 1px solid var(--surface-0);
+			width: calc(100% - 40rem);
+		}
+	}
+
+	@media (max-width: 700px) {
+		footer {
+			width: 100%;
 		}
 	}
 

@@ -330,7 +330,7 @@
 		{/if}
 
 		{#if post.pictures.length > 0}
-			<ImageCarousel images={post.pictures} />
+			<ImageCarousel clickable={postpage} images={post.pictures} />
 		{/if}
 
 		<!-- Post stats (views, likes, replies, etc.) -->

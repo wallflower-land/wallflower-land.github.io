@@ -3,9 +3,11 @@
 
 	let { book, ...rest } = $props();
 
-	let image: HTMLImageElement = $state(null!);
+	let image: HTMLImageElement | null = $state(null);
 
 	function onload() {
+		if (!image) return;
+
 		if (image.naturalWidth < 10) {
 			image.src = book.backupCover;
 		}

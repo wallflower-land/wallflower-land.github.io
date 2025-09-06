@@ -1,9 +1,12 @@
+import { getBook } from "./bookapi.ts";
+
 export type Author = {
 	name: string;
 	birthday: string;
 	id: string;
 	books: string[];
 	picture: string;
+	bio: string;
 };
 
 export async function searchAuthors(searchTerm: string, limit = 10): Promise<Promise<Author>[]> {
@@ -20,16 +23,35 @@ export async function getAuthor(key: string) {
 	const response = await fetch(`https://openlibrary.org/authors/${key}.json`);
 	const authorData = await response.json();
 
-	const booksResponse = await fetch(
-		`https://openlibrary.org/query.json?type=/type/edition&authors=/authors/${key}&isbn_13=`,
+	const worksResponse = await fetch(
+		`https://openlibrary.org/authors/${key}/works.json?limit=100`,
 	);
-	const bookData = await booksResponse.json();
-	const books = bookData.filter(book => book.isbn_13).map(book => book.isbn_13[0]);
+	const worksData = await worksResponse.json();
+
+	const books = (
+		await Promise.all(
+			worksData.entries.map(async (work: any) => {
+				const workResponse = await fetch(
+					`https://openlibrary.org${work.key}/editions.json`,
+				);
+				const workData = await workResponse.json();
+
+				const language = workData.entries?.[0]?.languages?.[0].key ?? null;
+				if (language !== "/languages/eng") {
+					return null;
+				}
+
+				const isbn = workData.entries?.[0]?.isbn_13?.[0] ?? null;
+				return isbn;
+			}),
+		)
+	).filter(isbn => isbn);
 
 	const author: Author = {
 		id: key,
 		name: authorData.name,
 		birthday: authorData.birth_date,
+		bio: authorData.bio?.value ?? "",
 		picture:
 			authorData.photos && authorData.photos.length
 				? `https://covers.openlibrary.org/a/id/${authorData.photos[0]}-L.jpg`

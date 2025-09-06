@@ -5,7 +5,15 @@
 	import TriangleRight from "../assets/images/icons/TriangleRight.svelte";
 	import ClickableImage from "./ClickableImage.svelte";
 
-	let { images = $bindable(), editable = false }: { images: string[], editable?: boolean } = $props();
+	let { 
+		images = $bindable(), 
+		clickable = true, 
+		editable = false 
+	}: { 
+		images: string[], 
+		clickable?: boolean,
+		editable?: boolean 
+	} = $props();
 
 	let imageIndex = $state(0);
 	function cycleImage(amount: number) {
@@ -29,9 +37,13 @@
 				{#await getFile(image)}
 					<div class="media-wrapper" style:background-color="var(--surface-0)"></div>
 				{:then image}
-					<ClickableImage src={image!}>
+					{#if clickable}
+						<ClickableImage src={image!}>
+							<div class="media-wrapper" style:background-image="url('{image}')"></div>
+						</ClickableImage>
+					{:else}
 						<div class="media-wrapper" style:background-image="url('{image}')"></div>
-					</ClickableImage>
+					{/if}
 				{/await}
 			{/each}
 		</div>

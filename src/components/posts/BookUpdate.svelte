@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { getAuthor } from "../../api/authorapi";
 	import { getBook } from "../../api/bookapi";
 	import PostBody from "./PostBody.svelte";
 
@@ -29,7 +30,9 @@
 				<!-- Book title & authors -->
 				<a href="/book/{book?.isbn}" class="title">{book?.title}</a>
 				<a href="/book/{book?.isbn}" class="author">
-					{book?.authors.join(", ")}
+					{#await getAuthor(book.authorKey) then author}
+						{author.name}
+					{/await}
 				</a>
 			</div>
 

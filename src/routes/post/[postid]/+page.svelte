@@ -14,7 +14,7 @@
 	let postid = $derived(data.postid);
 	let thePost = $derived(getPostFromId(postid)!);
 
-	let reply: HTMLTextAreaElement = $state(null!);
+	let reply: HTMLElement = $state(null!);
 
 	let replyState: "contracted" | "expanded" = $state("contracted");
 
@@ -23,18 +23,18 @@
 
 	function expand() {
 		replyState = "expanded";
-		reply.style.height = "8rem";
-		reply.style.borderRadius = "1rem";
+		reply.style.borderRadius = "0.5rem";
 	}
 
 	function contract() {
-		replyState = "contracted";
-		reply.style.height = "2.3rem";
-		setTimeout(() => {
-			if (replyState === "contracted") {
-				reply.style.borderRadius = "100vmax";
-			}
-		}, 2000);
+		if (replyBody.trim().length === 0) {
+			replyState = "contracted";
+			setTimeout(() => {
+				if (replyState === "contracted") {
+					reply.style.borderRadius = "100vmax";
+				}
+			}, 200);
+		}
 	}
 
 	let replyBody = $state("");
@@ -62,6 +62,12 @@
 			chain.push(current);
 		}
 	});
+
+	function checkLength(event: Event) {
+		if (replyBody.length >= 144) {
+			event.preventDefault();
+		}
+	}
 
 	let characterLimitStyle = $derived.by(() => replyState === "expanded" ? "flex" : "none");
 	let mainPost: HTMLElement = $state(null!);
@@ -104,27 +110,32 @@
 					</a>
 
 					<div class="reply-body">
-						<textarea
+						<div
+							class="textarea {replyState === "expanded" ? "expanded" : ""}"
 							bind:this={reply}
-							bind:value={replyBody}
-							onfocus={expand}
-							onblur={contract}
-							placeholder="Leave a reply"
-							maxlength="144"
-						></textarea>
+							style="border-radius: 100vmax;"
+						>
+							<div title="Post" class="send">
+								<label for="attach-image-reply">
+									<AddImageIcon stroke="var(--overlay-1)" style="width: 1.25rem;" />
+								</label>
+								<ImagePicker allowEdit={false} id="attach-image-reply" onupload={async imageId => images.push(imageId)} />
+
+								<button onmousedown={sendReply}>
+									<SendIcon stroke="var(--overlay-1)" style="width: 1.25rem;" />
+								</button>
+							</div>
+							<!-- svelte-ignore a11y_no_static_element_interactions -->
+							<div 
+								onblur={contract}
+								onfocus={expand}
+								bind:textContent={replyBody}
+								contenteditable class="content"
+								onkeypress={checkLength}
+							></div>
+						</div>
 
 						<ImageCarousel bind:images editable />
-
-						<div title="Post" class="send">
-							<label for="attach-image-reply">
-								<AddImageIcon stroke="var(--overlay-1)" style="width: 1.5rem;" />
-							</label>
-							<ImagePicker allowEdit={false} id="attach-image-reply" onupload={async imageId => images.push(imageId)} />
-
-							<button onmousedown={sendReply}>
-								<SendIcon stroke="var(--overlay-1)" style="width: 1.5rem;" />
-							</button>
-						</div>
 
 						<CharacterLimitMeter display={characterLimitStyle} limit={144} bind:text={replyBody} />
 					</div>
@@ -165,20 +176,34 @@
 		height: calc(100% - 4rem);
 	}
 
-	textarea {
+	.textarea {
 		resize: none;
 		font-size: 0.85rem;
-		padding: 0.5rem;
 		width: 100%;
 		transition: height 0.2s;
-		height: 2.3rem;
-		border-radius: 100vmax;
-		display: flex;
-		align-items: center;
 		margin-top: 0.4rem;
 		filter: brightness(90%);
 		background: var(--mantle);
 		color: var(--subtext-1);
+		word-break: break-all;
+		overflow: hidden;
+		height: 2.3rem;
+		border-radius: 0.5rem;
+
+		&.expanded {
+			height: 8rem;
+		}
+
+		.content {
+			padding: 0.5rem;
+
+			&:empty::before {
+				content: "Leave a reply...";
+				margin-left: 0.5rem;
+				color: var(--overlay-1);
+				pointer-events: none;
+			}
+		}
 	}
 
 	.replies {
@@ -215,12 +240,12 @@
 	.send {
 		display: flex;
 		gap: 0.5rem;
-		height: fit-content;
-		position: absolute;
-		right: 0.25rem;
-		top: 0.5rem;
-		padding: 0.25rem;
+		height: 1lh;
 		border-radius: 0.5rem;
+		float: right;
+		margin-top: 0.5rem;
+		margin-right: 0.5rem;
+		margin-left: 0.5rem;
 
 		> * {
 			display: flex;

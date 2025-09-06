@@ -13,6 +13,13 @@
 </span>
 
 <style>
+	@media(min-width: 700px) {
+		.heading {
+			margin-left: 20rem;
+			border-right: 1px solid var(--surface-0);
+		}
+	}
+
 	.heading {
 		view-transition-name: header;
 		display: flex;
@@ -24,7 +31,7 @@
 		position: fixed;
 		top: 0px;
 		background-color: var(--crust);
-		width: 100%;
+		width: inherit;
 		padding-top: 1rem;
 		padding-bottom: 1rem;
 		left: 0px;

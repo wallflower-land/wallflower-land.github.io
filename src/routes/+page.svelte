@@ -156,7 +156,7 @@
 <style>
 	.posts {
 		display: grid;
-		width: 200dvw;
+		width: 200%;
 		grid-template-columns: repeat(2, 1fr);
 		position: relative;
 		transition: left 0.2s;
@@ -170,10 +170,6 @@
 		width: 9rem;
 		border-radius: 100vmax;
 		transition: left 0.2s;
-	}
-
-	.wrapper {
-		width: 100dvw;
 	}
 
 	.nofollowing {
@@ -266,7 +262,6 @@
 		display: flex;
 		flex-direction: column;
 		width: 100%;
-		max-width: var(--max-width);
 		background: var(--crust);
 	}
 </style>

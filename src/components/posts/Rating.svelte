@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { getAuthor } from "../../api/authorapi";
 	import { getBook } from "../../api/bookapi";
 	import BookCover from "../BookCover.svelte";
 	import StarRating from "../StarRating.svelte";
@@ -20,7 +21,9 @@
 			<div class="content">
 				<a href={`/book/${book?.isbn}`} class="title">{book?.title}</a>
 				<a href={`/book/${book?.isbn}`} class="author">
-					{book?.authors.join(", ")}
+					{#await getAuthor(book.authorKey) then author}
+						{author.name}
+					{/await}
 				</a>
 				<div class="stars">
 					<StarRating {rating} size={1.2} />

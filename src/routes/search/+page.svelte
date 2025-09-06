@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
-	import { onMount } from "svelte";
+	import { getAbortSignal, onMount } from "svelte";
 	import { searchBooks, type Book } from "../../api/bookapi";
 	import { searchPosts, type InternalPost} from "../../api/postapi";
 	import { searchUsers, type User } from "../../api/userapi";
@@ -11,7 +11,7 @@
 	import Sidebar from "../../components/Sidebar.svelte";
 	import BookCover from "../../components/BookCover.svelte";
 	import Header from "../../components/Header.svelte";
-	import { searchAuthors, type Author } from "../../api/authorapi";
+	import { getAuthor, searchAuthors, type Author } from "../../api/authorapi";
 
 	type View = "posts" | "books" | "people" | "authors";
 
@@ -19,7 +19,7 @@
 
 	let view: View = $state(new URLSearchParams(window.location.search).get("view") as View ?? "posts");
 
-	let searchTerm: string = $state("");
+	let searchTerm: string = $state(new URLSearchParams(window.location.search).get("term") ?? "");
 
 	async function search() {
 		if (searchTimeout) clearTimeout(searchTimeout)
@@ -65,6 +65,7 @@
 			search();
 		}
 	}
+
 </script>
 
 <Page bind:sidebar type="search">
@@ -159,7 +160,9 @@
 										{book.title}
 									</h1>
 									<h2>
-										{book.authors.join(", ")}
+										{#await getAuthor(book.authorKey) then author}
+											{author.name}
+										{/await}
 									</h2>
 								</div>
 								{#if book.cover}

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
+	import { getAuthor } from "../../../api/authorapi";
 	import { getBookDiscussions, getBookRating } from "../../../api/bookapi";
 	import { updateUser, user } from "../../../backend/auth.svelte";
 	import BackButton from "../../../components/BackButton.svelte";
@@ -10,7 +11,8 @@
 	import StarRating from "../../../components/StarRating.svelte";
 
 	let { data } = $props();
-	let book = data.book;
+	let book = $derived(data.book);
+	let author = $derived(getAuthor(book.authorKey));
 
 	let view: "info" | "discussion" = $state("info");
 
@@ -23,7 +25,7 @@
 		}
 	}
 
-	let discussions = getBookDiscussions(book.isbn);
+	let discussions = $derived(getBookDiscussions(book.isbn));
 	let sidebar: Sidebar = $state(null!);
 	let isInReadingList = $derived(user()?.readingList.includes(book.isbn) ?? false)
 
@@ -73,7 +75,11 @@
 	<nav>
 		<div class="book-name">
 			<h1>{book.title}</h1>
-			<h2>{book.authors.join(", ")}</h2>
+			{#await author}
+				<h2>Loading...</h2>
+			{:then author}
+				<h2>{author.name}</h2>
+			{/await}
 		</div>
 		<div class="views">
 			<button
@@ -97,9 +103,11 @@
 			<div class="book-info">
 				<div class="title">
 					<h1>{book.title}</h1>
-					{#if book.authors.length > 0}
-						<h2>{book.authors[0]}</h2>
-					{/if}
+					{#await author}
+						<h2>Loading...</h2>
+					{:then author}
+						<h2>{author.name}</h2>
+					{/await}
 				</div>
 				<BookCover {book} style="width: 10rem" />
 				{#await getBookRating(book.isbn) then { rating, count } }
@@ -129,11 +137,11 @@
 				<h2>Product Information</h2>
 				<span><span>Title: </span>{book.title}</span>
 				<span>
-					<span>Author{book.authors.length === 1 ? "" : "s"}: </span>
+					<span>Author: </span>
 					<span>
-						{#each book.authors as author, index (author)}
-							<a href="/author">{author}</a>{#if index !== book.authors.length - 1},{/if}
-						{/each}
+						{#await author then author}
+							<a href="/author/{author.id}">{author.name}</a>
+						{/await}
 					</span>
 				</span>
 				<span><span>ISBN-13: </span>{book.isbn}</span>

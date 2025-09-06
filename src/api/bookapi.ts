@@ -6,7 +6,6 @@ export type ISBN = string;
 
 export type Book = {
 	backupCover: string;
-	authors: string[];
 	isbn: ISBN;
 	title: string;
 	genres: string[];
@@ -16,6 +15,7 @@ export type Book = {
 	publishers: string[];
 	publishDate: string;
 	characters: string[];
+	authorKey: string;
 };
 
 let { db } = initializeFirebase();
@@ -66,15 +66,20 @@ export async function getBook(isbn: ISBN): Promise<Book> {
 	]);
 
 	const work = openLibraryData.works[0].key;
-	const workResponse = await fetch(`https://openlibrary.org${work}.json`);
-	const workData = await workResponse.json();
+	const [workResponse, editionsResponse] = await Promise.all([
+		fetch(`https://openlibrary.org${work}.json`),
+		fetch(`https://openlibrary.org${work}/editions.json`),
+	]);
+	const [workData, editionsData] = await Promise.all([
+		workResponse.json(),
+		editionsResponse.json(),
+	]);
 
 	googleData = googleData.items?.[0].volumeInfo;
 
 	const book: Book = {
 		title: openLibraryData.title,
-		authors: Array.from(new Set(googleData?.authors ?? [])),
-		isbn,
+		isbn: editionsData.entries?.[0]?.[0]?.isbn_13?.[0] ?? isbn,
 		cover: workData.covers?.[0]
 			? `https://covers.openlibrary.org/b/id/${workData.covers[0]}-L.jpg`
 			: `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg`,
@@ -85,6 +90,10 @@ export async function getBook(isbn: ISBN): Promise<Book> {
 		publishers: openLibraryData.publishers,
 		publishDate: openLibraryData.publish_date,
 		characters: workData.subject_people ?? [],
+		authorKey:
+			(openLibraryData.authors?.[0]?.key ?? workData.authors?.[0]?.author?.key)?.match(
+				/\/authors\/(.+)/,
+			)?.[1] ?? null,
 	};
 
 	if (globalThis.localStorage) {

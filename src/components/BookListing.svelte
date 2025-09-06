@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { getAuthor } from "../api/authorapi";
 	import type { Book } from "../api/bookapi";
 	import type { User } from "../api/userapi";
 	import BookCover from "./BookCover.svelte";
@@ -11,7 +12,7 @@
 <svelte:element data-rating="{rating}" id="outer" this={onclick ? "div" : "a"} href="/book/{book.isbn}" onclick={() => onclick?.()}>
 	<div class="book-info">
 		<h1>{book.title}</h1>
-		<h2>{book.authors.join(", ")}</h2>
+		<h2>{#await getAuthor(book.authorKey) then author}{author.name}{/await}</h2>
 	</div>
 
 	{#if rating !== undefined}
