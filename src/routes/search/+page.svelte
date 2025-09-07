@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
-	import { getAbortSignal, onMount } from "svelte";
+	import { onMount } from "svelte";
 	import { searchBooks, type Book } from "../../api/bookapi";
 	import { searchPosts, type InternalPost} from "../../api/postapi";
 	import { searchUsers, type User } from "../../api/userapi";
@@ -12,14 +12,23 @@
 	import BookCover from "../../components/BookCover.svelte";
 	import Header from "../../components/Header.svelte";
 	import { getAuthor, searchAuthors, type Author } from "../../api/authorapi";
+	import SideSwiper from "../../components/SideSwiper.svelte";
 
-	type View = "posts" | "books" | "people" | "authors";
+	type View = "posts" | "books" | "users" | "authors";
 
 	let sidebar: Sidebar = $state(null!);
 
 	let view: View = $state(new URLSearchParams(window.location.search).get("view") as View ?? "posts");
 
 	let searchTerm: string = $state(new URLSearchParams(window.location.search).get("term") ?? "");
+
+	let container: HTMLElement | null = $state(null);
+
+	// svelte-ignore state_referenced_locally
+	let pageLeft = $state("0px");
+	let viewbarLeft = $derived(`${["posts", "books", "authors", "users"].indexOf(view) * 25 + 12.5}%`);
+
+	let width = $state(0);
 
 	async function search() {
 		if (searchTimeout) clearTimeout(searchTimeout)
@@ -33,11 +42,14 @@
 		if (view === "posts") posts = searchPosts(searchTerm);
 		else if (view === "books") books = searchBooks(searchTerm);
 		else if (view === "authors") authors = searchAuthors(searchTerm);
-		else if (view === "people") users = searchUsers(searchTerm);
+		else if (view === "users") users = searchUsers(searchTerm);
 	}
 
 	onMount(() => {
 		if (searchTerm) search();
+
+		width = container!.getBoundingClientRect().width;
+		pageLeft = `${["posts", "books", "authors", "users"].indexOf(view) * (-width / 4)}px`;
 	});
 
 	let searchTimeout: number | null = $state(null);
@@ -47,7 +59,7 @@
 			search();
 		} else {
 			if (searchTimeout) clearTimeout(searchTimeout)
-			searchTimeout = setTimeout(search, 3000) as unknown as number;
+			searchTimeout = setTimeout(search, 1000) as unknown as number;
 		}
 	}
 
@@ -62,11 +74,26 @@
 			if (searchTerm) params.set("term", searchTerm);
 			goto(`/search?${params}`);
 			view = viewName;
+			pageLeft = `${["posts", "books", "authors", "users"].indexOf(view) * (-width / 4)}px`;
+
 			search();
 		}
 	}
 
+	function gotoNext() {
+		if (view === "posts") setView("books")();
+		else if (view === "books") setView("authors")();
+		else if (view === "authors") setView("users")();
+	}
+
+	function gotoPrevious() {
+		if (view === "books") setView("posts")();
+		else if (view === "authors") setView("books")();
+		else if (view === "users") setView("authors")();
+	}
 </script>
+
+<SideSwiper {gotoNext} {gotoPrevious} bind:left={pageLeft} />
 
 <Page bind:sidebar type="search">
 	<Header title="Search" />
@@ -81,7 +108,7 @@
 				books: "Enter a title or ISBN",
 				posts: "Enter some keywords",
 				authors: "Enter an author's name",
-				people: "Enter a username"
+				users: "Enter a username"
 			}[view]}
 		/>
 
@@ -89,168 +116,184 @@
 			<button class={view === "posts" ? "selected" : ""} onclick={setView("posts")}>Posts</button>
 			<button class={view === "books" ? "selected" : ""} onclick={setView("books")}>Books</button>
 			<button class={view === "authors" ? "selected" : ""} onclick={setView("authors")}>Authors</button>
-			<button class={view === "people" ? "selected" : ""} onclick={setView("people")}>Users</button>
+			<button class={view === "users" ? "selected" : ""} onclick={setView("users")}>Users</button>
+
+			<div class="viewline" style:left={viewbarLeft}></div>
 		</div>
 	</section>
-	{#if view === "posts"}
-		{#await posts}
-			<div class="loading">
-				<h1>Loading posts...</h1>
-				<p>We promise Wallflower will be faster soon.</p>
-				<Loading />
-			</div>
-		{:then posts}
-			{#if searchTerm == ""}
+
+	<div class="content" style:left={pageLeft} bind:this={container}>
+
+		<!-- Posts -->
+		<div class="wrapper">
+			{#await posts}
 				<div class="loading">
-					<h1>Search for a post</h1>
-					<p>
-						Enter your search term to find relevant posts.
-					</p>
-				</div>
-			{:else if posts.length === 0}
-				<div class="loading">
-					<h1>No posts found</h1>
-					<p>
-						No posts were found relating to your search term. Make sure you spelled everything right!
-					</p>
-				</div>
-			{/if}
-			{#each posts as post}
-				<AnyPost {post} />
-			{/each}
-		{/await}
-	{:else if view === "books"}
-		{#if searchTerm == ""}
-			<div class="loading">
-				<h1>Search for a book</h1>
-				<p>
-					Enter your search term to find relevant books.
-				</p>
-			</div>
-		{:else}
-			{#await books}
-				<div class="loading">
-					<h1>Loading books...</h1>
+					<h1>Loading posts...</h1>
 					<p>We promise Wallflower will be faster soon.</p>
 					<Loading />
 				</div>
-			{:then books}
-				{#if books.length === 0}
+			{:then posts}
+				{#if searchTerm == ""}
 					<div class="loading">
-						<h1>No books found</h1>
+						<h1>Search for a post</h1>
 						<p>
-							No books were found relating to your search term. Make sure you spelled everything right!
+							Enter your search term to find relevant posts.
+						</p>
+					</div>
+				{:else if posts.length === 0}
+					<div class="loading">
+						<h1>No posts found</h1>
+						<p>
+							No posts were found relating to your search term. Make sure you spelled everything right!
 						</p>
 					</div>
 				{/if}
-				<div class="books">
-					{#each books as book}
-						{#await book}
-							<div class="book">
-								<div class="book-info">
-									<div class="loading-title"></div>
-									<div class="loading-authors"></div>
-								</div>
-								<div class="loading-cover"></div>
-							</div>
-						{:then book}
-							<a href={`/book/${book.isbn}`} class="book">
-								<div class="book-info">
-									<h1>
-										{book.title}
-									</h1>
-									<h2>
-										{#await getAuthor(book.authorKey) then author}
-											{author.name}
-										{/await}
-									</h2>
-								</div>
-								{#if book.cover}
-									<BookCover {book} style="width: 3.5rem; margin-left: auto;" />
-								{:else}
+				{#each posts as post}
+					<AnyPost {post} />
+				{/each}
+			{/await}
+		</div>
+
+		<!-- Books -->
+		<div class="wrapper">
+			{#if searchTerm == ""}
+				<div class="loading">
+					<h1>Search for a book</h1>
+					<p>
+						Enter your search term to find relevant books.
+					</p>
+				</div>
+			{:else}
+				{#await books}
+					<div class="loading">
+						<h1>Loading books...</h1>
+						<p>We promise Wallflower will be faster soon.</p>
+						<Loading />
+					</div>
+				{:then books}
+					{#if books.length === 0}
+						<div class="loading">
+							<h1>No books found</h1>
+							<p>
+								No books were found relating to your search term. Make sure you spelled everything right!
+							</p>
+						</div>
+					{/if}
+					<div class="books">
+						{#each books as book}
+							{#await book}
+								<div class="book">
+									<div class="book-info">
+										<div class="loading-title"></div>
+										<div class="loading-authors"></div>
+									</div>
 									<div class="loading-cover"></div>
-								{/if}
-							</a>
+								</div>
+							{:then book}
+								<a href={`/book/${book.isbn}`} class="book">
+									<div class="book-info">
+										<h1>
+											{book.title}
+										</h1>
+										<h2>
+											{#await getAuthor(book.authorKey) then author}
+												{author.name}
+											{/await}
+										</h2>
+									</div>
+									{#if book.cover}
+										<BookCover {book} style="width: 3.5rem; margin-left: auto;" />
+									{:else}
+										<div class="loading-cover"></div>
+									{/if}
+								</a>
+							{/await}
+						{/each}
+					</div>
+				{/await}
+			{/if}
+		</div>
+		
+		<!-- Authors -->
+		<div class="wrapper">
+			{#await authors}
+				<div class="loading">
+					<h1>Loading authors...</h1>
+					<p>We promise Wallflower will be faster soon.</p>
+				</div>
+			{:then authors}
+				{#if searchTerm == ""}
+					<div class="loading">
+						<h1>Search for an author</h1>
+						<p>
+							Enter your search term to find relevant authors.
+						</p>
+					</div>
+				{:else if authors.length === 0}
+					<div class="loading">
+						<h1>No users found</h1>
+						<p>
+							No users were found relating to your search term. Make sure you spelled everything right!
+						</p>
+					</div>
+				{/if}
+				<div class="authors">
+					{#each authors as author}
+						{#await author then author}
+							{#if author.picture}
+								<a href={`/author/${author.id}`} class="book">
+									<div class="author-info">
+										<h1>
+											{author.name}
+										</h1>
+										<h2>
+											Born {author.birthday}
+										</h2>
+									</div>
+									{#if author.picture}
+										<img class="author-image" src={author.picture} />
+									{:else}
+										<div class="loading-cover"></div>
+									{/if}
+								</a>
+							{/if}
 						{/await}
 					{/each}
 				</div>
 			{/await}
-		{/if}
-	{:else if view === "authors"}
-		{#await authors}
-			<div class="loading">
-				<h1>Loading authors...</h1>
-				<p>We promise Wallflower will be faster soon.</p>
-			</div>
-		{:then authors}
-			{#if searchTerm == ""}
+		</div>
+		
+		<!-- Users -->
+		<div class="wrapper">
+			{#await users}
 				<div class="loading">
-					<h1>Search for an author</h1>
-					<p>
-						Enter your search term to find relevant authors.
-					</p>
+					<h1>Loading accounts...</h1>
+					<p>We promise Wallflower will be faster soon.</p>
 				</div>
-			{:else if authors.length === 0}
-				<div class="loading">
-					<h1>No users found</h1>
-					<p>
-						No users were found relating to your search term. Make sure you spelled everything right!
-					</p>
+			{:then users}
+				{#if searchTerm == ""}
+					<div class="loading">
+						<h1>Search for a user</h1>
+						<p>
+							Enter your search term to find relevant users.
+						</p>
+					</div>
+				{:else if users.length === 0}
+					<div class="loading">
+						<h1>No users found</h1>
+						<p>
+							No users were found relating to your search term. Make sure you spelled everything right!
+						</p>
+					</div>
+				{/if}
+				<div class="users">
+					{#each users as user}
+						<UserListing {user} />
+					{/each}
 				</div>
-			{/if}
-			<div class="authors">
-				{#each authors as author}
-					{#await author then author}
-						{#if author.picture}
-							<a href={`/author/${author.id}`} class="book">
-								<div class="author-info">
-									<h1>
-										{author.name}
-									</h1>
-									<h2>
-										Born {author.birthday}
-									</h2>
-								</div>
-								{#if author.picture}
-									<img class="author-image" src={author.picture} />
-								{:else}
-									<div class="loading-cover"></div>
-								{/if}
-							</a>
-						{/if}
-					{/await}
-				{/each}
-			</div>
-		{/await}
-	{:else if view === "people"}
-		{#await users}
-			<div class="loading">
-				<h1>Loading accounts...</h1>
-				<p>We promise Wallflower will be faster soon.</p>
-			</div>
-		{:then users}
-			{#if searchTerm == ""}
-				<div class="loading">
-					<h1>Search for a user</h1>
-					<p>
-						Enter your search term to find relevant users.
-					</p>
-				</div>
-			{:else if users.length === 0}
-				<div class="loading">
-					<h1>No users found</h1>
-					<p>
-						No users were found relating to your search term. Make sure you spelled everything right!
-					</p>
-				</div>
-			{/if}
-			<div class="people">
-				{#each users as user}
-					<UserListing {user} />
-				{/each}
-			</div>
-		{/await}
-	{/if}
+			{/await}
+		</div>
+	</div>
 </Page>
 
 <style>
@@ -259,6 +302,31 @@
 		background-color: var(--crust);
 		margin-top: 2.5rem;
 		view-transition-name: search-box;
+	}
+
+	.content {
+		width: 400%;
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		position: relative;
+		transition: left 0.2s;
+		height: 100dvh;
+	}
+
+	.wrapper {
+		width: 100%;
+		border-right: 1px solid var(--surface-0);
+	}
+
+	.viewline {
+		position: absolute;
+		background-color: var(--lavender);
+		bottom: 0px;
+		height: 3px;
+		width: 5rem;
+		border-radius: 100vmax;
+		transition: left 0.2s;
+		transform: translateX(-50%);
 	}
 
 	.loading {
@@ -292,7 +360,6 @@
 		padding-top: 1rem;
 		padding-bottom: 1rem;
 		padding-right: 2rem;
-		border-bottom-width: 1px solid var(--surface-0);
 
 		.loading-cover {
 			width: 3.25rem;
@@ -350,13 +417,12 @@
 	}
 
 	.views {
-		display: flex;
-		justify-content: space-between;
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
 		padding-top: 1.25rem;
-		padding-left: 1rem;
-		padding-right: 1rem;
+		position: relative;
 
-		> * {
+		> button {
 			padding-bottom: 0.75rem;
 			border-color: var(--lavender);
 			color: var(--overlay-1);
@@ -365,7 +431,6 @@
 
 			&.selected {
 				color: var(--text);
-				border-bottom: 2px solid var(--lavender);
 			}
 		}
 	}

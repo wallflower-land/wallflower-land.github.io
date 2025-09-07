@@ -14,7 +14,7 @@ icon:
 
 # Runs the website in develop mode
 dev-site:
-	$(NPM) run dev
+	$(NPM) run dev --open
 
 # Runs the app in develop mode
 dev-app:
@@ -31,9 +31,6 @@ build-site:
 	@echo -e "\e[1;33mwallflower.land\e[0m version \e[1;36m$(call version)\e[0m"
 	@echo ""
 	@echo -e "\e[1;32mBuilding\e[0m website..."
-	@echo -en "    \e[1;32mGenerating\e[0m app icons... "
-	@$(MAKE) --no-print-directory icon
-	@echo -e "\e[1;32mDone!\e[0m"
 	@echo -en "    \e[1;32mCompiling\e[0m Svelte project... "
 	@if $(NPM) run build &>cache/build.log ; then echo -e "\e[1;32mDone!\e[0m" ; else echo -e "\e[1;31mError:\e[0m\n\n$$(<cache/build.log)\n\n\e[1;31mError:\e[0m Aborting due to the error above."; exit 1; fi
 	@echo -en "    \e[1;32mAdding\e[0m extra necessary files... "

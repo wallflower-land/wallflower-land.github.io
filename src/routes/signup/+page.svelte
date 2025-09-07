@@ -281,10 +281,4 @@
 		margin-top: 5rem;
 		gap: 0.5rem;
 	}
-
-	a {
-		color: var(--blue);
-		text-decoration: none;
-		font-size: 0.85rem;
-	}
 </style>

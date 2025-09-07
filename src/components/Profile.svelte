@@ -20,6 +20,7 @@
 	import Sidebar from "./Sidebar.svelte";
 	import ClickableImage from "./ClickableImage.svelte";
 	import PostBody from "./posts/PostBody.svelte";
+	import SideSwiper from "./SideSwiper.svelte";
 
 	let { sidebar, user: profileUser }: { sidebar: Sidebar, user: User } = $props();
 
@@ -125,6 +126,20 @@
 		}[view];
 	});
 
+	function gotoNext() {
+		if (view === "all") gotoView("books")();
+		else if (view === "books") gotoView("activity")();
+		else if (view === "activity") gotoView("list")();
+		else if (view === "list") gotoView("discussion")();
+	}
+
+	function gotoPrevious() {
+		if (view === "books") gotoView("all")();
+		else if (view === "activity") gotoView("books")();
+		else if (view === "list") gotoView("activity")();
+		else if (view === "discussion") gotoView("list")();
+	}
+
 	// svelte-ignore state_referenced_locally
 	let pageLeft = $state(`${["all", "books", "activity", "list", "discussion"].indexOf(view) * -100}dvw`);
 
@@ -140,57 +155,10 @@
 				ratingOptions.style.background = `rgb(${r}, ${g}, ${b})`
 			}
 		}, true); // me when true
-
-		let touchStartX = 0;
-		let touchEndX = 0;
-		let touchStartY = 0;
-		let touchEndY = 0;
-		const SWIPE_THRESHOLD = 30;
-
-		document.addEventListener("touchstart", (event) => {
-			touchStartX = event.touches[0].clientX;
-			touchStartY = event.touches[0].clientY;
-		});
-
-		document.addEventListener("touchmove", (event) => {
-			if (touchEndX) {
-				const delta = touchEndX - event.touches[0].clientX;
-				pageLeft = `${Math.min(0, parseInt(pageLeft) - delta * 1.5)}px`;
-			}
-			touchEndX = event.touches[0].clientX;
-			touchEndY = event.touches[0].clientY;
-		});
-
-		document.addEventListener("touchend", () => {
-			const swipeDistance = touchEndX - touchStartX;
-			const swipeDistanceY = touchEndY - touchStartY;
-
-			if (Math.abs(swipeDistanceY) < SWIPE_THRESHOLD) {
-
-				// Swipe forward
-				if (swipeDistance < -SWIPE_THRESHOLD) {
-					if (view === "all") gotoView("books")();
-					else if (view === "books") gotoView("activity")();
-					else if (view === "activity") gotoView("list")();
-					else if (view === "list") gotoView("discussion")();
-				} 
-
-				// Swipe back
-				else if (swipeDistance > SWIPE_THRESHOLD) {
-					if (view === "books") gotoView("all")();
-					else if (view === "activity") gotoView("books")();
-					else if (view === "list") gotoView("activity")();
-					else if (view === "discussion") gotoView("list")();
-				}
-			}
-
-			const left = parseInt(pageLeft);
-			const newLeft = left % innerWidth < innerWidth / 2 ? left - left % innerWidth : left + (innerWidth - left % innerWidth);
-			pageLeft = `${newLeft}px`;
-			touchEndX = 0;
-		});
 	});
 </script>
+
+<SideSwiper {gotoPrevious} {gotoNext} bind:left={pageLeft} />
 
 <section>
 	{#await getFile(profileUser.banner) then bnr}
