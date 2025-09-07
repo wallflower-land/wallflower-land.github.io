@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { goto } from "$app/navigation";
 	import Page from "../../components/Page.svelte";
 	import { getFile } from "../../api/storageapi";
 	import { getUserReplies, user } from "../../backend/auth.svelte";
@@ -9,25 +8,26 @@
 	import Sidebar from "../../components/Sidebar.svelte";
 	import { getPostFromId, type InternalPost } from "../../api/postapi";
 	import AnyPost from "../../components/posts/AnyPost.svelte";
+	import PageWithViews from "../../components/PageWithViews.svelte";
 
-	type View = "likes" | "replies" | "saved" | "shared" | "viewed";
+	type View = "liked" | "replied" | "saved" | "shared" | "viewed";
 
 	let sidebar: Sidebar = $state(null!);
 
-	let view: View = $state(new URLSearchParams(window.location.search).get("view") as View ?? "likes");
+	let view: View = $state(new URLSearchParams(window.location.search).get("view") as View ?? "liked");
 
 	let viewed: InternalPost[] = $state([]);
 	let liked: InternalPost[] = $state([]);
 	let shared: InternalPost[] = $state([]);
 	let saved: InternalPost[] = $state([]);
-	let replies: Promise<InternalPost[]> = $state(Promise.resolve([]));
+	let replied: Promise<InternalPost[]> = $state(Promise.resolve([]));
 
 	$effect(() => {
 		if (user()) load();
 	})
 
 	async function load() {
-		if (view === "likes") {
+		if (view === "liked") {
 			liked = (await Promise.all(user()!.likes.map(post => getPostFromId(post))))
 				.map(post => post!)
 				.filter(post => post)
@@ -39,7 +39,7 @@
 				.map(post => post!)
 				.toReversed()
 		}
-		if (view === "replies") replies = getUserReplies(user()!);
+		if (view === "replied") replied = getUserReplies(user()!);
 		if (view === "shared") {
 			shared = (await Promise.all(user()!.shares.map(post => getPostFromId(post))))
 				.filter(post => post)
@@ -51,15 +51,6 @@
 				.filter(post => post)
 				.map(post => post!)
 				.toReversed()
-		}
-	}
-
-	function setView(viewName: View) {
-		return async function() {
-			const params = new URLSearchParams({ view: viewName });
-			goto(`/interactions?${params}`);
-			view = viewName;
-			await load();
 		}
 	}
 </script>
@@ -86,69 +77,41 @@
 			</a>
 		</div>
 	</nav>
-	<section>
-		<div class="views">
-			<button class={view === "viewed" ? "selected" : ""} onclick={setView("viewed")}>Viewed</button>
-			<button class={view === "likes" ? "selected" : ""} onclick={setView("likes")}>Liked</button>
-			<button class={view === "replies" ? "selected" : ""} onclick={setView("replies")}>Replies</button>
-			<button class={view === "saved" ? "selected" : ""} onclick={setView("saved")}>Saved</button>
-			<button class={view === "shared" ? "selected" : ""} onclick={setView("shared")}>Shared</button>
-		</div>
-	</section>
-	{#if view === "viewed"}
-		{#each viewed as viewedPost}
-			<AnyPost post={viewedPost} />
-		{/each}
-	{:else if view === "likes"}
-		{#each liked as likedPost}
-			<AnyPost post={likedPost} />
-		{/each}
-	{:else if view === "replies"}
-		{#await replies then replies}
-			{#each replies as reply}
-				<AnyPost post={reply} />
+
+	<PageWithViews views={["viewed", "liked", "replied", "saved", "shared"]} bind:view>
+		<div>
+			{#each viewed as viewedPost}
+				<AnyPost post={viewedPost} />
 			{/each}
-		{/await}
-	{:else if view === "saved"}
-		{#each saved as savedPost}
-			<AnyPost post={savedPost} />
-		{/each}
-	{:else if view === "shared"}
-		{#each shared as sharedPost}
-			<AnyPost post={sharedPost} />
-		{/each}
-	{/if}
+		</div>
+		<div>
+			{#each liked as likedPost}
+				<AnyPost post={likedPost} />
+			{/each}
+		</div>
+		<div>
+			{#await replied then replied}
+				{#each replied as reply}
+					<AnyPost post={reply} />
+				{/each}
+			{/await}
+		</div>
+		<div>
+			{#each saved as savedPost}
+				<AnyPost post={savedPost} />
+			{/each}
+		</div>
+		<div>
+			{#each shared as sharedPost}
+				<AnyPost post={sharedPost} />
+			{/each}
+		</div>
+	</PageWithViews>
 </Page>
 
 <style>
-	section {
-		padding-top: 1rem;
-		background-color: var(--crust);
-		margin-top: 4.5rem;
-	}
-
 	a {
 		text-decoration: none;
-	}
-
-	.views {
-		display: grid;
-		grid-template-columns: repeat(5, 1fr);
-		padding-left: 1rem;
-		padding-right: 1rem;
-
-		> * {
-			padding-bottom: 0.75rem;
-			border-color: var(--lavender);
-			color: var(--overlay-1);
-			padding-left: 1rem;
-			padding-right: 1rem;
-
-			&.selected {
-				color: var(--text);
-				border-bottom: 3px solid var(--lavender);
-			}
-		}
 	}
 
 	.banner {
@@ -173,11 +136,8 @@
 	nav {
 		display: flex;
 		flex-direction: column;
-		width: 100%;
 		width: inherit;
 		background: var(--crust);
-		position: fixed;
-		top: 0px;
 	}
 
 	@media(min-width: 700px) {

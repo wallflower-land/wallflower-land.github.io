@@ -6,11 +6,15 @@
 	let { 
 		views, 
 		view = $bindable(), 
-		left = $bindable() 
+		left = $bindable(),
+		formatViewName = (name) => name,
+		marginTop = "0px"
 	}: { 
 		views: View[], 
 		view: View,
-		left: string 
+		left: string,
+		formatViewName?: (name: View) => string | Promise<string>
+		marginTop?: string
 	} = $props();
 
 	let element: HTMLElement;
@@ -48,17 +52,21 @@
 	class="views" 
 	bind:this={element} 
 	style:grid-template-columns="repeat({views.length}, 1fr)"
+	style:margin-top={marginTop}
 >
 	{#each views as viewtab}
 		<button 
 			class={view === viewtab ? "selected" : ""} 
 			onclick={() => setView(viewtab)}
+			style:font-size={views.length > 2 ? "0.85rem" : "1rem"}
 		>
-			{viewtab}
+			{#await formatViewName(viewtab) then viewtab}
+				{viewtab}
+			{/await}
 		</button>
 	{/each}
 
-	<div class="viewline" style:left={viewbarLeft}></div>
+	<div class="viewline" style:width="{50 / views.length}%" style:left={viewbarLeft}></div>
 </div>
 
 <style>
@@ -86,7 +94,6 @@
 		background-color: var(--lavender);
 		bottom: 0px;
 		height: 3px;
-		width: 5rem;
 		border-radius: 100vmax;
 		transition: left 0.2s;
 		transform: translateX(-50%);

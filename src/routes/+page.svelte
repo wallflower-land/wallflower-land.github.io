@@ -9,7 +9,7 @@
 	import Wallflower from "../assets/images/icons/Wallflower.svelte";
 	import { getFile } from "../api/storageapi";
 	import BellIcon from "../assets/images/icons/BellIcon.svelte";
-	import Views from "../components/Views.svelte";
+	import PageWithViews from "../components/PageWithViews.svelte";
 
 	let view: "following" | "for you" = $state(
 		user() ? 
@@ -18,7 +18,6 @@
 		: "for you"
 	);
 
-	let container: HTMLElement | null = $state(null);
 	let innerWidth: number = $state(window.innerWidth);
 
 	let followedPosts = $derived(user() ? getFollowedPosts(user()!, true).then(posts => posts.toSorted((a, b) => b.timestamp - a.timestamp)) : Promise.resolve([]));
@@ -33,9 +32,6 @@
 			setTimeout(() => spinLogo = false, 2000);
 		}
 	}
-
-	// svelte-ignore state_referenced_locally
-	let pageLeft = $state(`${["following", "for you"].indexOf(view) * -100}%`);
 </script>
 
 <svelte:window bind:innerWidth />
@@ -63,45 +59,37 @@
 		</div>
 	</nav>
 
-	<section class="content" bind:this={container}>
-		<Views bind:view views={["following", "for you"]} bind:left={pageLeft} />
+	<PageWithViews bind:view views={["following", "for you"]}>
 
 		<!-- Following -->
-		<div class="posts" style:left={pageLeft}>
-			<div class="wrapper">
-				{#await followedPosts then followedPosts}
-					{#if followedPosts.length === 0}
-						<div class="nofollowing">
-							<h1>You're not following anyone.</h1>
-							<p>When you follow people, their posts will appear here.</p>
-							<CatIcon style="width: 10rem;" stroke="var(--mantle)" />
-						</div>
-					{/if}
-					{#each followedPosts as post}
-						<AnyPost {post} />
-					{/each}
-				{/await}
-			</div>
-			<div class="wrapper">
-				{#await forYouPosts then forYouPosts}
-					{#each forYouPosts as post}
-						<AnyPost {post} />
-					{/each}
-				{/await}
-			</div>
+		<div>
+			{#await followedPosts then followedPosts}
+				{#if followedPosts.length === 0}
+					<div class="nofollowing">
+						<h1>You're not following anyone.</h1>
+						<p>When you follow people, their posts will appear here.</p>
+						<CatIcon style="width: 10rem;" stroke="var(--mantle)" />
+					</div>
+				{/if}
+				{#each followedPosts as post}
+					<AnyPost {post} />
+				{/each}
+			{/await}
 		</div>
-	</section>
+
+		<!-- Discover -->
+		<div>
+			{#await forYouPosts then forYouPosts}
+				{#each forYouPosts as post}
+					<AnyPost {post} />
+				{/each}
+			{/await}
+		</div>
+
+	</PageWithViews>
 </Page>
 
 <style>
-	.posts {
-		display: grid;
-		width: 200%;
-		grid-template-columns: repeat(2, 1fr);
-		position: relative;
-		transition: left 0.2s;
-	}
-
 	.nofollowing {
 		display: flex;
 		flex-direction: column;
@@ -136,11 +124,6 @@
 	:global(.spin) {
 		animation-name: spin;
 		animation-duration: 2s;
-	}
-
-	.content {
-		font-family: sans-serif;
-		color: #c6d0f5;
 	}
 
 	.banner {

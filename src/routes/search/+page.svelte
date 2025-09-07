@@ -12,7 +12,7 @@
 	import BookCover from "../../components/BookCover.svelte";
 	import Header from "../../components/Header.svelte";
 	import { getAuthor, searchAuthors, type Author } from "../../api/authorapi";
-	import Views from "../../components/Views.svelte";
+	import PageWithViews from "../../components/PageWithViews.svelte";
 
 	type View = "posts" | "books" | "users" | "authors";
 
@@ -21,13 +21,6 @@
 	let view: View = $state(new URLSearchParams(window.location.search).get("view") as View ?? "posts");
 
 	let searchTerm: string = $state(new URLSearchParams(window.location.search).get("term") ?? "");
-
-	let container: HTMLElement | null = $state(null);
-
-	// svelte-ignore state_referenced_locally
-	let pageLeft = $state("0px");
-
-	let width = $state(0);
 
 	async function search() {
 		if (searchTimeout) clearTimeout(searchTimeout)
@@ -46,9 +39,6 @@
 
 	onMount(() => {
 		if (searchTerm) search();
-
-		width = container!.getBoundingClientRect().width;
-		pageLeft = `${["posts", "books", "authors", "users"].indexOf(view) * (-width / 4)}px`;
 	});
 
 	let searchTimeout: number | null = $state(null);
@@ -84,14 +74,12 @@
 				users: "Enter a username"
 			}[view]}
 		/>
-
-		<Views bind:view views={["posts", "books", "authors", "users"]} bind:left={pageLeft} />
 	</section>
 
-	<div class="content" style:left={pageLeft} bind:this={container}>
+	<PageWithViews bind:view views={["posts", "books", "authors", "users"]}>
 
 		<!-- Posts -->
-		<div class="wrapper">
+		<div>
 			{#await posts}
 				<div class="loading">
 					<h1>Loading posts...</h1>
@@ -121,7 +109,7 @@
 		</div>
 
 		<!-- Books -->
-		<div class="wrapper">
+		<div>
 			{#if searchTerm == ""}
 				<div class="loading">
 					<h1>Search for a book</h1>
@@ -181,7 +169,7 @@
 		</div>
 		
 		<!-- Authors -->
-		<div class="wrapper">
+		<div>
 			{#await authors}
 				<div class="loading">
 					<h1>Loading authors...</h1>
@@ -217,7 +205,7 @@
 										</h2>
 									</div>
 									{#if author.picture}
-										<img class="author-image" src={author.picture} />
+										<img alt={author.name} class="author-image" src={author.picture} />
 									{:else}
 										<div class="loading-cover"></div>
 									{/if}
@@ -230,7 +218,7 @@
 		</div>
 		
 		<!-- Users -->
-		<div class="wrapper">
+		<div>
 			{#await users}
 				<div class="loading">
 					<h1>Loading accounts...</h1>
@@ -259,7 +247,7 @@
 				</div>
 			{/await}
 		</div>
-	</div>
+	</PageWithViews>
 </Page>
 
 <style>
@@ -268,20 +256,6 @@
 		background-color: var(--crust);
 		margin-top: 2.5rem;
 		view-transition-name: search-box;
-	}
-
-	.content {
-		width: 400%;
-		display: grid;
-		grid-template-columns: repeat(4, 1fr);
-		position: relative;
-		transition: left 0.2s;
-		height: 100dvh;
-	}
-
-	.wrapper {
-		width: 100%;
-		border-right: 1px solid var(--surface-0);
 	}
 
 	.loading {

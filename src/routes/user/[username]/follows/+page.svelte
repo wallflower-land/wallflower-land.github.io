@@ -2,77 +2,44 @@
 	import { getUserFromId, getUserFromUsername, getFollowers } from "../../../../api/userapi";
 	import Header from "../../../../components/Header.svelte";
 	import Page from "../../../../components/Page.svelte";
+	import PageWithViews from "../../../../components/PageWithViews.svelte";
 	import UserListing from "../../../../components/UserListing.svelte";
 
-	let view: "following" | "followers" = $state("following");
+	type View = "following" | "followers";
+	let view: View = $state("following");
 
 	let { data }: { data: { username: string } } = $props();
-	let { username } = data;
+	let username = $derived(data.username);
 
-	let profileUser = $state(getUserFromUsername(username));
-	let following = profileUser.then(user => Promise.all(user.following.map(following => getUserFromId(following))));
-	let followers = profileUser.then(user => getFollowers(user));
+	let profileUser = $derived(getUserFromUsername(username));
+	let following = $derived(profileUser.then(user => Promise.all(user.following.map(following => getUserFromId(following)))));
+	let followers = $derived(profileUser.then(user => getFollowers(user)));
+
+	async function formatViewName(name: View): Promise<string> {
+		if (name === "following") return `Following (${(await following).length})`;
+		return `Followers (${(await followers).length})`;
+	}
 </script>
 
 <Page type="profile">
 	<Header title="Follows" />
 
-	{#await profileUser then}
-		<div class="view">
-			{#await following then following}
-				<button
-					style:color={view === "following" ? "var(--lavender)" : "var(--overlay-1)"}
-					style:border-color={view === "following" ? "var(--lavender)" : "transparent"}
-					onclick={() => (view = "following")}
-				>
-					Following ({following.length})
-				</button>
-			{/await}
-			{#await followers then followers}
-				<button
-					style:color={view === "followers" ? "var(--lavender)" : "var(--overlay-1)"}
-					style:border-color={view === "followers" ? "var(--lavender)" : "transparent"}
-					onclick={() => (view = "followers")}
-				>
-					Followers ({followers.length})
-				</button>
-			{/await}
-		</div>
-
-		{#if view === "following"}
-			{#await following then following}
-				{#each following as child}
-					<UserListing user={child} />
-				{/each}
-			{/await}
-		{:else if view === "followers"}
-			{#await followers then followers}
-				{#each followers as child}
-					<UserListing user={child} />
-				{/each}
-			{/await}
-		{/if}
-	{/await}
+	<PageWithViews bind:view views={["following", "followers"]} marginTop="3rem" {formatViewName}>
+		{#await profileUser then}
+			<div>
+				{#await following then following}
+					{#each following as child}
+						<UserListing user={child} />
+					{/each}
+				{/await}
+			</div>
+			<div>
+				{#await followers then followers}
+					{#each followers as child}
+						<UserListing user={child} />
+					{/each}
+				{/await}
+			</div>
+		{/await}
+	</PageWithViews>
 </Page>
-
-<style>
-	.view {
-		display: flex;
-		justify-content: space-evenly;
-		background-color: var(--crust);
-		margin-top: 1.5rem;
-
-		button {
-			border-bottom-style: solid;
-			border-bottom-width: 2px;
-			padding-top: 2rem;
-			font-size: 0.85rem;
-			padding-bottom: 0.75rem;
-			padding-left: 2rem;
-			padding-right: 2rem;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-		}
-	}
-</style>
