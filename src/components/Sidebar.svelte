@@ -132,11 +132,11 @@
 		<EmptyHomeIcon stroke="var(--subtext-1)" style="width: 1.5rem;" />
 		Home
 	</button>
-	<button class="listing" style:color="var(--subtext-1)" onclick={nav("/profile")}>
-		<ProfileIcon stroke="var(--subtext-1)" style="width: 1.5rem;" />
-		Profile
-	</button>
 	{#if user()}
+		<button class="listing" style:color="var(--subtext-1)" onclick={nav("/profile")}>
+			<ProfileIcon stroke="var(--subtext-1)" style="width: 1.5rem;" />
+			Profile
+		</button>
 		<button class="listing" style:color="var(--subtext-1)" onclick={nav("/interactions")}>
 			<BarChartIcon stroke="var(--subtext-1)" style="width: 1.5rem;" />
 			Interactions

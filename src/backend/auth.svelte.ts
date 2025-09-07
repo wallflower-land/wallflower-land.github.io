@@ -150,7 +150,7 @@ export async function signUp(
 	}
 }
 
-export async function logIn(email: string, password: string): Promise<unknown | null> {
+export async function logIn(email: string, password: string): Promise<{ code: string } | null> {
 	try {
 		await signInWithEmailAndPassword(auth, email, password);
 		return null;

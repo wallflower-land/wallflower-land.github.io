@@ -35,6 +35,7 @@
 		padding-top: 1rem;
 		padding-bottom: 1rem;
 		left: 0px;
+		z-index: 9;
 
 		h1 {
 			color: var(--text);

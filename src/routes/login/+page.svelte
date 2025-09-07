@@ -3,15 +3,21 @@
 	import { logIn, user } from "../../backend/auth.svelte";
 	import Page from "../../components/Page.svelte";
 	import Header from "../../components/Header.svelte";
+	import Link from "../../components/Link.svelte";
 
 	let email: string = $state("");
 	let password: string = $state("");
+	let errorMessage: string | null = $state(null);
 
 	async function signIn() {
 		let error = await logIn(email, password);
 		if (error) {
+			errorMessage = {
+				"auth/invalid-email": "No account exists with this email.",
+				"auth/wrong-password": "Email or password is incorrect."
+			}[error.code] ?? "An unknown error has occurred.";
 		} else {
-			goto("/profile");
+			goto("/");
 		}
 	}
 
@@ -21,8 +27,14 @@
 </script>
 
 <Page type="profile">
-	<main>
-		<Header title="Log In" />
+	<Header title="Log In" />
+	<section class="main">
+		<h2>Welcome Back.</h2>
+
+		{#if errorMessage}
+			<span class="error">{errorMessage}</span>
+		{/if}
+
 		<div>
 			<div class="section">
 				<p>Email</p>
@@ -39,15 +51,14 @@
 					placeholder="s3cr3tp4zzc0d3"
 					bind:value={password}
 				/>
-				<a href="/forgot-password">Forgot your password?</a>
+				<Link href="/forgot-password">Forgot your password?</Link>
 			</div>
-
 		</div>
 		<div class="bottom">
 			<button disabled={!email || !password} onclick={signIn}>Log In</button>
-			<p>Don't have an account? <a href="/signup">Create one now.</a></p>
+			<p>Don't have an account? <Link href="/signup">Create one now.</Link></p>
 		</div>
-	</main>
+	</section>
 </Page>
 
 <style>
@@ -64,6 +75,17 @@
 		gap: 0.5rem;
 	}
 
+	.error {
+		font-size: 0.85rem;
+		color: var(--red);
+		width: 15rem;
+	}
+
+	h2 {
+		color: var(--subtext-1);
+		font-weight: normal;
+	}
+
 	p {
 		color: var(--overlay-1);
 		font-size: 0.85rem;
@@ -75,12 +97,12 @@
 		gap: 0.5rem;
 	}
 
-	main {
+	.main {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		gap: 2rem;
+		gap: 1rem;
 		height: 100%;
 
 		> div {
@@ -90,8 +112,8 @@
 			gap: 1rem;
 
 			input {
-				padding: 1rem;
-				border-radius: 1rem;
+				padding: 0.5rem;
+				border-radius: 0.5rem;
 				width: 15rem;
 				font-size: 0.85rem;
 				background-color: var(--crust);

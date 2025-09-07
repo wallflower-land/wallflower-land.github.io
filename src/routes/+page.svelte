@@ -19,6 +19,11 @@
 		: "for you"
 	);
 
+	let followingButton: HTMLElement | null = $state(null);
+	let forYouButton: HTMLElement | null = $state(null);
+	let container: HTMLElement | null = $state(null);
+	let innerWidth: number = $state(window.innerWidth);
+
 	let followedPosts = $derived(user() ? getFollowedPosts(user()!, true).then(posts => posts.toSorted((a, b) => b.timestamp - a.timestamp)) : Promise.resolve([]));
 	let forYouPosts = getForYouPosts(user()!);
 
@@ -33,9 +38,18 @@
 	}
 
 	let viewbarLeft = $derived.by(() => {
+		innerWidth; // we want this to update when the window is resized
+
 		return {
-			following: "2.3rem",
-			"for you": "13.2rem",
+			following: `${
+				(followingButton?.getBoundingClientRect().left ?? 0) +
+				(followingButton?.getBoundingClientRect().width ?? 0) / 2 - 
+				(container?.getBoundingClientRect().left ?? 0)
+			}px`,
+			"for you": `${
+				(forYouButton?.getBoundingClientRect().left ?? 0) +
+				(forYouButton?.getBoundingClientRect().width ?? 0) / 2 - 
+				(container?.getBoundingClientRect().left ?? 0)}px`,
 		}[view];
 	});
 
@@ -44,12 +58,12 @@
 			view = newView;
 			const params = new URLSearchParams({ view });
 			goto(`/?${params}`);
-			pageLeft = `${["following", "for you"].indexOf(view) * -100}dvw`;
+			pageLeft = `${["following", "for you"].indexOf(view) * -100}%`;
 		}
 	}
 
 	// svelte-ignore state_referenced_locally
-	let pageLeft = $state(`${["following", "for you"].indexOf(view) * -100}dvw`);
+	let pageLeft = $state(`${["following", "for you"].indexOf(view) * -100}%`);
 
 	onMount(() => {
 		let touchStartX = 0;
@@ -82,7 +96,10 @@
 			}
 		});
 	});
+
 </script>
+
+<svelte:window bind:innerWidth />
 
 <Page bind:sidebar type="home">
 	<nav>
@@ -107,12 +124,13 @@
 		</div>
 	</nav>
 
-	<section class="content">
+	<section class="content" bind:this={container}>
 		<div class="views">
 			{#if user()}
 				<button
 					style:color={view === "following" ? "var(--lavender)" : "var(--overlay-1)"}
 					onclick={setView("following")}
+					bind:this={followingButton}
 				>
 					Following
 				</button>
@@ -120,6 +138,7 @@
 			<button
 				style:color={view === "for you" ? "var(--lavender)" : "var(--overlay-1)"}
 				onclick={setView("for you")}
+				bind:this={forYouButton}
 			>
 				Discover
 			</button>
@@ -170,6 +189,7 @@
 		width: 9rem;
 		border-radius: 100vmax;
 		transition: left 0.2s;
+		transform: translateX(-50%);
 	}
 
 	.nofollowing {
@@ -220,7 +240,7 @@
 		}
 
 		&:has(> *:nth-child(2)) {
-			justify-content: space-between;
+			justify-content: space-evenly;
 		}
 
 		button {

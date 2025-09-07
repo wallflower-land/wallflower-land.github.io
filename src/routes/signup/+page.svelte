@@ -4,6 +4,7 @@
 	import { emailIsTaken, passwordErrors, signUp, user, usernameIsTaken } from "../../backend/auth.svelte";
 	import Page from "../../components/Page.svelte";
 	import Header from "../../components/Header.svelte";
+	import Link from "../../components/Link.svelte";
 
 	let email = $state("");
 	let password = $state("");
@@ -73,10 +74,10 @@
 </script>
 
 <Page type="profile">
-	<main>
-		<Header title="Create Account" />
+	<Header title="Create Account" />
+	<section class="main">
 		<div class="header">
-			<a href="/about">Wait, what <i>is</i> wallflower.land?</a>
+			<Link href="/about">Wait, what <i>is</i> wallflower.land?</Link>
 		</div>
 		<p class="warning">
 			<strong>Hold up!</strong> wallflower.land is still in alpha, and bugs
@@ -86,6 +87,10 @@
 			(wallflower.land is secure, and despite any bugs, your information is
 			guaranteed to be kept safe.)
 		</p>
+
+		<span class="login">
+			Already have an account? <Link href="/login">Log in instead</Link>.
+		</span>
 
 		<div>
 			<div class="section">
@@ -164,10 +169,15 @@
 		<button disabled={!valid} onclick={createAccount}>
 			Create Account
 		</button>
-	</main>
+	</section>
 </Page>
 
 <style>
+	.login {
+		color: var(--overlay-1);
+		font-size: 0.85rem;
+	}
+
 	.error {
 		font-size: 0.8rem;
 		color: var(--red);
@@ -204,12 +214,13 @@
 		}
 	}
 
-	main {
+	.main {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		height: 100%;
 		gap: 2rem;
+		position: relative;
 
 		> div {
 			display: flex;
@@ -218,7 +229,7 @@
 			gap: 1rem;
 			width: 50%;
 
-			input {
+			input[type="text"], input[type="password"] {
 				padding: 0.5rem;
 				border-radius: 0.5rem;
 				width: 15rem;
