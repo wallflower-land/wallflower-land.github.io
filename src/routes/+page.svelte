@@ -9,8 +9,7 @@
 	import Wallflower from "../assets/images/icons/Wallflower.svelte";
 	import { getFile } from "../api/storageapi";
 	import BellIcon from "../assets/images/icons/BellIcon.svelte";
-	import { goto } from "$app/navigation";
-	import { onMount } from "svelte";
+	import Views from "../components/Views.svelte";
 
 	let view: "following" | "for you" = $state(
 		user() ? 
@@ -19,8 +18,6 @@
 		: "for you"
 	);
 
-	let followingButton: HTMLElement | null = $state(null);
-	let forYouButton: HTMLElement | null = $state(null);
 	let container: HTMLElement | null = $state(null);
 	let innerWidth: number = $state(window.innerWidth);
 
@@ -37,66 +34,8 @@
 		}
 	}
 
-	let viewbarLeft = $derived.by(() => {
-		innerWidth; // we want this to update when the window is resized
-
-		return {
-			following: `${
-				(followingButton?.getBoundingClientRect().left ?? 0) +
-				(followingButton?.getBoundingClientRect().width ?? 0) / 2 - 
-				(container?.getBoundingClientRect().left ?? 0)
-			}px`,
-			"for you": `${
-				(forYouButton?.getBoundingClientRect().left ?? 0) +
-				(forYouButton?.getBoundingClientRect().width ?? 0) / 2 - 
-				(container?.getBoundingClientRect().left ?? 0)}px`,
-		}[view];
-	});
-
-	function setView(newView: "following" | "for you") {
-		return function() {
-			view = newView;
-			const params = new URLSearchParams({ view });
-			goto(`/?${params}`);
-			pageLeft = `${["following", "for you"].indexOf(view) * -100}%`;
-		}
-	}
-
 	// svelte-ignore state_referenced_locally
 	let pageLeft = $state(`${["following", "for you"].indexOf(view) * -100}%`);
-
-	onMount(() => {
-		let touchStartX = 0;
-		let touchEndX = 0;
-		let touchStartY = 0;
-		let touchEndY = 0;
-
-		const SWIPE_THRESHOLD = 30;
-
-		document.addEventListener("touchstart", (event) => {
-			touchStartX = event.touches[0].clientX;
-			touchStartY = event.touches[0].clientY;
-		});
-
-		document.addEventListener("touchmove", (event) => {
-			touchEndX = event.touches[0].clientX;
-			touchEndY = event.touches[0].clientY;
-		});
-
-		document.addEventListener("touchend", () => {
-			const swipeDistance = touchEndX - touchStartX;
-			const swipeDistanceY = touchEndY - touchStartY;
-
-			if (Math.abs(swipeDistanceY) < SWIPE_THRESHOLD) {
-				if (swipeDistance < -SWIPE_THRESHOLD) {
-					if (view === "following") setView("for you")();
-				} else if (swipeDistance > SWIPE_THRESHOLD) {
-					if (view === "for you") setView("following")();
-				}
-			}
-		});
-	});
-
 </script>
 
 <svelte:window bind:innerWidth />
@@ -125,25 +64,7 @@
 	</nav>
 
 	<section class="content" bind:this={container}>
-		<div class="views">
-			{#if user()}
-				<button
-					style:color={view === "following" ? "var(--lavender)" : "var(--overlay-1)"}
-					onclick={setView("following")}
-					bind:this={followingButton}
-				>
-					Following
-				</button>
-			{/if}
-			<button
-				style:color={view === "for you" ? "var(--lavender)" : "var(--overlay-1)"}
-				onclick={setView("for you")}
-				bind:this={forYouButton}
-			>
-				Discover
-			</button>
-			<div class="viewline" style:left={viewbarLeft}></div>
-		</div>
+		<Views bind:view views={["following", "for you"]} bind:left={pageLeft} />
 
 		<!-- Following -->
 		<div class="posts" style:left={pageLeft}>
@@ -181,17 +102,6 @@
 		transition: left 0.2s;
 	}
 
-	.viewline {
-		position: absolute;
-		background-color: var(--lavender);
-		bottom: 0px;
-		height: 3px;
-		width: 9rem;
-		border-radius: 100vmax;
-		transition: left 0.2s;
-		transform: translateX(-50%);
-	}
-
 	.nofollowing {
 		display: flex;
 		flex-direction: column;
@@ -226,32 +136,6 @@
 	:global(.spin) {
 		animation-name: spin;
 		animation-duration: 2s;
-	}
-
-	.views {
-		position: relative;
-		display: flex;
-		padding-right: 2rem;
-		padding-left: 2rem;
-		background-color: var(--crust);
-
-		&:not(:has(> *:nth-child(2))) {
-			justify-content: center;
-		}
-
-		&:has(> *:nth-child(2)) {
-			justify-content: space-evenly;
-		}
-
-		button {
-			padding-left: 3rem;
-			padding-right: 3rem;
-			font-weight: normal;
-			font-size: 0.85rem;
-			white-space: nowrap;
-			padding-top: 0.5rem;
-			padding-bottom: 0.5rem;
-		}
 	}
 
 	.content {

@@ -45,7 +45,6 @@
 		bottom: 0px;
 		left: 0px;
 		display: grid;
-		max-width: var(--max-width);
 		background: var(--crust);
 		view-transition-name: footer;
 
@@ -71,7 +70,7 @@
 		footer {
 			margin-left: 20rem;
 			border-right: 1px solid var(--surface-0);
-			width: calc(100% - 40rem);
+			width: max(calc(100% - 40rem), 25rem);
 		}
 	}
 

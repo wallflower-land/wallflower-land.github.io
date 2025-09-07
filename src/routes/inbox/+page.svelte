@@ -5,7 +5,7 @@
 	import { getFollowingPosts, getMentions, getRepliesToUser } from "../../api/userapi";
 	import AnyPost from "../../components/posts/AnyPost.svelte";
 	import { user } from "../../backend/auth.svelte";
-	import { goto } from "$app/navigation";
+	import Views from "../../components/Views.svelte";
 
 	type View = "mentions" | "replies" | "following";
 
@@ -15,13 +15,8 @@
 	const replies = $derived(user() ? getRepliesToUser(user()!) : []);
 	const following = $derived(user() ? getFollowingPosts() : []);
 
-	function navTo(viewName: View) {
-		return function() {
-			const params = new URLSearchParams({ view: viewName });
-			goto(`/inbox?${params}`);
-			view = viewName;
-		}
-	}
+	// svelte-ignore state_referenced_locally
+	let pageLeft = $state(`${["mentions", "replies", "following"].indexOf(view) * -100}%`);
 </script>
 
 <Page type="inbox">
@@ -29,64 +24,88 @@
 	<a class="settings" href="/settings/notifications">
 		<GearIcon stroke="var(--overlay-1)" style="width: 1.5rem; height: 1.5rem;" />
 	</a>
-	<div class="views">
-		<button
-			style:border-color={view === "mentions" ? "var(--lavender)" : "transparent"}
-			style:color={view === "mentions" ? "var(--lavender)" : "var(--overlay-1)"}
-			onclick={navTo("mentions")}
-		>Mentions</button>
-		<button
-			style:border-color={view === "replies" ? "var(--lavender)" : "transparent"}
-			style:color={view === "replies" ? "var(--lavender)" : "var(--overlay-1)"}
-			onclick={navTo("replies")}
-		>Replies</button>
-		<button
-			style:border-color={view === "following" ? "var(--lavender)" : "transparent"}
-			style:color={view === "following" ? "var(--lavender)" : "var(--overlay-1)"}
-			onclick={navTo("following")}
-		>Following</button>
+
+	<div class="view-wrapper">
+		<Views bind:view views={["mentions", "replies", "following"]} bind:left={pageLeft} />
 	</div>
 
-	<div class="posts">
-		{#if view === "mentions"}
-			{#await mentions then mentions}
+	<div class="posts" style:left={pageLeft}>
+		
+		<div class="wrapper">
+			{#await mentions}
+				<div class="loading">
+					<h2>Loading Mentions...</h2>
+					<p>We promise wallflower.land will be faster soon.</p>
+				</div>
+			{:then mentions}
 				{#each mentions as mention}
 					<AnyPost post={mention} />
 				{/each}
 			{/await}
-		{:else if view === "replies"}
-			{#await replies then replies}
+		</div>
+
+		<div class="wrapper">
+			{#await replies}
+				<div class="loading">
+					<h2>Loading Replies...</h2>
+					<p>We promise wallflower.land will be faster soon.</p>
+				</div>
+			{:then replies}
 				{#each replies as reply}
 					<AnyPost post={reply} />
 				{/each}
 			{/await}
-		{:else if view === "following"}
-			{#await following then following}
+		</div>
+
+		<div class="wrapper">
+			{#await following}
+				<div class="loading">
+					<h2>Loading Followed Posts...</h2>
+					<p>We promise wallflower.land will be faster soon.</p>
+				</div>
+			{:then following}
 				{#each following as followedPost}
 					<AnyPost post={followedPost} />
 				{/each}
 			{/await}
-		{/if}
+		</div>
 	</div>
 </Page>
 
 <style>
-	.views {
+	.posts {
+		position: relative;
 		display: grid;
 		grid-template-columns: repeat(3, 1fr);
-		padding-top: 2rem;
-		background-color: var(--crust);
-		margin-top: 1.5rem;
-		padding-left: 1rem;
-		padding-right: 1rem;
-		view-transition-name: inbox-views;
+		width: 300%;
+		transition: left 0.2s;
 
-		> * {
+		.wrapper {
+			border-right: 1px solid var(--surface-0);
+			min-width: 0px;
+		}
+	}
+
+	.view-wrapper {
+		margin-top: 3.2rem;
+	}
+
+	.loading {
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 1rem;
+		margin-top: 2rem;
+
+		h2 {
+			font-weight: normal;
+			color: var(--subtext-1);
+		}
+
+		p {
+			color: var(--overlay-1);
 			font-size: 0.85rem;
-			padding-bottom: 0.5rem;
-			border-bottom-width: 2px;
-			border-bottom-style: solid;
-			color: var(--text);
 		}
 	}
 

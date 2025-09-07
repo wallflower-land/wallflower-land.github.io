@@ -12,7 +12,7 @@
 	import BookCover from "../../components/BookCover.svelte";
 	import Header from "../../components/Header.svelte";
 	import { getAuthor, searchAuthors, type Author } from "../../api/authorapi";
-	import SideSwiper from "../../components/SideSwiper.svelte";
+	import Views from "../../components/Views.svelte";
 
 	type View = "posts" | "books" | "users" | "authors";
 
@@ -26,7 +26,6 @@
 
 	// svelte-ignore state_referenced_locally
 	let pageLeft = $state("0px");
-	let viewbarLeft = $derived(`${["posts", "books", "authors", "users"].indexOf(view) * 25 + 12.5}%`);
 
 	let width = $state(0);
 
@@ -67,33 +66,7 @@
 	let books: Promise<Promise<Book>[]> = $state(Promise.resolve([]));
 	let authors: Promise<Promise<Author>[]> = $state(Promise.resolve([]));
 	let users: Promise<User[]> = $state(Promise.resolve([]));
-
-	function setView(viewName: View) {
-		return function() {
-			const params = new URLSearchParams({ view: viewName });
-			if (searchTerm) params.set("term", searchTerm);
-			goto(`/search?${params}`);
-			view = viewName;
-			pageLeft = `${["posts", "books", "authors", "users"].indexOf(view) * (-width / 4)}px`;
-
-			search();
-		}
-	}
-
-	function gotoNext() {
-		if (view === "posts") setView("books")();
-		else if (view === "books") setView("authors")();
-		else if (view === "authors") setView("users")();
-	}
-
-	function gotoPrevious() {
-		if (view === "books") setView("posts")();
-		else if (view === "authors") setView("books")();
-		else if (view === "users") setView("authors")();
-	}
 </script>
-
-<SideSwiper {gotoNext} {gotoPrevious} bind:left={pageLeft} />
 
 <Page bind:sidebar type="search">
 	<Header title="Search" />
@@ -112,14 +85,7 @@
 			}[view]}
 		/>
 
-		<div class="views">
-			<button class={view === "posts" ? "selected" : ""} onclick={setView("posts")}>Posts</button>
-			<button class={view === "books" ? "selected" : ""} onclick={setView("books")}>Books</button>
-			<button class={view === "authors" ? "selected" : ""} onclick={setView("authors")}>Authors</button>
-			<button class={view === "users" ? "selected" : ""} onclick={setView("users")}>Users</button>
-
-			<div class="viewline" style:left={viewbarLeft}></div>
-		</div>
+		<Views bind:view views={["posts", "books", "authors", "users"]} bind:left={pageLeft} />
 	</section>
 
 	<div class="content" style:left={pageLeft} bind:this={container}>
@@ -318,17 +284,6 @@
 		border-right: 1px solid var(--surface-0);
 	}
 
-	.viewline {
-		position: absolute;
-		background-color: var(--lavender);
-		bottom: 0px;
-		height: 3px;
-		width: 5rem;
-		border-radius: 100vmax;
-		transition: left 0.2s;
-		transform: translateX(-50%);
-	}
-
 	.loading {
 		padding-top: 2rem;
 		display: flex;
@@ -416,27 +371,9 @@
 		}
 	}
 
-	.views {
-		display: grid;
-		grid-template-columns: repeat(4, 1fr);
-		padding-top: 1.25rem;
-		position: relative;
-
-		> button {
-			padding-bottom: 0.75rem;
-			border-color: var(--lavender);
-			color: var(--overlay-1);
-			padding-left: 1rem;
-			padding-right: 1rem;
-
-			&.selected {
-				color: var(--text);
-			}
-		}
-	}
-
 	input {
 		margin-left: 2rem;
+		margin-bottom: 1rem;
 		border-radius: 100vmax;
 		width: calc(100% - 4rem);
 		padding-left: 1rem;
