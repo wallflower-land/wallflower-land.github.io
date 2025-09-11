@@ -252,7 +252,7 @@
 					const delta = Math.abs(imageContainer!.getBoundingClientRect().height - desiredHeight - cropperTop);
 					cropperBottom = delta;
 				}
-			} 
+			}
 
 			else if (draggingHandle == "bottom right") {
 				const amount = Math.min(Math.abs(event.movementX), Math.abs(event.movementY));
@@ -270,13 +270,14 @@
 				imageLeft = Math.max(Math.min(cropperLeft, rawLeft), cropperLeft + cropperWidth - imageWidth * scale);
 				imageTop = Math.max(Math.min(cropperTop, rawTop), cropperTop + cropperHeight - imageHeight * scale);
 			}
-		}, true);
+		}, true); // me when true
 
-		document.addEventListener("mouseup", () => {
-			panning = false;
-			draggingHandle = null;
-		});
 	})
+
+	function onmouseup() {
+		panning = false;
+		draggingHandle = null;
+	}
 
 	const overlayLeftHeight = $derived.by(() => {
 		cropperLeft;
@@ -296,6 +297,8 @@
 		return 0;
 	});
 </script>
+
+<svelte:document {onmouseup} />
 
 <input {...rest} bind:this={input} bind:files onchange={openImage} type="file" />
 

@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { onMount } from "svelte";
-
 	let { 
 		gotoNext, 
 		gotoPrevious, 
@@ -13,27 +11,26 @@
 		swipeThreshold?: number,
 	} = $props();
 
-	onMount(() => {
 		let touchStartX = 0;
 		let touchEndX = 0;
 		let touchStartY = 0;
 		let touchEndY = 0;
 
-		document.addEventListener("touchstart", (event) => {
+		function ontouchstart(event: TouchEvent) {
 			touchStartX = event.touches[0].clientX;
 			touchStartY = event.touches[0].clientY;
-		});
+		}
 
-		document.addEventListener("touchmove", (event) => {
+		function ontouchmove(event: TouchEvent) {
 			if (touchEndX) {
 				const delta = touchEndX - event.touches[0].clientX;
 				left = `${Math.min(0, parseInt(left) - delta)}px`;
 			}
 			touchEndX = event.touches[0].clientX;
 			touchEndY = event.touches[0].clientY;
-		});
+		}
 
-		document.addEventListener("touchend", () => {
+		function ontouchend() {
 			const swipeDistance = touchEndX - touchStartX;
 			const swipeDistanceY = touchEndY - touchStartY;
 
@@ -54,6 +51,7 @@
 				left = `${newLeft}px`;
 				touchEndX = 0;
 			}
-		});
-	});
+		}
 </script>
+
+<svelte:document {ontouchstart} {ontouchmove} {ontouchend} />

@@ -62,13 +62,6 @@
 </Page>
 
 <style>
-	a {
-		color: var(--blue);
-		text-decoration: none;
-		font-size: 0.85rem;
-
-	}
-
 	.section {
 		display: flex;
 		flex-direction: column;

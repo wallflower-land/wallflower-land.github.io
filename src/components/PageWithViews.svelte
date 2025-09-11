@@ -37,6 +37,11 @@
 
 		:global(> *) {
 			min-width: 0px;
+			min-height: 100dvh;
+
+			&:not(:last-child) {
+				border-right: 1px solid var(--surface-0);
+			}
 		}
 	}
 </style>

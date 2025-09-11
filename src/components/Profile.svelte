@@ -20,7 +20,7 @@
 	import Sidebar from "./Sidebar.svelte";
 	import ClickableImage from "./ClickableImage.svelte";
 	import PostBody from "./posts/PostBody.svelte";
-	import SideSwiper from "./SideSwiper.svelte";
+	import PageWithViews from "./PageWithViews.svelte";
 
 	let { sidebar, user: profileUser }: { sidebar: Sidebar, user: User } = $props();
 
@@ -88,7 +88,6 @@
 		return function() {
 			goto(`${window.location.origin}${window.location.pathname}?${new URLSearchParams({ view: viewName })}`);
 			view = viewName as any;
-			pageLeft = `${["all", "books", "activity", "list", "discussion"].indexOf(view) * -window.innerWidth}px`;
 		}
 	}
 
@@ -116,33 +115,6 @@
 		}
 	}
 
-	let viewbarLeft = $derived.by(() => {
-		return {
-			all: "0px",
-			books: "5.6rem",
-			activity: "12.2rem",
-			list: "18.2rem",
-			discussion: "24.8rem",
-		}[view];
-	});
-
-	function gotoNext() {
-		if (view === "all") gotoView("books")();
-		else if (view === "books") gotoView("activity")();
-		else if (view === "activity") gotoView("list")();
-		else if (view === "list") gotoView("discussion")();
-	}
-
-	function gotoPrevious() {
-		if (view === "books") gotoView("all")();
-		else if (view === "activity") gotoView("books")();
-		else if (view === "list") gotoView("activity")();
-		else if (view === "discussion") gotoView("list")();
-	}
-
-	// svelte-ignore state_referenced_locally
-	let pageLeft = $state(`${["all", "books", "activity", "list", "discussion"].indexOf(view) * -100}dvw`);
-
 	onMount(() => {
 		document.addEventListener("scroll", () => {
 			ratingSortMenu?.close();
@@ -157,8 +129,6 @@
 		}, true); // me when true
 	});
 </script>
-
-<SideSwiper {gotoPrevious} {gotoNext} bind:left={pageLeft} />
 
 <section>
 	{#await getFile(profileUser.banner) then bnr}
@@ -257,145 +227,89 @@
 			</span>
 		</a>
 
-		<!-- Line 4: Views (all, discussion, ratings, list) -->
-		<div class="views">
-			<button
-				style:color={view === "all" ? "var(--subtext-1)" : "var(--overlay-1)"}
-				onclick={gotoView("all")}
-			>
-				All
-			</button>
-			<button
-				style:color={view === "books" ? "var(--subtext-1)" : "var(--overlay-1)"}
-				onclick={gotoView("books")}
-			>
-				Books
-			</button>
-			<button
-				style:color={view === "activity" ? "var(--subtext-1)" : "var(--overlay-1)"}
-				onclick={gotoView("activity")}
-			>
-				Activity
-			</button>
-			<button
-				style:color={view === "list" ? "var(--subtext-1)" : "var(--overlay-1)"}
-				onclick={gotoView("list")}
-			>
-				List
-			</button>
-			<button
-				style:color={view === "discussion" ? "var(--subtext-1)" : "var(--overlay-1)"}
-				onclick={gotoView("discussion")}
-			>
-				Discussion
-			</button>
-			<div class="viewline" style:left={viewbarLeft}></div>
+		<div>
+			<PageWithViews bind:view views={["all", "books", "activity", "list", "discussion"]}>
+				{#await posts}
+					<div class="loading">
+						<h1>Loading posts...</h1>
+						<p>We promise Wallflower will be faster soon.</p>
+					</div>
+				{:then posts}
+					<!-- All -->
+					<div>
+						{#each posts as post}
+							<AnyPost {post} />
+						{/each}
+					</div>
+
+					<!-- Books -->
+					<div>
+						<div bind:this={ratingOptions} class="rating-options">
+							<span style:color="var(--overlay-1)">
+								<label for="show-full-reviews">Show full reviews</label>
+								<RadioInput id="show-full-reviews" size={0.5} bind:value={showFullReviews} />
+							</span>
+							<span style:color="var(--overlay-1)">
+								<label for="change-rating-sort">{ratingSortName}</label>
+								<button onclick={event => ratingSortMenu.toggle(event)} id="change-rating-sort">
+									<SortIcon stroke="var(--overlay-1)" style="width: 1.5rem; height: 1.5rem;" />
+								</button>
+							</span>
+							<ContextMenu bind:this={ratingSortMenu}>
+								<button onclick={sortRatingsBy("best")}>
+									Highest Rated
+								</button>
+								<button onclick={sortRatingsBy("recent")}>
+									Recently Finished
+								</button>
+							</ContextMenu>
+						</div>
+						{#await ratings then ratings}
+							{#each ratings as post (post.id)}
+								{#if showFullReviews}
+									<AnyPost {post} />
+								{:else}
+									{#await getBook(post.books[0]) then book}
+										<BookListing {book} rating={post.rating} user={profileUser} onclick={() => goto(`/post/${post.id}`)} />
+									{/await}
+								{/if}
+							{/each}
+						{/await}
+					</div>
+
+					<!-- Activity -->
+					<div>
+						{#each posts.filter(post => post.type === "update") as post}
+							<AnyPost {post} />
+						{/each}
+					</div>
+
+					<!-- List -->
+					<div>
+						{#await readingList then readingList}
+							{#each readingList as book}
+								<BookListing {book} user={profileUser} />
+							{/each}
+						{/await}
+					</div>
+
+					<!-- Discussion -->
+					<div>
+						{#each posts.filter(post => post.type === "general") as post}
+							<AnyPost {post} />
+						{/each}
+					</div>
+				{/await}
+			</PageWithViews>
 		</div>
 	</div>
-
-	{#await posts}
-		<div class="loading">
-			<h1>Loading posts...</h1>
-			<p>We promise Wallflower will be faster soon.</p>
-		</div>
-	{:then posts}
-		<div class="posts" style:left={pageLeft}>
-	
-			<!-- All -->
-			<div class="wrapper">
-				{#each posts as post}
-					<AnyPost {post} />
-				{/each}
-			</div>
-
-			<!-- Books -->
-			<div class="ratings">
-				<div bind:this={ratingOptions} class="rating-options">
-					<span style:color="var(--overlay-1)">
-						<label for="show-full-reviews">Show full reviews</label>
-						<RadioInput id="show-full-reviews" size={0.5} bind:value={showFullReviews} />
-					</span>
-					<span style:color="var(--overlay-1)">
-						<label for="change-rating-sort">{ratingSortName}</label>
-						<button onclick={event => ratingSortMenu.toggle(event)} id="change-rating-sort">
-							<SortIcon stroke="var(--overlay-1)" style="width: 1.5rem; height: 1.5rem;" />
-						</button>
-					</span>
-					<ContextMenu bind:this={ratingSortMenu}>
-						<button onclick={sortRatingsBy("best")}>
-							Highest Rated
-						</button>
-						<button onclick={sortRatingsBy("recent")}>
-							Recently Finished
-						</button>
-					</ContextMenu>
-				</div>
-				{#await ratings then ratings}
-					{#each ratings as post (post.id)}
-						{#if showFullReviews}
-							<AnyPost {post} />
-						{:else}
-							{#await getBook(post.books[0]) then book}
-								<BookListing {book} rating={post.rating} user={profileUser} onclick={() => goto(`/post/${post.id}`)} />
-							{/await}
-						{/if}
-					{/each}
-				{/await}
-			</div>
-
-			<!-- Activity -->
-			<div class="wrapper">
-				{#each posts.filter(post => post.type === "update") as post}
-					<AnyPost {post} />
-				{/each}
-			</div>
-
-			<!-- List -->
-			<div class="ratings">
-				{#await readingList then readingList}
-					{#each readingList as book}
-						<BookListing {book} user={profileUser} />
-					{/each}
-				{/await}
-			</div>
-
-			<!-- Discussion -->
-			<div class="wrapper">
-				{#each posts.filter(post => post.type === "general") as post}
-					<AnyPost {post} />
-				{/each}
-			</div>
-		</div>
-	{/await}
 </section>
 
 <style>
-	.posts {
-		display: grid;
-		width: 500%;
-		grid-template-columns: repeat(5, 1fr);
-		position: relative;
-		transition: left 0.2s;
-	}
-
 	.pronouns {
 		display: flex;
 		align-items: center;
 		color: var(--surface-2);
-	}
-
-	.wrapper {
-		border-right: 1px solid var(--surface-0);
-	}
-	
-	.viewline {
-		position: absolute;
-		background-color: var(--lavender);
-		bottom: 0px;
-		height: 3px;
-		width: 5rem;
-		border-radius: 100vmax;
-		transition: left 0.2s;
 	}
 
 	.rating-options {
@@ -473,10 +387,6 @@
 		font-size: 0.85rem;
 	}
 
-	.ratings {
-		position: relative;
-	}
-
 	.back-arrow {
 		width: 2rem;
 		height: 2rem;
@@ -496,22 +406,6 @@
 		position: absolute;
 		background-size: cover;
 		background-position: center;
-	}
-
-	.views {
-		display: flex;
-		width: 100%;
-		overflow-x: auto;
-		position: relative;
-
-		button {
-			font-size: 0.85rem;
-			white-space: nowrap;
-			padding-top: 0.5rem;
-			padding-bottom: 0.5rem;
-			padding-left: 2rem;
-			padding-right: 2rem;
-		}
 	}
 
 	.profile {

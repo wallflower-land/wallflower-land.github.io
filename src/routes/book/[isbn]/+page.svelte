@@ -6,6 +6,7 @@
 	import BackButton from "../../../components/BackButton.svelte";
 	import BookCover from "../../../components/BookCover.svelte";
 	import Page from "../../../components/Page.svelte";
+	import PageWithViews from "../../../components/PageWithViews.svelte";
 	import AnyPost from "../../../components/posts/AnyPost.svelte";
 	import Sidebar from "../../../components/Sidebar.svelte";
 	import StarRating from "../../../components/StarRating.svelte";
@@ -19,7 +20,6 @@
 	function setView(viewName: "info" | "discussion") {
 		return function() {
 			view = viewName;
-			content.scrollTop = 0;
 			const params = new URLSearchParams({ view });
 			goto(`/book/${book.isbn}?${params}`);
 		}
@@ -65,14 +65,11 @@
 
 		return formattedText;
 	}
-
-	let content: HTMLElement;
 </script>
 
 <Page type="search" bind:sidebar>
-	<BackButton style="position: fixed; top: 1rem; left: 1rem;" />
-
 	<nav>
+		<BackButton style="left: 1rem; position: absolute;" />
 		<div class="book-name">
 			<h1>{book.title}</h1>
 			{#await author}
@@ -81,25 +78,10 @@
 				<h2>{author.name}</h2>
 			{/await}
 		</div>
-		<div class="views">
-			<button
-				style:color={view === "info" ? "var(--text)" : "var(--overlay-1)"}
-				style:border-bottom-color={view === "info" ? "var(--lavender)" : "transparent"}
-				onclick={setView("info")}
-			>
-				Info
-			</button>
-			<button
-				style:color={view === "discussion" ? "var(--text)" : "var(--overlay-1)"}
-				style:border-bottom-color={view === "discussion" ? "var(--lavender)" : "transparent"}
-				onclick={setView("discussion")}
-			>
-				Discussion
-			</button>
-		</div>
 	</nav>
-	<section bind:this={content}>
-		{#if view === "info"}
+
+	<PageWithViews bind:view views={["info", "discussion"]}>
+		<div class="info">
 			<div class="book-info">
 				<div class="title">
 					<h1>{book.title}</h1>
@@ -153,23 +135,23 @@
 				{/if}
 				<span><span>Tags: </span>{book.genres.join(", ")}</span>
 			</div>
-		{:else if view === "discussion"}
+
+		</div>
+		<div>
 			{#await discussions then discussions}
 				{#each discussions as post}
 					<AnyPost {post} />
 				{/each}
 			{/await}
-		{/if}
-
-	</section>
+		</div>
+	</PageWithViews>
 </Page>
 
 <style>
-	section {
+	.info {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		height: 100%;
 	}
 
 	.rating {
@@ -264,27 +246,6 @@
 		}
 	}
 
-	.views {
-		width: 100%;
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		padding-right: 2rem;
-		padding-left: 2rem;
-		background-color: var(--crust);
-
-		button {
-			border-bottom-width: 2px;
-			border-bottom-style: solid;
-			padding-left: 3rem;
-			padding-right: 3rem;
-			font-weight: normal;
-			font-size: 1rem;
-			white-space: nowrap;
-			padding-top: 0.5rem;
-			padding-bottom: 1rem;
-		}
-	}
-
 	.book-name {
 		display: flex;
 		flex-direction: column;
@@ -300,6 +261,8 @@
 	}
 
 	nav {
+		z-index: 99;
+		padding-bottom: 0.5rem;
 		view-transition-name: book-view;
 		display: flex;
 		flex-direction: column;

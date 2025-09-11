@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from "svelte";
 	import RightArrowIcon from "../assets/images/icons/RightArrowIcon.svelte";
 
 	let { options, value = $bindable(), ...rest }: { options: string[], value?: string, [key: string]: unknown } = $props();
@@ -8,14 +7,14 @@
 
 	let optionsElement: HTMLElement;
 
-	onMount(() => {
-		document.addEventListener("click", event => {
-			if (!event.composedPath().includes(optionsElement)) {
-				expanded = false;
-			}
-		});
-	});
+	function onclick(event: MouseEvent) {
+		if (!event.composedPath().includes(optionsElement)) {
+			expanded = false;
+		}
+	}
 </script>
+
+<svelte:document {onclick} />
 
 <div {...rest} class="select" bind:this={optionsElement}>
 	<button class="value" onclick={() => expanded = !expanded}>

@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { goto } from "$app/navigation";
-	import { onMount } from "svelte";
+	import { beforeNavigate, goto } from "$app/navigation";
 	import { getFile } from "../../../api/storageapi";
 	import { awaitUser, usernameErrors } from "../../../api/userapi";
 	import AuthorIcon from "../../../assets/images/icons/AuthorIcon.svelte";
@@ -8,7 +7,7 @@
 	import EditIcon from "../../../assets/images/icons/EditIcon.svelte";
 	import SproutIcon from "../../../assets/images/icons/SproutIcon.svelte";
 	import WrenchIcon from "../../../assets/images/icons/WrenchIcon.svelte";
-	import { updateUser, usernameIsTaken } from "../../../backend/auth.svelte";
+	import { updateUser, user, usernameIsTaken } from "../../../backend/auth.svelte";
 	import BackButton from "../../../components/BackButton.svelte";
 	import CharacterLimitMeter from "../../../components/CharacterLimitMeter.svelte";
 	import ImagePicker from "../../../components/ImagePicker.svelte";
@@ -31,6 +30,25 @@
 	let pronouns = $state("");
 	let picture = $state("")
 
+	let unsavedChanges = $derived.by(() => {
+		if (!user()) return false;
+
+		if (displayName !== user()!.displayName) return true;
+		if (banner !== user()!.banner) return true;
+		if (bio !== user()!.bio) return true;
+		if (pronouns !== user()!.pronouns) return true;
+		if (picture !== user()!.picture) return true;
+		return false;
+	});
+
+	beforeNavigate(async ({ cancel }) => {
+		if (unsavedChanges) {
+			if (!confirm("Leave without saving changes?")) {
+				cancel();
+			}
+		}
+	});
+
 	let displayNameErrorList = $derived([
 		...(displayName ? [] : ["Display name can't be empty"])
 	]);
@@ -47,6 +65,7 @@
 	}
 
 	let canSave = $derived(
+		unsavedChanges && 
 		displayNameErrorList.length === 0 && 
 		usernameErrorList.length === 0 && 
 		!usernameTaken
@@ -104,7 +123,10 @@
 				{/await}
 				<ImagePicker id="set-profile-picture" bind:imageId={picture} aspectRatio={1 / 1} circular />
 
-				<button disabled={!canSave} class="save" onclick={update}>Save</button>
+				<div class="saves">
+					<a class="cancel save" href="/profile">Cancel</a>
+					<button disabled={!canSave} class="save" onclick={update}>Save</button>
+				</div>
 			</div>
 
 			<label for="display-name">Display Name</label>
@@ -258,7 +280,10 @@
 		</div>
 	{/await}
 
-	<button disabled={!canSave} class="save bottom" onclick={update}>Save</button>
+	<div class="saves bottom">
+		<a class="cancel save" href="/profile">Cancel</a>
+		<button disabled={!canSave} class="save" onclick={update}>Save</button>
+	</div>
 </Page>
 
 <style>
@@ -342,14 +367,6 @@
 		}
 	}
 
-	h2 {
-		color: var(--subtext-1);
-		font-weight: normal;
-		margin-left: 2rem;
-		font-size: 1rem;
-		margin-bottom: 0.5rem;
-	}
-
 	.at {
 		font-size: 0.85rem;
 		height: 100%;
@@ -390,9 +407,28 @@
 		color: var(--subtext-1);
 	}
 
+	.saves {
+		display: flex;
+		padding-right: 1rem;
+		width: 100%;
+		gap: 1rem;
+
+		&:not(.bottom) {
+			margin-top: -1.5rem;
+
+			> *:first-child {
+				margin-left: auto;
+			}
+		}
+
+		&.bottom {
+			justify-content: center;
+			margin-bottom: 2rem;
+			margin-top: 1rem;
+		}
+	}
+
 	.save {
-		padding-left: 2rem;
-		padding-right: 2rem;
 		padding-top: 0.5rem;
 		padding-bottom: 0.5rem;
 		border-radius: 100vmax;
@@ -400,12 +436,19 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		margin-left: auto;
-		margin-right: 2rem;
-		margin-bottom: -1rem;
-		margin-top: -1rem;
+		width: 7rem;
+		transition: scale 0.1s;
+		text-decoration: none;
 
-		&:not([disabled]) {
+		&:hover {
+			scale: 105%;
+		}
+
+		&.cancel {
+			background: linear-gradient(to bottom right, var(--peach), var(--red));
+		}
+
+		&:not([disabled], .cancel) {
 			background: linear-gradient(to bottom right, var(--lavender), var(--blue));
 			box-shadow: 0px 0px 0.5rem black;
 		}
@@ -416,15 +459,6 @@
 			box-shadow: none;
 			scale: 100%;
 			cursor: default;
-		}
-
-		&.bottom {
-			padding-left: 4rem;
-			padding-right: 4rem;
-			margin-bottom: 2rem;
-			margin-left: auto;
-			margin-right: auto;
-			margin-top: 1rem;
 		}
 	}
 

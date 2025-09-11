@@ -64,31 +64,29 @@
 
 	let overlayDisplay = $state("none");
 
-	onMount(() => {
-		let touchStartX = 0;
-		let touchEndX = 0;
+	let touchStartX = 0;
+	let touchEndX = 0;
 
-		const SWIPE_THRESHOLD = 30;
-		const EDGE_ZONE = 100;
+	const SWIPE_THRESHOLD = 30;
+	const EDGE_ZONE = 30;
 
-		document.addEventListener("touchstart", (event) => {
-			touchStartX = event.touches[0].clientX;
-		});
+	function ontouchstart(event: TouchEvent) {
+		touchStartX = event.touches[0].clientX;
+	}
 
-		document.addEventListener("touchmove", (event) => {
-			touchEndX = event.touches[0].clientX;
-		});
+	function ontouchmove(event: TouchEvent) {
+		touchEndX = event.touches[0].clientX;
+	}
 
-		document.addEventListener("touchend", () => {
-			const swipeDistance = touchEndX - touchStartX;
-			if (touchStartX < EDGE_ZONE && swipeDistance > SWIPE_THRESHOLD) {
-				show();
-			}
-		});
-	});
-
+	function ontouchend() {
+		const swipeDistance = touchEndX - touchStartX;
+		if (touchStartX < EDGE_ZONE && swipeDistance > SWIPE_THRESHOLD) {
+			show();
+		}
+	}
 </script>
 
+<svelte:document {ontouchstart} {ontouchmove} {ontouchend} />
 <svelte:window bind:innerWidth bind:innerHeight />
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
