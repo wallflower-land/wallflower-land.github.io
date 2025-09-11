@@ -4,12 +4,10 @@
 	import InfoIcon2 from "../../assets/images/icons/InfoIcon2.svelte";
 	import PaintRollerIcon from "../../assets/images/icons/PaintRollerIcon.svelte";
 	import ProfileIcon from "../../assets/images/icons/ProfileIcon.svelte";
-	import Header from "../../components/Header.svelte";
 	import Page from "../../components/Page.svelte";
 </script>
 
-<Page class="settings">
-	<Header title="Settings" />
+<Page class="settings" header="Settings">
 
 	<!-- Request author verification -->
 	<a href="/settings/appearance">

@@ -1,13 +1,10 @@
 <script>
 import Wallflower from "../../assets/images/icons/Wallflower.svelte";
 	import Link from "../../components/Link.svelte";
-	import Header from "../../components/Header.svelte";
 	import Page from "../../components/Page.svelte";
 </script>
 
-<Page class="about">
-	<Header title="About"/>
-
+<Page class="about" header="About">
 	<div class="definition">
 		<span>
 			<h2 class="wallflower"><i>Wall&middot;flow&middot;er</i></h2>

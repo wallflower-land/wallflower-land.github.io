@@ -1,11 +1,8 @@
 <script>
-	import Header from "../../../components/Header.svelte";
 	import Page from "../../../components/Page.svelte";
 </script>
 
-<Page class="about">
-	<Header title="API Usage"/>
-
+<Page class="about" header="API Usage">
 	<h2>API Usage</h2>
 
 	<p>

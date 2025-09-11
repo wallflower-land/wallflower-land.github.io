@@ -7,19 +7,24 @@
 		views, 
 		view = $bindable(), 
 		left = $bindable(),
+		content = undefined,
+		viewFilter = (_name) => true,
 		formatViewName = (name) => name,
 		marginTop = "0px"
 	}: { 
 		views: View[], 
 		view: View,
 		left: string,
+		content?: HTMLElement,
 		formatViewName?: (name: View) => string | Promise<string>
+		viewFilter?: (name: string) => (boolean | Promise<boolean>)
 		marginTop?: string
 	} = $props();
 
 	let element: HTMLElement;
 
-	let viewbarLeft = $derived(`${views.indexOf(view) * (100 / views.length) + (50 / views.length)}%`);
+	let availableViews = $derived(views.filter(viewFilter));
+	let viewbarLeft = $derived(`${availableViews.indexOf(view) * (100 / availableViews.length) + (50 / availableViews.length)}%`);
 
 	let width = 0;
 
@@ -28,17 +33,17 @@
 		const params = new URLSearchParams(window.location.search);
 		params.set("view", view);
 		goto(`${window.location.origin}${window.location.pathname}?${params}`);
-		left = `${views.indexOf(view) * -width}px`;
+		left = `${availableViews.indexOf(view) * -width}px`;
 	}
 
 	function gotoNext() {
-		const viewIndex = views.indexOf(view);
-		if (viewIndex < views.length - 1) setView(views[viewIndex + 1]);
+		const viewIndex = availableViews.indexOf(view);
+		if (viewIndex < availableViews.length - 1) setView(availableViews[viewIndex + 1]);
 	}
 
 	function gotoPrevious() {
-		const viewIndex = views.indexOf(view);
-		if (viewIndex > 0) setView(views[viewIndex - 1]);
+		const viewIndex = availableViews.indexOf(view);
+		if (viewIndex > 0) setView(availableViews[viewIndex - 1]);
 	}
 
 	onMount(() => {
@@ -46,19 +51,19 @@
 	});
 </script>
 
-<SideSwiper {gotoNext} {gotoPrevious} bind:left />
+<SideSwiper {content} {gotoNext} {gotoPrevious} bind:left />
 
 <div 
 	class="views" 
 	bind:this={element} 
-	style:grid-template-columns="repeat({views.length}, 1fr)"
+	style:grid-template-columns="repeat({availableViews.length}, 1fr)"
 	style:margin-top={marginTop}
 >
-	{#each views as viewtab}
+	{#each availableViews as viewtab}
 		<button 
 			class={view === viewtab ? "selected" : ""} 
 			onclick={() => setView(viewtab)}
-			style:font-size={views.length > 2 ? "0.85rem" : "1rem"}
+			style:font-size={availableViews.length > 2 ? "0.85rem" : "1rem"}
 		>
 			{#await formatViewName(viewtab) then viewtab}
 				{viewtab}
@@ -66,7 +71,7 @@
 		</button>
 	{/each}
 
-	<div class="viewline" style:width="{50 / views.length}%" style:left={viewbarLeft}></div>
+	<div class="viewline" style:width="max({50 / availableViews.length}%, 5rem)" style:left={viewbarLeft}></div>
 </div>
 
 <style>

@@ -21,7 +21,7 @@
 		{value}
 		<RightArrowIcon stroke="var(--subtext-1)" style="width: 1rem; height: 1rem; rotate: {expanded ? "90deg" : "0deg"}; transition: rotate 0.2s;" />
 	</button>
-	<div class="options" style:display={expanded ? "flex" : "none"}>
+	<div class={{ options: true, expanded }}>
 		{#each options as option}
 			<button class="option" onclick={() => { value = option; expanded = false; }}>
 				{option}
@@ -53,19 +53,27 @@
 
 	.options {
 		flex-direction: column;
-		overflow: hidden;
+		overflow-x: hidden;
+		overflow-y: auto;
 		position: absolute;
 		top: 100%;
 		left: 0px;
 		z-index: 999;
 		width: 100%;
-		border: 1px solid var(--surface-0);
 		border-radius: 0.5rem;
-		box-shadow: 0px 0px 0.5rem black;
 		background-color: var(--crust);
 		color: var(--subtext-1);
-		max-height: 10rem;
-		overflow-y: auto;
+		transition: max-height 0.2s;
+
+		&:not(.expanded) {
+			max-height: 0rem;
+		}
+
+		&.expanded {
+			max-height: 10rem;
+			box-shadow: 0px 0px 0.5rem black;
+			border: 1px solid var(--surface-0);
+		}
 	}
 
 	.option {

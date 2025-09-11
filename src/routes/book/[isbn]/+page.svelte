@@ -68,19 +68,7 @@
 </script>
 
 <Page type="search" bind:sidebar>
-	<nav>
-		<BackButton style="left: 1rem; position: absolute;" />
-		<div class="book-name">
-			<h1>{book.title}</h1>
-			{#await author}
-				<h2>Loading...</h2>
-			{:then author}
-				<h2>{author.name}</h2>
-			{/await}
-		</div>
-	</nav>
-
-	<PageWithViews bind:view views={["info", "discussion"]}>
+	<PageWithViews bind:view views={["info", "discussion"]} header={book.title} subheader={author.then(author => author.name)}>
 		<div class="info">
 			<div class="book-info">
 				<div class="title">
@@ -201,7 +189,7 @@
 	#add-to-reading-list {
 		padding: 0.5rem 1rem 0.5rem 1rem;
 		border-radius: 100vmax;
-		box-shadow: 0px 0px 0.5rem black;
+		box-shadow: 0px 0px 0.5rem var(--box-shadow);
 		transition: scale 0.1s;
 		margin-top: 1rem;
 

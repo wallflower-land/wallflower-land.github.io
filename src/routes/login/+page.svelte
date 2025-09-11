@@ -2,7 +2,6 @@
 	import { goto } from "$app/navigation";
 	import { logIn, user } from "../../backend/auth.svelte";
 	import Page from "../../components/Page.svelte";
-	import Header from "../../components/Header.svelte";
 	import Link from "../../components/Link.svelte";
 
 	let email: string = $state("");
@@ -26,8 +25,7 @@
 	});
 </script>
 
-<Page type="profile">
-	<Header title="Log In" />
+<Page type="profile" header="Log In">
 	<section class="main">
 		<h2>Welcome Back.</h2>
 

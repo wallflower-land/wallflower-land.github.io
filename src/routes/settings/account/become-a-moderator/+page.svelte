@@ -1,13 +1,10 @@
 <script>
 	import WrenchIcon from "../../../../assets/images/icons/WrenchIcon.svelte";
 	import Link from "../../../../components/Link.svelte";
-	import Header from "../../../../components/Header.svelte";
 	import Page from "../../../../components/Page.svelte";
 </script>
 
-<Page class="about">
-	<Header title="Become a moderator" />
-
+<Page class="about" header="Become a moderator">
 	<div class="wrench">
 		<WrenchIcon stroke="var(--crust)" style="width: 3rem; height: 3rem;" />
 	</div>

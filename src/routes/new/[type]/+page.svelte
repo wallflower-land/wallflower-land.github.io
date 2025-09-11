@@ -8,16 +8,17 @@
 	import EyeIcon from "../../../assets/images/icons/EyeIcon.svelte";
 	import Header from "../../../components/Header.svelte";
 	import CharacterLimitMeter from "../../../components/CharacterLimitMeter.svelte";
+	import { getAuthor } from "../../../api/authorapi";
 
 	let { data }: { data: { type: PostType } } = $props();
-	let { type } = data;
+	let type = $derived(data.type);
 
-	let bodyName = {
+	let bodyName = $derived({
 		general: "Post Body",
 		rating: "Review (Optional)",
 		update: "Comments (Optional)",
 		reply: null!,
-	}[type];
+	}[type]);
 
 	let body: string = $state("");
 	let rating: string | null = $state(null);
@@ -139,7 +140,11 @@
 					<img alt="{book.title} cover" src={book.cover} />
 					<div class="info">
 						<span class="title">{book.title}</span>
-						<span class="authors">{book.authors.join(",")}</span>
+						<span class="authors">
+							{#await getAuthor(book.authorKey) then author}
+								{author}
+							{/await}
+						</span>
 					</div>
 				</div>
 			{/await}
@@ -154,7 +159,11 @@
 				<img alt="{book.title} cover" src={book.cover} />
 				<div class="info">
 					<span class="title">{book.title}</span>
-					<span class="authors">{book.authors.join(",")}</span>
+					<span class="authors">
+						{#await getAuthor(book.authorKey) then author}
+							{author}
+						{/await}
+					</span>
 				</div>
 				<button class="close" onclick={removeBook(book)}>
 					<TrashIcon stroke="var(--red)" style="width: 1.25rem; height: 1.25rem;" />

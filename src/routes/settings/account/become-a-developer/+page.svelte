@@ -2,13 +2,10 @@
 <script>
 	import DeveloperIcon from "../../../../assets/images/icons/DeveloperIcon.svelte";
 	import Link from "../../../../components/Link.svelte";
-	import Header from "../../../../components/Header.svelte";
 	import Page from "../../../../components/Page.svelte";
 </script>
 
-<Page class="about">
-	<Header title="Become a developer" />
-
+<Page class="about" header="Become a developer">
 	<div class="icon">
 		<DeveloperIcon stroke="var(--crust)" style="width: 3rem; height: 3rem;" />
 	</div>

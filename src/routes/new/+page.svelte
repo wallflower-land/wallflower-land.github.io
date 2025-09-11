@@ -1,11 +1,8 @@
 <script lang="ts">
 	import Page from "../../components/Page.svelte";
-	import Header from "../../components/Header.svelte";
 </script>
 
-<Page type="new" class="new-page">
-	<Header title="New Post" />
-
+<Page type="new" class="new-page" header="New Post">
 	<p class="kind">What kind of post do you want to make?</p>
 
 	<!-- General post -->

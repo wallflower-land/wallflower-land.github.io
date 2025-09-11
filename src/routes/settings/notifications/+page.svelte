@@ -1,11 +1,8 @@
 <script lang="ts">
-	import Header from "../../../components/Header.svelte";
 	import Page from "../../../components/Page.svelte";
 </script>
 
-<Page class="settings">
-	<Header title="Notifications" />
-
+<Page class="settings" header="Notification Settings">
 	<div class="content">
 	</div>
 </Page>

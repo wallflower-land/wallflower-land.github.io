@@ -1,34 +1,36 @@
 <script lang="ts">
 	import BackButton from "./BackButton.svelte";
 
-	let { title, subtitle = null } = $props();
+	let { 
+		title, 
+		nonfixed = false, 
+		subtitle = undefined 
+	}: {
+		title: string,
+		nonfixed?: boolean,
+		subtitle?: string | Promise<string>
+	} = $props();
 </script>
 
-<span class="heading">
+<span class="heading" style:position={nonfixed ? "relative" : "fixed"}>
 	<BackButton style="position: absolute; left: 1rem;" />
 	<h1>{title}</h1>
 	{#if subtitle}
-		<h2>{subtitle}</h2>
+		{#await subtitle}
+			<h2>Loading...</h2>
+		{:then subtitle}
+			<h2>{subtitle}</h2>
+		{/await}
 	{/if}
 </span>
 
 <style>
-	@media(min-width: 700px) {
-		.heading {
-			margin-left: 20rem;
-			border-right: 1px solid var(--surface-0);
-		}
-	}
-
 	.heading {
-		view-transition-name: header;
 		display: flex;
 		flex-direction: column;
 		gap: 0.25rem;
 		align-items: center;
-		position: relative;
 		justify-content: center;
-		position: fixed;
 		top: 0px;
 		background-color: var(--crust);
 		width: inherit;

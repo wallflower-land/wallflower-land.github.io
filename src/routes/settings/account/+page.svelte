@@ -10,7 +10,6 @@
 	import TrashIcon from "../../../assets/images/icons/TrashIcon.svelte";
 	import WrenchIcon from "../../../assets/images/icons/WrenchIcon.svelte";
 	import { changeEmail, changePassword, deleteAccount, passwordErrors, updateUser, user } from "../../../backend/auth.svelte";
-	import Header from "../../../components/Header.svelte";
 	import Page from "../../../components/Page.svelte";
 	import Popup from "../../../components/Popup.svelte";
 
@@ -79,8 +78,7 @@
 	
 </script>
 
-<Page class="settings">
-	<Header title="Account" />
+<Page class="settings" header="Account">
 
 	<!-- Change email -->
 	<button class="first listing" onclick={() => changeEmailVisible = true}>

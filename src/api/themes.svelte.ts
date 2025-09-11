@@ -19,6 +19,7 @@ const themes = [
 			teal: "#94e2d5",
 			pink: "#f5c2e7",
 			mauve: "#cba6f7",
+			"box-shadow": "black",
 		},
 	},
 	{
@@ -41,6 +42,7 @@ const themes = [
 			teal: "#179299",
 			pink: "#ea76cb",
 			mauve: "#8839ef",
+			"box-shadow": "transparent",
 		},
 	},
 ] as const satisfies {
@@ -63,6 +65,7 @@ const themes = [
 		teal: string;
 		pink: string;
 		mauve: string;
+		"box-shadow": string;
 	};
 }[];
 

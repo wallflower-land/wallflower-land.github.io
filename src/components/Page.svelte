@@ -1,22 +1,34 @@
 <script lang="ts">
-	import { onMount } from "svelte";
+	import { onMount, type Snippet } from "svelte";
 	import Sidebar from "./Sidebar.svelte";
 	import Footer from "./Footer.svelte";
 	import { setTheme } from "../api/themes.svelte";
 	import { getPreference } from "../api/userapi";
+	import Header from "./Header.svelte";
 
-	let { sidebar = $bindable(), type = undefined, children, ...rest } = $props();
+	let { 
+		sidebar = $bindable(), 
+		type = undefined, 
+		children, 
+		header,
+		...rest 
+	}: {
+		children: Snippet,
+		sidebar?: Sidebar,
+		type?: "home" | "search" | "new" | "inbox" | "profile",
+		header?: string,
+		[key: string]: unknown,
+	} = $props();
 
 	onMount(() => {
-		if (window.innerWidth > window.innerHeight) {
-			sidebar.show();
-		}
-
 		setTheme(getPreference("darkMode") ? "Catppuccin Mocha" : "Catppuccin Latte");
 	});
 </script>
 
 <div class="outer">
+	{#if header}
+		<Header title={header} />
+	{/if}
 	<Sidebar bind:this={sidebar} />
 	<main {...rest}>
 		{@render children?.()}

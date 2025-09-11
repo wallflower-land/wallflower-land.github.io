@@ -24,7 +24,7 @@
 
 	let { sidebar, user: profileUser }: { sidebar: Sidebar, user: User } = $props();
 
-	let view: "all" | "books" | "discussion" | "activity" | "list" = $state(new URLSearchParams(window.location.search).get("view") as any ?? "all");
+	let view: "all" | "books" | "other" | "activity" | "list" = $state(new URLSearchParams(window.location.search).get("view") as any ?? "all");
 
 	/** This user's highest rated book */
 	let favoriteBook = getFavoriteBook(profileUser);
@@ -228,7 +228,7 @@
 		</a>
 
 		<div>
-			<PageWithViews bind:view views={["all", "books", "activity", "list", "discussion"]}>
+			<PageWithViews bind:view views={["all", "books", "activity", "list", "other"]}>
 				{#await posts}
 					<div class="loading">
 						<h1>Loading posts...</h1>
@@ -483,6 +483,7 @@
 			font-weight: 500;
 			color: var(--crust);
 			transition: scale 0.2s;
+			box-shadow: 0px 0px 0.5rem var(--box-shadow);
 
 			&:hover {
 				scale: 105%;

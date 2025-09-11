@@ -8,7 +8,6 @@
 
 <script lang="ts">
 	import { goto } from "$app/navigation";
-	import { onMount } from "svelte";
 	import { getFile } from "../api/storageapi";
 	import CloseIcon from "../assets/images/icons/CloseIcon.svelte";
 	import EmptyHomeIcon from "../assets/images/icons/EmptyHomeIcon.svelte";
@@ -20,7 +19,6 @@
 	import ProfileIcon from "../assets/images/icons/ProfileIcon.svelte";
 	import { logOut, user } from "../backend/auth.svelte";
 	import BarChartIcon from "../assets/images/icons/BarChartIcon.svelte";
-	import WrenchIcon from "../assets/images/icons/WrenchIcon.svelte";
 
 	let innerHeight = $state(window.innerHeight);
 
@@ -68,10 +66,13 @@
 	let touchEndX = 0;
 
 	const SWIPE_THRESHOLD = 30;
-	const EDGE_ZONE = 30;
+	const EDGE_ZONE = 20;
 
 	function ontouchstart(event: TouchEvent) {
 		touchStartX = event.touches[0].clientX;
+		if (touchStartX < 10 || touchStartX > window.innerWidth - 10) {
+			event.preventDefault();
+		}
 	}
 
 	function ontouchmove(event: TouchEvent) {
@@ -135,9 +136,9 @@
 			<ProfileIcon stroke="var(--subtext-1)" style="width: 1.5rem;" />
 			Profile
 		</button>
-		<button class="listing" style:color="var(--subtext-1)" onclick={nav("/interactions")}>
+		<button class="listing" style:color="var(--subtext-1)" onclick={nav("/activity")}>
 			<BarChartIcon stroke="var(--subtext-1)" style="width: 1.5rem;" />
-			Interactions
+			Activity
 		</button>
 	{/if}
 	<!-- {#if user() && user()!.tags.includes("mod")} -->

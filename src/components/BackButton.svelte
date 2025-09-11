@@ -17,7 +17,7 @@
 		justify-content: center;
 		border-radius: 50%;
 		padding: 0.25rem;
-		box-shadow: 0px 0px 0.5rem black;
+		box-shadow: 0px 0px 0.5rem var(--box-shadow);
 		z-index: 9999;
 		width: fit-content;
 		height: fit-content;

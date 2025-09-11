@@ -5,18 +5,13 @@
 	import { searchPosts, type InternalPost} from "../../api/postapi";
 	import { searchUsers, type User } from "../../api/userapi";
 	import Loading from "../../components/Loading.svelte";
-	import Page from "../../components/Page.svelte";
 	import AnyPost from "../../components/posts/AnyPost.svelte";
 	import UserListing from "../../components/UserListing.svelte";
-	import Sidebar from "../../components/Sidebar.svelte";
 	import BookCover from "../../components/BookCover.svelte";
-	import Header from "../../components/Header.svelte";
 	import { getAuthor, searchAuthors, type Author } from "../../api/authorapi";
 	import PageWithViews from "../../components/PageWithViews.svelte";
 
 	type View = "posts" | "books" | "users" | "authors";
-
-	let sidebar: Sidebar = $state(null!);
 
 	let view: View = $state(new URLSearchParams(window.location.search).get("view") as View ?? "posts");
 
@@ -58,8 +53,7 @@
 	let users: Promise<User[]> = $state(Promise.resolve([]));
 </script>
 
-<Page bind:sidebar type="search">
-	<Header title="Search" />
+{#snippet input()}
 	<section>
 		<input
 			type="text"
@@ -75,186 +69,190 @@
 			}[view]}
 		/>
 	</section>
+{/snippet}
 
-	<PageWithViews bind:view views={["posts", "books", "authors", "users"]}>
-
-		<!-- Posts -->
-		<div>
-			{#await posts}
+<PageWithViews 
+	fullpage
+	bind:view
+	views={["posts", "books", "authors", "users"]}
+	afterHeader={input}
+	header="Search"
+	pagetype="search"
+>
+	<!-- Posts -->
+	<div>
+		{#await posts}
+			<div class="loading">
+				<h1>Loading posts...</h1>
+				<p>We promise Wallflower will be faster soon.</p>
+				<Loading />
+			</div>
+		{:then posts}
+			{#if searchTerm == ""}
 				<div class="loading">
-					<h1>Loading posts...</h1>
+					<h1>Search for a post</h1>
+					<p>
+						Enter your search term to find relevant posts.
+					</p>
+				</div>
+			{:else if posts.length === 0}
+				<div class="loading">
+					<h1>No posts found</h1>
+					<p>
+						No posts were found relating to your search term. Make sure you spelled everything right!
+					</p>
+				</div>
+			{/if}
+			{#each posts as post}
+				<AnyPost {post} />
+			{/each}
+		{/await}
+	</div>
+
+	<!-- Books -->
+	<div>
+		{#if searchTerm == ""}
+			<div class="loading">
+				<h1>Search for a book</h1>
+				<p>
+					Enter your search term to find relevant books.
+				</p>
+			</div>
+		{:else}
+			{#await books}
+				<div class="loading">
+					<h1>Loading books...</h1>
 					<p>We promise Wallflower will be faster soon.</p>
 					<Loading />
 				</div>
-			{:then posts}
-				{#if searchTerm == ""}
+			{:then books}
+				{#if books.length === 0}
 					<div class="loading">
-						<h1>Search for a post</h1>
+						<h1>No books found</h1>
 						<p>
-							Enter your search term to find relevant posts.
-						</p>
-					</div>
-				{:else if posts.length === 0}
-					<div class="loading">
-						<h1>No posts found</h1>
-						<p>
-							No posts were found relating to your search term. Make sure you spelled everything right!
+							No books were found relating to your search term. Make sure you spelled everything right!
 						</p>
 					</div>
 				{/if}
-				{#each posts as post}
-					<AnyPost {post} />
-				{/each}
-			{/await}
-		</div>
-
-		<!-- Books -->
-		<div>
-			{#if searchTerm == ""}
-				<div class="loading">
-					<h1>Search for a book</h1>
-					<p>
-						Enter your search term to find relevant books.
-					</p>
-				</div>
-			{:else}
-				{#await books}
-					<div class="loading">
-						<h1>Loading books...</h1>
-						<p>We promise Wallflower will be faster soon.</p>
-						<Loading />
-					</div>
-				{:then books}
-					{#if books.length === 0}
-						<div class="loading">
-							<h1>No books found</h1>
-							<p>
-								No books were found relating to your search term. Make sure you spelled everything right!
-							</p>
-						</div>
-					{/if}
-					<div class="books">
-						{#each books as book}
-							{#await book}
-								<div class="book">
-									<div class="book-info">
-										<div class="loading-title"></div>
-										<div class="loading-authors"></div>
-									</div>
-									<div class="loading-cover"></div>
+				<div class="books">
+					{#each books as book}
+						{#await book}
+							<div class="book">
+								<div class="book-info">
+									<div class="loading-title"></div>
+									<div class="loading-authors"></div>
 								</div>
-							{:then book}
-								<a href={`/book/${book.isbn}`} class="book">
-									<div class="book-info">
-										<h1>
-											{book.title}
-										</h1>
-										<h2>
-											{#await getAuthor(book.authorKey) then author}
-												{author.name}
-											{/await}
-										</h2>
-									</div>
-									{#if book.cover}
-										<BookCover {book} style="width: 3.5rem; margin-left: auto;" />
-									{:else}
-										<div class="loading-cover"></div>
-									{/if}
-								</a>
-							{/await}
-						{/each}
-					</div>
-				{/await}
-			{/if}
-		</div>
-		
-		<!-- Authors -->
-		<div>
-			{#await authors}
-				<div class="loading">
-					<h1>Loading authors...</h1>
-					<p>We promise Wallflower will be faster soon.</p>
-				</div>
-			{:then authors}
-				{#if searchTerm == ""}
-					<div class="loading">
-						<h1>Search for an author</h1>
-						<p>
-							Enter your search term to find relevant authors.
-						</p>
-					</div>
-				{:else if authors.length === 0}
-					<div class="loading">
-						<h1>No users found</h1>
-						<p>
-							No users were found relating to your search term. Make sure you spelled everything right!
-						</p>
-					</div>
-				{/if}
-				<div class="authors">
-					{#each authors as author}
-						{#await author then author}
-							{#if author.picture}
-								<a href={`/author/${author.id}`} class="book">
-									<div class="author-info">
-										<h1>
+								<div class="loading-cover"></div>
+							</div>
+						{:then book}
+							<a href={`/book/${book.isbn}`} class="book">
+								<div class="book-info">
+									<h1>
+										{book.title}
+									</h1>
+									<h2>
+										{#await getAuthor(book.authorKey) then author}
 											{author.name}
-										</h1>
-										<h2>
-											Born {author.birthday}
-										</h2>
-									</div>
-									{#if author.picture}
-										<img alt={author.name} class="author-image" src={author.picture} />
-									{:else}
-										<div class="loading-cover"></div>
-									{/if}
-								</a>
-							{/if}
+										{/await}
+									</h2>
+								</div>
+								{#if book.cover}
+									<BookCover {book} style="width: 3.5rem; margin-left: auto;" />
+								{:else}
+									<div class="loading-cover"></div>
+								{/if}
+							</a>
 						{/await}
 					{/each}
 				</div>
 			{/await}
-		</div>
-		
-		<!-- Users -->
-		<div>
-			{#await users}
+		{/if}
+	</div>
+	
+	<!-- Authors -->
+	<div>
+		{#await authors}
+			<div class="loading">
+				<h1>Loading authors...</h1>
+				<p>We promise Wallflower will be faster soon.</p>
+			</div>
+		{:then authors}
+			{#if searchTerm == ""}
 				<div class="loading">
-					<h1>Loading accounts...</h1>
-					<p>We promise Wallflower will be faster soon.</p>
+					<h1>Search for an author</h1>
+					<p>
+						Enter your search term to find relevant authors.
+					</p>
 				</div>
-			{:then users}
-				{#if searchTerm == ""}
-					<div class="loading">
-						<h1>Search for a user</h1>
-						<p>
-							Enter your search term to find relevant users.
-						</p>
-					</div>
-				{:else if users.length === 0}
-					<div class="loading">
-						<h1>No users found</h1>
-						<p>
-							No users were found relating to your search term. Make sure you spelled everything right!
-						</p>
-					</div>
-				{/if}
-				<div class="users">
-					{#each users as user}
-						<UserListing {user} />
-					{/each}
+			{:else if authors.length === 0}
+				<div class="loading">
+					<h1>No users found</h1>
+					<p>
+						No users were found relating to your search term. Make sure you spelled everything right!
+					</p>
 				</div>
-			{/await}
-		</div>
-	</PageWithViews>
-</Page>
+			{/if}
+			<div class="authors">
+				{#each authors as author}
+					{#await author then author}
+						{#if author.picture}
+							<a href={`/author/${author.id}`} class="book">
+								<div class="author-info">
+									<h1>
+										{author.name}
+									</h1>
+									<h2>
+										Born {author.birthday}
+									</h2>
+								</div>
+								{#if author.picture}
+									<img alt={author.name} class="author-image" src={author.picture} />
+								{:else}
+									<div class="loading-cover"></div>
+								{/if}
+							</a>
+						{/if}
+					{/await}
+				{/each}
+			</div>
+		{/await}
+	</div>
+	
+	<!-- Users -->
+	<div>
+		{#await users}
+			<div class="loading">
+				<h1>Loading accounts...</h1>
+				<p>We promise Wallflower will be faster soon.</p>
+			</div>
+		{:then users}
+			{#if searchTerm == ""}
+				<div class="loading">
+					<h1>Search for a user</h1>
+					<p>
+						Enter your search term to find relevant users.
+					</p>
+				</div>
+			{:else if users.length === 0}
+				<div class="loading">
+					<h1>No users found</h1>
+					<p>
+						No users were found relating to your search term. Make sure you spelled everything right!
+					</p>
+				</div>
+			{/if}
+			<div class="users">
+				{#each users as user}
+					<UserListing {user} />
+				{/each}
+			</div>
+		{/await}
+	</div>
+</PageWithViews>
 
 <style>
 	section {
-		padding-top: 1rem;
 		background-color: var(--crust);
-		margin-top: 2.5rem;
 		view-transition-name: search-box;
 	}
 
