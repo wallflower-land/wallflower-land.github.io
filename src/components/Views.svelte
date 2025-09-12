@@ -10,12 +10,14 @@
 		content = undefined,
 		viewFilter = (_name) => true,
 		formatViewName = (name) => name,
-		marginTop = "0px"
+		marginTop = "0px",
+		paddingTop = "0px"
 	}: { 
 		views: View[], 
 		view: View,
 		left: string,
 		content?: HTMLElement,
+		paddingTop?: string,
 		formatViewName?: (name: View) => string | Promise<string>
 		viewFilter?: (name: string) => (boolean | Promise<boolean>)
 		marginTop?: string
@@ -64,6 +66,7 @@
 			class={view === viewtab ? "selected" : ""} 
 			onclick={() => setView(viewtab)}
 			style:font-size={availableViews.length > 2 ? "0.85rem" : "1rem"}
+			style:padding-top={paddingTop}
 		>
 			{#await formatViewName(viewtab) then viewtab}
 				{viewtab}

@@ -18,7 +18,9 @@
 		views,
 		view = $bindable(),
 		children,
+		contentElement = $bindable(),
 		marginTop = "0px",
+		top = "0px",
 		header = undefined,
 		subheader = undefined,
 		afterHeader = undefined,
@@ -34,6 +36,8 @@
 		header?: string | typeof wallflowerHeader,
 		afterHeader?: Snippet,
 		fullpage?: boolean,
+		contentElement?: HTMLElement,
+		top?: string,
 		pagetype?: "home" | "search" | "new" | "inbox" | "profile",
 		subheader?: string | Promise<string>,
 		formatViewName?: (name: View) => (string | Promise<string>)
@@ -41,7 +45,6 @@
 	} = $props();
 
 	let left = $state("0px");
-	let content: HTMLElement | undefined = $state(undefined);
 
 	let sidebar: Sidebar | undefined = $state(undefined);
 	let spinLogo = $state(false);
@@ -55,7 +58,7 @@
 </script>
 
 {#snippet nav()}
-	<div class="header">
+	<div class="header" style:top>
 		{#if header}
 			{#if header === wallflowerHeader}
 				<div class="banner">
@@ -83,17 +86,18 @@
 		{/if}
 		{@render afterHeader?.()}
 		<Views 
-			{content} 
+			content={contentElement}
 			{viewFilter} 
 			{formatViewName} 
 			{marginTop} 
 			{views} 
 			bind:view 
 			bind:left 
+			paddingTop={fullpage ? "0px" : "0.5rem"}
 		/>
 	</div>
 	<div
-		bind:this={content}
+		bind:this={contentElement}
 		class="content" 
 		style:left
 		style:grid-template-columns="repeat({views.length}, 1fr)"
@@ -116,7 +120,6 @@
 	.header {
 		position: sticky;
 		width: 100%;
-		top: 0px;
 		display: flex;
 		flex-direction: column;
 		z-index: 99;

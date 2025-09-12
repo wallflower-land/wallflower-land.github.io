@@ -63,12 +63,84 @@ export const getBook = onRequest(async (request, response) => {
 					(
 						openLibraryData.authors?.[0]?.key ?? workData.authors?.[0]?.author?.key
 					)?.match(/\/authors\/(.+)/)?.[1] ?? "",
+				id: "",
 			};
 
 			const bookDoc = db.collection("books").doc();
-			bookDoc.set({ ...book, id: bookDoc.id });
+			book.id = bookDoc.id;
+			bookDoc.set(book);
 
 			response.json(book);
+			return;
+		} catch (error) {
+			response.statusCode = 500;
+			response.json({ error: `${error}` });
+			return;
+		}
+	});
+});
+
+export const getAuthor = onRequest(async (request, response) => {
+	corsHandler(request, response, async () => {
+		try {
+			const key = request.query.key;
+
+			const snapshot = await db.collection("authors").where("key", "==", key).get();
+
+			const docs: any[] = [];
+			snapshot.forEach(doc => docs.push(doc.data()));
+
+			// Already in database - return the data
+			if (docs.length > 0) {
+				response.json(docs[0] as any);
+				return;
+			}
+
+			const authorResponse = await fetch(`https://openlibrary.org/authors/${key}.json`);
+			const authorData = await authorResponse.json();
+
+			const worksResponse = await fetch(
+				`https://openlibrary.org/authors/${key}/works.json?limit=100`,
+			);
+			const worksData = await worksResponse.json();
+
+			const books = (
+				await Promise.all(
+					worksData?.entries?.map(async (work: any) => {
+						const workResponse = await fetch(
+							`https://openlibrary.org${work.key}/editions.json`,
+						);
+						const workData = await workResponse.json();
+
+						const language = workData.entries?.[0]?.languages?.[0].key ?? null;
+						if (language !== "/languages/eng") {
+							return null;
+						}
+
+						const isbn = workData.entries?.[0]?.isbn_13?.[0] ?? null;
+						return isbn;
+					}) ?? [],
+				)
+			).filter(isbn => isbn);
+
+			const author = {
+				key,
+				name: authorData?.name ?? "",
+				birthday: authorData?.birth_date ?? "",
+				bio: authorData.bio?.value ?? "",
+				picture:
+					authorData?.photos && authorData?.photos?.length
+						? `https://covers.openlibrary.org/a/id/${authorData.photos[0]}-L.jpg`
+						: "",
+				books: books ?? [],
+				id: "",
+			};
+
+			const authorDoc = db.collection("authors").doc();
+			author.id = authorDoc.id;
+			authorDoc.set(author);
+
+			response.json(author);
 			return;
 		} catch (error) {
 			response.statusCode = 500;

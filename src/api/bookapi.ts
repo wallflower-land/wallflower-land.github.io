@@ -7,6 +7,9 @@ import {
 	getCountFromServer,
 	doc,
 	setDoc,
+	getAggregateFromServer,
+	average,
+	count,
 } from "firebase/firestore";
 import initializeFirebase from "../backend/backend";
 import { internalPostToPost, type InternalPost, type Post } from "./postapi";
@@ -26,6 +29,7 @@ export type Book = {
 	publishDate: string;
 	characters: string[];
 	authorKey: string;
+	id: string;
 };
 
 let { db } = initializeFirebase();
@@ -44,28 +48,48 @@ export async function getBookDiscussions(isbn: ISBN): Promise<InternalPost[]> {
 	return posts;
 }
 
+/**
+ * Returns the average rating across all users on the website for
+ * a given book.
+ */
 export async function getBookRating(isbn: ISBN): Promise<{ rating: number; count: number }> {
-	let posts = (
-		await getDocs(
+	const data = (
+		await getAggregateFromServer(
 			query(
 				collection(db, "posts"),
 				where("books", "array-contains", isbn),
 				where("type", "==", "rating"),
 			),
+			{
+				averageRating: average("rating"),
+				ratingCount: count(),
+			},
 		)
-	).docs.map(doc => doc.data().rating);
+	).data();
 
-	return {
-		rating:
-			posts.reduce((accumulator, current) => accumulator + current, 0) / (posts.length || 1),
-		count: posts.length,
-	};
+	return { rating: data.averageRating ?? 0, count: data.ratingCount };
 }
 
+/**
+ * Gets the information about a book from its ISBN.
+ *
+ * Unlike most resources in this API, this makes a call to the server using
+ * a Firebase cloud function. This is because if a book isn't in the database,
+ * we want to get its info from external sources (e.g. openlibrary) and then
+ * add it to the database. However, I can't allow arbitrary users to add
+ * books to the database, or else people could in theory just add whatever
+ * books they want, even if they don't exist. To avoid this security
+ * vulnerability, the `books` collection in the database can only be written
+ * to from the server (or if the user is a moderator).
+ *
+ * @param isbn The ISBN of the book to get the information about
+ *
+ * @returns The book data
+ */
 export async function getBook(isbn: ISBN): Promise<Book> {
 	const response = await fetch(`https://getbook-psqyhrtnra-uc.a.run.app?isbn=${isbn}`);
-	const book = await response.json();
-	return book;
+	const data = await response.json();
+	return data as Book;
 }
 
 export async function searchBooks(searchTerm: string, max = 10): Promise<Promise<Book>[]> {

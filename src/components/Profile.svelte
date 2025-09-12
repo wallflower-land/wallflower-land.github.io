@@ -115,6 +115,10 @@
 		}
 	}
 
+	let contentElement: HTMLElement | undefined = $state(undefined);
+	let nameElement: HTMLElement | null = $state(null);
+	let nameLeft = $state("-1.8rem");
+
 	onMount(() => {
 		document.addEventListener("scroll", () => {
 			ratingSortMenu?.close();
@@ -126,8 +130,16 @@
 				const { r, g, b } = lerp(cssVar("crust"), cssVar("base"), percent);
 				ratingOptions.style.background = `rgb(${r}, ${g}, ${b})`
 			}
+
+			if ((nameElement?.getBoundingClientRect().top ?? 999) <= 24) {
+				nameLeft = `${window.innerWidth / 2 - nameElement!.getBoundingClientRect().width / 2}px`;
+			} else {
+				nameLeft = "-1.8rem";
+			}
 		}, true); // me when true
 	});
+
+	let picture = $derived(getFile(profileUser.picture));
 </script>
 
 <section>
@@ -140,7 +152,7 @@
 		<LeftArrowIcon stroke="#FFFFFF" style="width: 1.5rem; height: 1.5rem;" />
 	</button>
 	<div class="profile">
-		{#await getFile(profileUser.picture) then pfp}
+		{#await picture then pfp}
 			<ClickableImage
 				class="profile-picture"
 				src={pfp!}
@@ -148,7 +160,15 @@
 			/>
 		{/await}
 		<div class="profile-line-1">
-			<span class="name">
+			<span class="name" bind:this={nameElement} style:margin-left={nameLeft}>
+				{#await picture then pfp}
+					<ClickableImage
+						class="profile-picture-small"
+						src={pfp!}
+						alt={`${profileUser.displayName} profile picture`}
+					/>
+				{/await}
+
 				<!-- Username -->
 				<h1>{profileUser.displayName}</h1>
 				<h2>@{profileUser.username}</h2>
@@ -162,25 +182,28 @@
 				{/if}
 			</span>
 
-			<!-- Edit profile button -->
-			{#if isCurrentUser}
-				<button class="edit button" onclick={() => goto("/profile/edit")}>
-					Edit Profile
-				</button>
-			{:else if user()}
-				{#if user()!.following.includes(profileUser.id)}
-					<button class="unfollow button" onclick={unfollow}>
-						Unfollow
-					</button>
-				{:else}
-					<button class="follow button" onclick={follow}>
-						Follow
-					</button>
-				{/if}
-			{/if}
 		</div>
 
-		<PostBody body={profileUser.bio} style="color: var(--overlay-1); margin-left: 1rem;" />
+		<div class="bio">
+			<PostBody body={profileUser.bio} style="color: var(--overlay-1); margin-left: 1rem;" />
+		</div>
+
+		<!-- Edit profile button -->
+		{#if isCurrentUser}
+			<button class="edit button" onclick={() => goto("/profile/edit")}>
+				Edit Profile
+			</button>
+		{:else if user()}
+			{#if user()!.following.includes(profileUser.id)}
+				<button class="unfollow button" onclick={unfollow}>
+					Unfollow
+				</button>
+			{:else}
+				<button class="follow button" onclick={follow}>
+					Follow
+				</button>
+			{/if}
+		{/if}
 
 		<!-- Line 2: Profile stats -->
 		<div class="profile-line-2">
@@ -228,7 +251,12 @@
 		</a>
 
 		<div>
-			<PageWithViews bind:view views={["all", "books", "activity", "list", "other"]}>
+			<PageWithViews
+				bind:view
+				views={["all", "books", "activity", "list", "other"]}
+				top="3rem"
+				bind:contentElement
+			>
 				{#await posts}
 					<div class="loading">
 						<h1>Loading posts...</h1>
@@ -320,7 +348,7 @@
 		padding: 0.5rem 1rem 0.5rem 1rem;
 		border-bottom: 1px solid var(--surface-0);
 		position: sticky;
-		top: 0px;
+		top: 2.3rem;
 		z-index: 9999;
 
 		label {
@@ -336,6 +364,17 @@
 				height: 1.5rem;
 			}
 		}
+	}
+
+	:global(.profile-picture-small) {
+		border-radius: 50%;
+		width: 1.75rem;
+		height: 1.75rem;
+		margin-right: 0.5rem;
+	}
+
+	.bio {
+		z-index: 1000;
 	}
 
 	.dot {
@@ -419,7 +458,7 @@
 			width: 6rem;
 			height: 6rem;
 			margin-top: 4.7rem;
-			z-index: 2;
+			z-index: 1002;
 			border: 0.5rem solid var(--crust);
 		}
 	}
@@ -457,7 +496,15 @@
 
 	.profile-line-1 {
 		display: flex;
-		margin-left: 1rem;
+		padding: 1rem;
+		padding-left: 0rem;
+		margin-bottom: -1rem;
+		position: sticky;
+		top: 0px;
+		z-index: 999;
+		background-color: var(--crust);
+		margin-top: -1.5rem;
+		padding-top: 1.5rem;
 
 		h1 {
 			font-size: 1.25rem;
@@ -470,45 +517,48 @@
 			color: var(--surface-2);
 		}
 
-		.button {
-			position: absolute;
-			right: 0px;
-			top: 8.5rem;
-			width: 7rem;
-			height: 2rem;
-			margin-right: 1rem;
-			padding-left: 1rem;
-			padding-right: 1rem;
-			border-radius: 100vmax;
-			font-weight: 500;
-			color: var(--crust);
-			transition: scale 0.2s;
-			box-shadow: 0px 0px 0.5rem var(--box-shadow);
+	}
 
-			&:hover {
-				scale: 105%;
-			}
+	.button {
+		position: absolute;
+		right: 0px;
+		top: 8.5rem;
+		width: 7rem;
+		height: 2rem;
+		margin-right: 1rem;
+		padding-left: 1rem;
+		padding-right: 1rem;
+		border-radius: 100vmax;
+		font-weight: 500;
+		color: var(--crust);
+		transition: scale 0.2s;
+		box-shadow: 0px 0px 0.5rem var(--box-shadow);
+		z-index: 1002;
 
-			&.follow {
-				background-image: linear-gradient(to bottom right, var(--lavender), var(--blue));
-			}
+		&:hover {
+			scale: 105%;
+		}
 
-			&.unfollow {
-				background-image: linear-gradient(to bottom right, var(--peach), var(--red));
-			}
+		&.follow {
+			background-image: linear-gradient(to bottom right, var(--lavender), var(--blue));
+		}
 
-			&.edit {
-				background-image: linear-gradient(to bottom right, var(--teal), var(--green));
-			}
+		&.unfollow {
+			background-image: linear-gradient(to bottom right, var(--peach), var(--red));
+		}
+
+		&.edit {
+			background-image: linear-gradient(to bottom right, var(--teal), var(--green));
 		}
 	}
 
 	.name {
-		flex-grow: 1;
 		color: var(--subtext-1);
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
 		margin-top: -0.5rem;
+		width: fit-content;
+		transition: margin-left 0.2s;
 	}
 </style>

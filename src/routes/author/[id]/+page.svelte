@@ -19,7 +19,7 @@
 	<div class="content">
 		<ClickableImage src={author.picture} class="picture" />
 
-		<p>{author.bio}</p>
+		<p>{author.bio || "No description provided."}</p>
 
 		<h2>Books</h2>
 		<div class="books">

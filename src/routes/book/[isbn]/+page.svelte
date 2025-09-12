@@ -3,7 +3,6 @@
 	import { getAuthor } from "../../../api/authorapi";
 	import { getBookDiscussions, getBookRating } from "../../../api/bookapi";
 	import { updateUser, user } from "../../../backend/auth.svelte";
-	import BackButton from "../../../components/BackButton.svelte";
 	import BookCover from "../../../components/BookCover.svelte";
 	import Page from "../../../components/Page.svelte";
 	import PageWithViews from "../../../components/PageWithViews.svelte";
@@ -110,7 +109,7 @@
 					<span>Author: </span>
 					<span>
 						{#await author then author}
-							<a href="/author/{author.id}">{author.name}</a>
+							<a href="/author/{author.key}">{author.name}</a>
 						{/await}
 					</span>
 				</span>
@@ -231,48 +230,6 @@
 				color: var(--overlay-1);
 				font-size: 1rem;
 			}
-		}
-	}
-
-	.book-name {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-
-		h1 {
-			color: var(--text);
-		}
-
-		h2 {
-			color: var(--surface-2);
-		}
-	}
-
-	nav {
-		z-index: 99;
-		padding-bottom: 0.5rem;
-		view-transition-name: book-view;
-		display: flex;
-		flex-direction: column;
-		position: sticky;
-		top: 0px;
-		gap: 1rem;
-		padding-top: 1rem;
-		background: var(--crust);
-
-		.book-name {
-			padding-left: 4rem;
-			padding-right: 4rem;
-			text-align: center;
-		}
-
-		h1 {
-			font-size: 1rem;
-			font-weight: normal;
-		}
-
-		h2 {
-			font-size: 0.85rem;
 		}
 	}
 
