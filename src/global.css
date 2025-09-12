@@ -27,7 +27,7 @@ body {
 	background: var(--crust);
 }
 
-button,
+button:not([disabled]),
 label,
 video[controls] {
 	cursor: pointer;

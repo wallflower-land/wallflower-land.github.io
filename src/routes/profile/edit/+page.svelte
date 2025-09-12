@@ -11,6 +11,7 @@
 	import BackButton from "../../../components/BackButton.svelte";
 	import CharacterLimitMeter from "../../../components/CharacterLimitMeter.svelte";
 	import ImagePicker from "../../../components/ImagePicker.svelte";
+	import LeavePagePopup from "../../../components/LeavePagePopup.svelte";
 	import Page from "../../../components/Page.svelte";
 	import RadioInput from "../../../components/RadioInput.svelte";
 
@@ -29,6 +30,8 @@
 	let bio = $state("");
 	let pronouns = $state("");
 	let picture = $state("")
+
+	let popup: LeavePagePopup;
 
 	let unsavedChanges = $derived.by(() => {
 		if (!user()) return false;
@@ -92,6 +95,10 @@
 			update();
 		}
 	}
+
+	function cancel() {
+
+	}
 </script>
 
 <Page type="profile" {onkeydown}>
@@ -139,7 +146,7 @@
 					bind:value={displayName} 
 					style:outline={displayNameErrorList.length > 0 ? "2px solid var(--red)" : "none"}
 				/>
-				<CharacterLimitMeter padding="0.31rem" limit={20} bind:text={displayName} />
+				<CharacterLimitMeter size={0.7} limit={20} bind:text={displayName} />
 			</div>
 			{#each displayNameErrorList as displayNameError}
 				<span class="error">{displayNameError}</span>
@@ -159,7 +166,7 @@
 					oninput={onInput}
 					bind:value={username}
 				/>
-				<CharacterLimitMeter padding="0.31rem" limit={20} bind:text={username} />
+				<CharacterLimitMeter size={0.7} limit={20} bind:text={username} />
 			</div>
 			{#each usernameErrorList as usernameError}
 				<span class="error">{usernameError}</span>
@@ -175,7 +182,7 @@
 			<label for="pronouns">Pronouns</label>
 			<div class="text-container">
 				<input maxlength="20" enterkeyhint="done" type="text" id="pronouns" bind:value={pronouns} />
-				<CharacterLimitMeter padding="0.31rem" limit={20} bind:text={pronouns} />
+				<CharacterLimitMeter size={0.7} limit={20} bind:text={pronouns} />
 			</div>
 
 			<span class="radio-input">
@@ -285,6 +292,8 @@
 		<button disabled={!canSave} class="save" onclick={update}>Save</button>
 	</div>
 </Page>
+
+<LeavePagePopup bind:this={popup} />
 
 <style>
 	.username {

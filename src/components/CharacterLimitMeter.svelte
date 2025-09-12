@@ -3,7 +3,7 @@
 		limit, 
 		threshold = 0.2, 
 		text = $bindable(), 
-		padding = "0.5rem",
+		size = 1,
 		display = "flex",
 		...rest 
 	} = $props();
@@ -22,8 +22,9 @@
 <div 
 	style:--color={color} 
 	style:--percent={100 * (1 - (limit - text.length) / limit)} 
-	style:right={padding}
-	style:bottom={padding}
+	style:right="{size * 0.5}rem"
+	style:bottom="{size * 0.5}rem"
+	style:font-size="max({size * 0.75}rem, 0.7rem)"
 	style:display
 	{...rest}>
 	{limit - text.length}
@@ -34,7 +35,6 @@
 		position: absolute;
 		right: 0.5rem;
 		bottom: 0.5rem;
-		font-size: 0.75rem;
 		height: 70%;
 		aspect-ratio: 1;
 		color: var(--color);
@@ -50,8 +50,8 @@
 			border-radius: 50%;
 			padding: 2px;
 			background: conic-gradient(var(--color) calc(var(--percent) * 1%), transparent 0);
-			-webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-			mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+			-webkit-mask: linear-gradient(#000000 0 0) content-box, linear-gradient(#000000 0 0);
+			mask: linear-gradient(#000000 0 0) content-box, linear-gradient(#000000 0 0);
 			-webkit-mask-composite: xor;
 			mask-composite: exclude;
 		}

@@ -1,4 +1,13 @@
-import { collection, getDocs, orderBy, query, where, getCountFromServer, doc, setDoc } from "firebase/firestore";
+import {
+	collection,
+	getDocs,
+	orderBy,
+	query,
+	where,
+	getCountFromServer,
+	doc,
+	setDoc,
+} from "firebase/firestore";
 import initializeFirebase from "../backend/backend";
 import { internalPostToPost, type InternalPost, type Post } from "./postapi";
 import { awaitUser } from "./userapi";
@@ -54,74 +63,8 @@ export async function getBookRating(isbn: ISBN): Promise<{ rating: number; count
 }
 
 export async function getBook(isbn: ISBN): Promise<Book> {
-	const docs = await getDocs(query(collection(db, "books"), where("isbn", "==", isbn)));
-	if (docs.length > 0) {
-		return docs[0].data();
-	}
-
-	const item = globalThis.localStorage ? globalThis.localStorage.getItem(`book-${isbn}`) : null;
-	if (item) {
-		const book = JSON.parse(item);
-		awaitUser.then(async user => {
-			if (user?.tags.includes("mod")) {
-				const bookDoc = doc(collection(db, "books"));
-				setDoc(bookDoc, { ...book, id: bookDoc.id });
-			}
-		});
-		return book;
-	}
-
-	let [openLibraryResponse, googleResponse] = await Promise.all([
-		fetch(`https://openlibrary.org/isbn/${isbn}.json`),
-		fetch(`https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`),
-	]);
-	let [openLibraryData, googleData] = await Promise.all([
-		openLibraryResponse.json(),
-		googleResponse.json(),
-	]);
-
-	const work = openLibraryData.works[0].key;
-	const [workResponse, editionsResponse] = await Promise.all([
-		fetch(`https://openlibrary.org${work}.json`),
-		fetch(`https://openlibrary.org${work}/editions.json`),
-	]);
-	const [workData, editionsData] = await Promise.all([
-		workResponse.json(),
-		editionsResponse.json(),
-	]);
-
-	googleData = googleData.items?.[0].volumeInfo;
-
-	const book: Book = {
-		title: openLibraryData.title ?? "",
-		isbn: editionsData.entries?.[0]?.[0]?.isbn_13?.[0] ?? isbn,
-		cover: workData.covers?.[0]
-			? `https://covers.openlibrary.org/b/id/${workData.covers[0]}-L.jpg`
-			: `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg`,
-		backupCover: googleData?.imageLinks?.thumbnail ?? "",
-		pageCount: openLibraryData.number_of_pages ?? 0,
-		genres: workData.subjects ?? [],
-		description: googleData?.description ?? workData.description ?? "",
-		publishers: openLibraryData.publishers ?? [],
-		publishDate: openLibraryData.publish_date ?? "",
-		characters: workData.subject_people ?? [],
-		authorKey:
-			(openLibraryData.authors?.[0]?.key ?? workData.authors?.[0]?.author?.key)?.match(
-				/\/authors\/(.+)/,
-			)?.[1] ?? "",
-	};
-
-	if (globalThis.localStorage) {
-		globalThis.localStorage.setItem(`book-${isbn}`, JSON.stringify(book));
-	}
-
-	awaitUser.then(async user => {
-		if (user?.tags.includes("mod")) {
-			const bookDoc = doc(collection(db, "books"));
-			setDoc(bookDoc, { ...book, id: bookDoc.id });
-		}
-	});
-
+	const response = await fetch(`https://getbook-psqyhrtnra-uc.a.run.app?isbn=${isbn}`);
+	const book = await response.json();
 	return book;
 }
 

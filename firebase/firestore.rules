@@ -1,0 +1,193 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+  	match /books/{isbn} {
+    	allow read: if true
+      allow create, write, update, delete: if
+      	(request.auth != null) &&
+      	("mod" in get(/databases/$(database)/documents/users/$(request.auth.uid)).data.tags)
+    }
+    match /users/{userId} {
+    	allow read: if true
+      allow update: if 
+      	request.auth != null &&
+        request.auth.uid == userId &&
+           
+      	// Field Types
+        (request.resource.data.username is string) &&
+        (request.resource.data.email is string) &&
+        (request.resource.data.displayName is string) &&
+        (request.resource.data.banner is string) &&
+        (request.resource.data.picture is string) &&
+        (request.resource.data.bio is string) &&
+        (request.resource.data.links is list) &&
+        (request.resource.data.currentBook is int) &&
+        (request.resource.data.pronouns is string) &&
+        (request.resource.data.views is list) &&
+        (request.resource.data.likes is list) &&
+        (request.resource.data.shares is list) &&
+        (request.resource.data.saved is list) &&
+    	  (request.resource.data.readingList is list) &&
+      	(request.resource.data.following is list) &&
+        (request.resource.data.darkMode is bool) &&
+        (request.resource.data.requestedAuthorVerification is bool) &&
+        (request.resource.data.showDeveloperBadge is bool) &&
+        (request.resource.data.showModeratorBadge is bool) &&
+        (request.resource.data.showNewbieBadge is bool) &&
+        (request.resource.data.showAuthorBadge is bool) &&
+        (request.resource.data.showPronounsOnProfile is bool) &&
+        (request.resource.data.showPronounsOnPosts is bool) &&
+
+        (
+        	(request.resource.data.uiScale is float) || 
+          (request.resource.data.uiScale is int)
+        ) &&
+           
+        // Field Constraints
+        request.resource.data.username.matches("^[a-zA-Z_0-9\\-]{1,30}$") &&
+        !(request.resource.data.username.matches("^-")) &&
+        !(request.resource.data.username.matches("-$")) &&
+        !(request.resource.data.username.matches("^-+$")) &&
+        !(request.resource.data.username.matches("^_+$")) &&
+      	request.resource.data.uiScale >= 0.5 &&
+        request.resource.data.uiScale <= 1 &&
+        request.resource.data.bio.size() <= 144 &&
+        request.resource.data.pronouns.size() <= 20 &&
+        request.resource.data.username.size() <= 20 &&
+        request.resource.data.displayName.size() <= 20 &&
+           
+        // Unchangeable Fields
+      	(resource.data.tags == request.resource.data.tags) &&
+      	(resource.data.birthmoment == request.resource.data.birthmoment) &&
+    		(request.resource.data.id == userId)
+      ;
+        
+      // Create User Permissions
+      allow create: if 
+      	request.auth != null && 
+        request.auth.uid == userId &&
+        
+        // Required Fields
+        ("username" in request.resource.data) &&
+      	("email" in request.resource.data) &&
+        ("id" in request.resource.data) &&
+        ("displayName" in request.resource.data) &&
+        ("banner" in request.resource.data) &&
+        ("picture" in request.resource.data) &&
+        ("bio" in request.resource.data) &&
+        ("tags" in request.resource.data) &&
+        ("currentBook" in request.resource.data) &&
+        ("pronouns" in request.resource.data) &&
+        ("birthmoment" in request.resource.data) &&
+        ("views" in request.resource.data) &&
+        ("likes" in request.resource.data) &&
+        ("shares" in request.resource.data) &&
+        ("saved" in request.resource.data) &&
+        ("readingList" in request.resource.data) &&
+        ("following" in request.resource.data) &&
+        ("darkMode" in request.resource.data) &&
+        ("uiScale" in request.resource.data) &&
+        ("requestedAuthorVerification" in request.resource.data) &&
+        ("showNewbieBadge" in request.resource.data) &&
+        ("showAuthorBadge" in request.resource.data) &&
+  			("showModeratorBadge" in request.resource.data) &&
+        ("showDeveloperBadge" in request.resource.data) &&
+        ("showPronounsOnProfile" in request.resource.data) &&
+        ("showPronounsOnPosts" in request.resource.data) &&
+           
+        // Field Types
+        (request.resource.data.username is string) &&
+        (request.resource.data.email is string) &&
+        (request.resource.data.id is string) &&
+        (request.resource.data.displayName is string) &&
+        (request.resource.data.banner is string) &&
+        (request.resource.data.picture is string) &&
+        (request.resource.data.bio is string) &&
+        (request.resource.data.tags is list) &&
+        (request.resource.data.currentBook is float || request.resource.data.currentBook == null) &&
+        (request.resource.data.pronouns is string) &&
+        (request.resource.data.birthmoment is int) &&
+        (request.resource.data.views is list) &&
+        (request.resource.data.likes is list) &&
+        (request.resource.data.saved is list) &&
+        (request.resource.data.shares is list) &&
+        (request.resource.data.readingList is list) &&
+        (request.resource.data.following is list) &&
+        (request.resource.data.darkMode is bool) &&
+        (request.resource.data.requestedAuthorVerification is bool) &&
+        (request.resource.data.requestedAuthorVerification is bool) &&
+        (request.resource.data.showDeveloperBadge is bool) &&
+        (request.resource.data.showModeratorBadge is bool) &&
+        (request.resource.data.showNewbieBadge is bool) &&
+        (request.resource.data.showAuthorBadge is bool) &&
+        (request.resource.data.showPronounsOnProfile is bool) &&
+        (request.resource.data.showPronounsOnPosts is bool) &&
+        (
+        	(request.resource.data.uiScale is float) || 
+          (request.resource.data.uiScale is int)
+        ) &&
+           
+        // Field Constraints
+        request.resource.data.username.matches("^[a-zA-Z_0-9\\-]{1,30}$") &&
+        !(request.resource.data.username.matches("^-")) &&
+        !(request.resource.data.username.matches("-$")) &&
+        !(request.resource.data.username.matches("^-+$")) &&
+        !(request.resource.data.username.matches("^_+$")) &&
+        request.resource.data.uiScale >= 0.5 &&
+        request.resource.data.uiScale <= 1 &&
+        request.resource.data.bio.size() <= 144 &&
+        request.resource.data.pronouns.size() <= 20 &&
+        request.resource.data.username.size() <= 20 &&
+        request.resource.data.displayName.size() <= 20 &&
+           
+        // Field Values
+        request.resource.data.id == userId &&
+        request.resource.data.tags == []
+      ;
+      allow delete: if false
+    }
+    match /posts/{postId} {
+    	allow read: if true
+      
+      // Create Post Permissions
+      allow create: if 
+        request.auth != null && 
+        
+        // Required Fields
+        ("id" in request.resource.data) &&
+        ("type" in request.resource.data) &&
+        ("poster" in request.resource.data) &&
+        ("body" in request.resource.data) &&
+        ("timestamp" in request.resource.data) &&
+        ("books" in request.resource.data) &&
+        ("authors" in request.resource.data) &&
+        ("pictures" in request.resource.data) &&
+          
+        // Field Types
+        (request.resource.data.id is string) &&
+        (request.resource.data.type is string) &&
+        (request.resource.data.poster is string) &&
+        (request.resource.data.body is string) &&
+        (request.resource.data.timestamp is int) &&
+        (request.resource.data.books is list) &&
+        (request.resource.data.authors is list) &&
+        (request.resource.data.pictures is list) &&
+        
+        // Field Constraints
+        request.resource.data.pictures.size() <= 10 &&
+           
+        // Field Values
+        request.resource.data.id == postId &&
+        request.auth.uid == request.resource.data.poster &&
+        request.resource.data.body.size() <= 144 &&
+        [request.resource.data.type].hasOnly(["rating", "general", "reply", "update"]) &&
+        (!("rating" in request.resource.data) || (request.resource.data.type == "rating" && request.resource.data.rating <= 10 && request.resource.data.rating >= 0)) &&
+        (!("parent" in request.resource.data) || (request.resource.data.type == "reply" && exists(/databases/$(database)/documents/posts/$(request.resource.data.parent)))) &&
+        (!("updateType" in request.resource.data) || (request.resource.data.type == "update" && [request.resource.data.updateType].hasOnly(["start", "finish", "abandon"])))
+      ;
+      allow update: if false
+      allow delete: if false
+    }
+  }
+}

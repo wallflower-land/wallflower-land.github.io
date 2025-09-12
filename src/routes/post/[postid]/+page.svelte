@@ -38,6 +38,7 @@
 	}
 
 	let replyBody = $state("");
+	let canReply = $derived(/\S/.test(replyBody));
 
 	let images: string[] = $state([]);
 
@@ -93,12 +94,13 @@
 	<section bind:this={container} style:min-height={height}>
 		{#await thePost then post}
 			{#await parentChain then parentChain}
-				<div bind:this={parentContainer}>
+				<div class="parents" bind:this={parentContainer}>
 					{#each parentChain as parent, index}
 						<AnyPost bind:element={parents[index]} post={parent} />
 					{/each}
 				</div>
 			{/await}
+
 			<AnyPost bind:element={mainPost} post={post!} postpage />
 
 			{#if user()}
@@ -121,8 +123,8 @@
 								</label>
 								<ImagePicker allowEdit={false} id="attach-image-reply" onupload={async imageId => images.push(imageId)} />
 
-								<button onmousedown={sendReply}>
-									<SendIcon stroke="var(--overlay-1)" style="width: 1.25rem;" />
+								<button disabled={!canReply} onmousedown={sendReply}>
+									<SendIcon stroke={canReply ? "var(--overlay-1)" : "var(--surface-0)"} style="width: 1.25rem;" />
 								</button>
 							</div>
 							<!-- svelte-ignore a11y_no_static_element_interactions -->
