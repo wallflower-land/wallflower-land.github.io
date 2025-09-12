@@ -124,7 +124,7 @@
 			ratingSortMenu?.close();
 
 			if (ratingOptions) {
-				const top = ratingOptions.getBoundingClientRect().top;
+				const top = ratingOptions.getBoundingClientRect().top - 150;
 				const percent = top / 100;
 
 				const { r, g, b } = lerp(cssVar("crust"), cssVar("base"), percent);
@@ -348,7 +348,7 @@
 		padding: 0.5rem 1rem 0.5rem 1rem;
 		border-bottom: 1px solid var(--surface-0);
 		position: sticky;
-		top: 2.3rem;
+		top: 5rem;
 		z-index: 9999;
 
 		label {

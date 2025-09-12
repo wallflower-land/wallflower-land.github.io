@@ -1,10 +1,10 @@
 <script lang="ts">
-	let { 
-		gotoNext, 
-		gotoPrevious, 
-		left = $bindable(),
-		swipeThreshold = 30,
+	let {
+		gotoNext,
+		gotoPrevious,
+		left = $bindable("0px"),
 		content = undefined,
+		swipeThreshold = 40,
 	}: {
 		gotoNext(): void,
 		gotoPrevious(): void,
@@ -13,68 +13,93 @@
 		swipeThreshold?: number,
 	} = $props();
 
-	let touchStartX = 0;
-	let touchEndX = 0;
-	let touchStartY = 0;
-	let touchEndY = 0;
+	let startX = 0;
+	let startY = 0;
+	let lastX = 0;
+	let baseLeft = 0;
+	let axisLocked: "none" | "x" | "y" = "none";
+	let dragging = $state(false);
 
-	function touchstart(event: TouchEvent) {
-		touchStartX = event.touches[0].clientX;
-		touchStartY = event.touches[0].clientY;
+	const AXIS_LOCK_THRESHOLD = 8;
+
+	function pxToNumber(v: string) {
+		return parseInt(v || "0", 10);
 	}
 
-	function touchmove(event: TouchEvent) {
-		if (touchEndX) {
-			const delta = touchEndX - event.touches[0].clientX;
-			left = `${Math.min(0, parseInt(left) - delta)}px`;
+	function touchstart(e: TouchEvent) {
+		if (e.touches.length !== 1) return;
+		startX = e.touches[0].clientX;
+		startY = e.touches[0].clientY;
+		lastX = startX;
+		baseLeft = pxToNumber(left);
+		axisLocked = "none";
+		dragging = true;
+	}
+
+	function touchmove(e: TouchEvent) {
+		if (!dragging) return;
+		const curX = e.touches[0].clientX;
+		const curY = e.touches[0].clientY;
+		const dx = curX - startX;
+		const dy = curY - startY;
+
+		// lock axis
+		if (axisLocked === "none") {
+			if (Math.abs(dx) > AXIS_LOCK_THRESHOLD && Math.abs(dx) > Math.abs(dy)) {
+				axisLocked = "x";
+			} else if (Math.abs(dy) > AXIS_LOCK_THRESHOLD) {
+				axisLocked = "y";
+			}
 		}
-		touchEndX = event.touches[0].clientX;
-		touchEndY = event.touches[0].clientY;
+
+		if (axisLocked === "x") {
+			e.preventDefault(); // block vertical scrolling
+			left = `${baseLeft + dx}px`;
+			lastX = curX;
+		}
 	}
 
 	function touchend() {
-		const swipeDistance = touchEndX - touchStartX;
-		const swipeDistanceY = touchEndY - touchStartY;
+		if (!dragging) return;
+		dragging = false;
 
-		if (Math.abs(swipeDistanceY) < swipeThreshold) {
-
-			// Swipe forward
-			if (swipeDistance < -swipeThreshold) {
-				gotoNext();
-			} 
-
-			// Swipe back
-			else if (swipeDistance > swipeThreshold) {
-				gotoPrevious();
-			}
-		} else {
-			const leftAmount = parseInt(left);
-			const newLeft = leftAmount % innerWidth < innerWidth / 2 ? leftAmount - leftAmount % innerWidth : leftAmount + (innerWidth - leftAmount % innerWidth);
-			left = `${newLeft}px`;
-			touchEndX = 0;
+		if (axisLocked !== "x") {
+			axisLocked = "none";
+			return;
 		}
+
+		const dx = lastX - startX;
+
+		if (dx > swipeThreshold) {
+			gotoPrevious();
+		} else if (dx < -swipeThreshold) {
+			gotoNext();
+		} else {
+			// snap back to nearest "page"
+			const width = content?.clientWidth || window.innerWidth;
+			const pageIndex = Math.round(pxToNumber(left) / -width);
+			left = `${-pageIndex * width}px`;
+		}
+
+		axisLocked = "none";
 	}
 
 	$effect(() => {
-		content?.addEventListener("touchstart", touchstart);
-		content?.addEventListener("touchmove", touchmove);
-		content?.addEventListener("touchend", touchend);
+		const target = content ?? document;
+
+		target.addEventListener("touchstart", touchstart as EventListener, { passive: true });
+		target.addEventListener("touchmove", touchmove as EventListener, { passive: false });
+		target.addEventListener("touchend", touchend, { passive: true });
+		target.addEventListener("touchcancel", touchend, { passive: true });
+
+		return () => {
+			target.removeEventListener("touchstart", touchstart as EventListener);
+			target.removeEventListener("touchmove", touchmove as EventListener);
+			target.removeEventListener("touchend", touchend);
+			target.removeEventListener("touchcancel", touchend);
+		};
 	});
-
-	function ontouchstart(event: TouchEvent) {
-		if (content) return;
-		touchstart(event);
-	}
-
-	function ontouchmove(event: TouchEvent) {
-		if (content) return;
-		touchmove(event);
-	}
-
-	function ontouchend() {
-		if (content) return;
-		touchend();
-	}
 </script>
 
-<svelte:document {ontouchstart} {ontouchmove} {ontouchend} />
+<svelte:document />
+
