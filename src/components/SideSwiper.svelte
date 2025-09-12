@@ -22,24 +22,24 @@
 
 	const AXIS_LOCK_THRESHOLD = 8;
 
-	function pxToNumber(v: string) {
-		return parseInt(v || "0", 10);
+	function pxToNumber(text: string) {
+		return parseInt(text || "0", 10);
 	}
 
-	function touchstart(e: TouchEvent) {
-		if (e.touches.length !== 1) return;
-		startX = e.touches[0].clientX;
-		startY = e.touches[0].clientY;
+	function touchstart(event: TouchEvent) {
+		if (event.touches.length !== 1) return;
+		startX = event.touches[0].clientX;
+		startY = event.touches[0].clientY;
 		lastX = startX;
 		baseLeft = pxToNumber(left);
 		axisLocked = "none";
 		dragging = true;
 	}
 
-	function touchmove(e: TouchEvent) {
+	function touchmove(event: TouchEvent) {
 		if (!dragging) return;
-		const curX = e.touches[0].clientX;
-		const curY = e.touches[0].clientY;
+		const curX = event.touches[0].clientX;
+		const curY = event.touches[0].clientY;
 		const dx = curX - startX;
 		const dy = curY - startY;
 
@@ -53,7 +53,7 @@
 		}
 
 		if (axisLocked === "x") {
-			e.preventDefault(); // block vertical scrolling
+			event.preventDefault(); // block vertical scrolling
 			left = `${baseLeft + dx}px`;
 			lastX = curX;
 		}
@@ -102,4 +102,3 @@
 </script>
 
 <svelte:document />
-

@@ -41,28 +41,33 @@
 	}
 
 	function makeReadable(description: string, interval = 3) {
-		description = description.replaceAll("--", "—");
-		description = description.replaceAll(/\.(\S)/g, (_match, letter) => `. ${letter}`);
+		try {
+			description = description.replaceAll("--", "—");
+			description = description.replaceAll(/\.(\S)/g, (_match, letter) => `. ${letter}`);
 
-		let sentences = description.split(/([.!?])\s*/);
+			let sentences = description.split(/([.!?])\s*/);
 
-		const sentenceArray = [];
-		for (let sentenceNumber = 0; sentenceNumber < sentences.length; sentenceNumber += 2) {
-			const punctuation = sentenceNumber < sentences.length - 1 ? sentences[sentenceNumber + 1] : "";
-			sentenceArray.push(sentences[sentenceNumber] + punctuation);
+			const sentenceArray = [];
+			for (let sentenceNumber = 0; sentenceNumber < sentences.length; sentenceNumber += 2) {
+				const punctuation = sentenceNumber < sentences.length - 1 ? sentences[sentenceNumber + 1] : "";
+				sentenceArray.push(sentences[sentenceNumber] + punctuation);
+			}
+
+			const mapped = sentenceArray.map((sentence, index) => {
+					if ((index + 1) % interval === 0 && index !== sentenceArray.length - 1) {
+						return sentence + "\n\n";
+					}
+					return sentence;
+				});
+
+			let formattedText = mapped.join("");
+			formattedText = formattedText.replaceAll(/\.(\S)/g, (_match, letter) => `. ${letter}`);
+
+			return formattedText;
+		} catch(error) {
+			console.log(description);
+			return description;
 		}
-
-		const mapped = sentenceArray.map((sentence, index) => {
-				if ((index + 1) % interval === 0 && index !== sentenceArray.length - 1) {
-					return sentence + "\n\n";
-				}
-				return sentence;
-			});
-
-		let formattedText = mapped.join("");
-		formattedText = formattedText.replaceAll(/\.(\S)/g, (_match, letter) => `. ${letter}`);
-
-		return formattedText;
 	}
 </script>
 

@@ -47,7 +47,7 @@ export const getBook = onRequest(async (request, response) => {
 			googleData = googleData.items?.[0].volumeInfo;
 
 			const book = {
-				title: openLibraryData.title ?? "",
+				title: workData?.title ?? openLibraryData.title ?? "",
 				isbn: editionsData.entries?.[0]?.[0]?.isbn_13?.[0] ?? isbn,
 				cover: workData.covers?.[0]
 					? `https://covers.openlibrary.org/b/id/${workData.covers[0]}-L.jpg`
@@ -55,7 +55,7 @@ export const getBook = onRequest(async (request, response) => {
 				backupCover: googleData?.imageLinks?.thumbnail ?? "",
 				pageCount: openLibraryData.number_of_pages ?? 0,
 				genres: workData.subjects ?? [],
-				description: googleData?.description ?? workData.description ?? "",
+				description: googleData?.description ?? workData?.description?.value ?? "",
 				publishers: openLibraryData.publishers ?? [],
 				publishDate: openLibraryData.publish_date ?? "",
 				characters: workData.subject_people ?? [],
