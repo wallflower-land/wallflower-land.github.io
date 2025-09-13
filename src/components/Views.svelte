@@ -25,8 +25,6 @@
 		marginTop?: string
 	} = $props();
 
-	let element: HTMLElement;
-
 	let availableViews = $derived(views.filter(viewFilter));
 	let viewbarLeft = $derived(`${availableViews.indexOf(view) * (100 / availableViews.length) + (50 / availableViews.length)}%`);
 
@@ -61,7 +59,6 @@
 
 <div 
 	class="views" 
-	bind:this={element} 
 	style:grid-template-columns="repeat({availableViews.length}, 1fr)"
 	style:margin-top={marginTop}
 >

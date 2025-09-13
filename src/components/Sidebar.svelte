@@ -19,6 +19,7 @@
 	import ProfileIcon from "../assets/images/icons/ProfileIcon.svelte";
 	import { logOut, user } from "../backend/auth.svelte";
 	import BarChartIcon from "../assets/images/icons/BarChartIcon.svelte";
+	import { onMount } from "svelte";
 
 	let innerHeight = $state(window.innerHeight);
 
@@ -68,12 +69,14 @@
 	const SWIPE_THRESHOLD = 30;
 	const EDGE_ZONE = 20;
 
-	function ontouchstart(event: TouchEvent) {
-		touchStartX = event.touches[0].clientX;
-		if (touchStartX < 10 || touchStartX > window.innerWidth - 10) {
-			event.preventDefault();
-		}
-	}
+	onMount(() => {
+		document.addEventListener("touchstart", event => {
+			touchStartX = event.touches[0].clientX;
+			if (touchStartX < 30 || touchStartX > window.innerWidth - 30) {
+				event.preventDefault();
+			}
+		}, { passive: false });
+	});
 
 	function ontouchmove(event: TouchEvent) {
 		touchEndX = event.touches[0].clientX;
@@ -87,7 +90,7 @@
 	}
 </script>
 
-<svelte:document {ontouchstart} {ontouchmove} {ontouchend} />
+<svelte:document {ontouchmove} {ontouchend} />
 <svelte:window bind:innerWidth bind:innerHeight />
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -141,12 +144,6 @@
 			Activity
 		</button>
 	{/if}
-	<!-- {#if user() && user()!.tags.includes("mod")} -->
-	<!-- 	<button class="listing" style:color="var(--subtext-1)" onclick={nav("/moderator-tools")}> -->
-	<!-- 		<WrenchIcon stroke="var(--subtext-1)" style="width: 1.5rem;" /> -->
-	<!-- 		Moderator Tools -->
-	<!-- 	</button> -->
-	<!-- {/if} -->
 	<button class="listing" style:color="var(--subtext-1)" onclick={nav("/settings")}>
 		<GearIcon stroke="var(--subtext-1)" style="width: 1.5rem;" />
 		Settings
