@@ -37,6 +37,7 @@ export type User = {
 	saved: PostId[];
 
 	readingList: ISBN[];
+	currentlyReading: ISBN[];
 
 	following: UserId[];
 

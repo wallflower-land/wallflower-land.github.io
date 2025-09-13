@@ -142,6 +142,12 @@
 	</div>
 	<div>
 		{#await discussions then discussions}
+			{#if discussions.length === 0}
+				<div class="no-discussions">
+					<h2>No discussions</h2>
+					<p>No one has rated or posted about this book. When they do, it'll appear here.</p>
+				</div>
+			{/if}
 			{#each discussions as post}
 				<AnyPost {post} />
 			{/each}
@@ -154,6 +160,25 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+	}
+
+	.no-discussions {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.25rem;
+		padding: 2rem;
+		text-align: center;
+
+		h2 {
+			color: var(--subtext-1);
+			font-size: 1.2rem;
+		}
+
+		p {
+			color: var(--overlay-1);
+			font-size: 0.85rem;
+		}
 	}
 
 	.rating {

@@ -7,7 +7,7 @@
 	let confirmLeave: (value: boolean) => void = (_value => {});
 
 	function cancel() {
-		visible = true;
+		visible = false;
 		confirmLeave(false);
 	}
 
@@ -30,7 +30,7 @@
 		<p>If you choose to leave this page now, your changes will be lost.</p>
 		<div class="buttons">
 			<button class="cancel" onclick={cancel}>Cancel</button>
-			<button class="submit" onclick={confirm}>Change</button>
+			<button class="submit" onclick={confirm}>Leave</button>
 		</div>
 		<button class="close" onclick={() => visible = false}>
 			<CloseIcon stroke="var(--red)" style="width: 1rem; height: 1rem;" />
@@ -83,6 +83,12 @@
 			color: var(--subtext-1);
 			font-size: 1.2rem;
 			text-align: center;
+		}
+		
+		.close {
+			position: absolute;
+			top: 1rem;
+			right: 1rem;
 		}
 	}
 </style>

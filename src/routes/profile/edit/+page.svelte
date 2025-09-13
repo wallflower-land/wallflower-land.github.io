@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { beforeNavigate, goto } from "$app/navigation";
+	import { getBook, type Book } from "../../../api/bookapi";
 	import { getFile } from "../../../api/storageapi";
 	import { awaitUser, usernameErrors } from "../../../api/userapi";
 	import AuthorIcon from "../../../assets/images/icons/AuthorIcon.svelte";
@@ -9,6 +10,7 @@
 	import WrenchIcon from "../../../assets/images/icons/WrenchIcon.svelte";
 	import { updateUser, user, usernameIsTaken } from "../../../backend/auth.svelte";
 	import BackButton from "../../../components/BackButton.svelte";
+	import BookSearch from "../../../components/BookSearch.svelte";
 	import CharacterLimitMeter from "../../../components/CharacterLimitMeter.svelte";
 	import ImagePicker from "../../../components/ImagePicker.svelte";
 	import LeavePagePopup from "../../../components/LeavePagePopup.svelte";
@@ -33,23 +35,36 @@
 
 	let popup: LeavePagePopup;
 
+	let chosenCurrentBooks: Book[] = $state([]);
+
+	(async() => {
+		chosenCurrentBooks = user()!.currentBook ? [await getBook(user()!.currentBook!)] : [];
+	})();
+
+	let changedCurrentBook = $derived.by(() => {
+		if (!user()!.currentBook) return chosenCurrentBooks.length !== 0;
+		if (chosenCurrentBooks.length === 0) return true;
+		return chosenCurrentBooks[0].isbn === user()!.currentBook;
+	});
+
+	async function resetCurrentBook() {
+		if (!user()!.currentBook) chosenCurrentBooks = [];
+		else chosenCurrentBooks = [await getBook(user()!.currentBook!)];
+	}
+
+	let saved = $state(false);
+
 	let unsavedChanges = $derived.by(() => {
-		if (!user()) return false;
+		if (!user() || saved) return false;
 
 		if (displayName !== user()!.displayName) return true;
 		if (banner !== user()!.banner) return true;
 		if (bio !== user()!.bio) return true;
 		if (pronouns !== user()!.pronouns) return true;
 		if (picture !== user()!.picture) return true;
-		return false;
-	});
+		if (changedCurrentBook) return true;
 
-	beforeNavigate(async ({ cancel }) => {
-		if (unsavedChanges) {
-			if (!confirm("Leave without saving changes?")) {
-				cancel();
-			}
-		}
+		return false;
 	});
 
 	let displayNameErrorList = $derived([
@@ -84,7 +99,16 @@
 			return;
 		}
 
-		await updateUser({ displayName, bio, username, pronouns, picture, banner });
+		await updateUser({ 
+			displayName,
+			bio,
+			username,
+			pronouns,
+			picture,
+			banner,
+			currentBook: chosenCurrentBooks.length === 0 ? null : chosenCurrentBooks[0].isbn
+		});
+		saved = true;
 		await goto("/profile");
 		location.reload();
 	}
@@ -96,9 +120,12 @@
 		}
 	}
 
-	function cancel() {
-
+	async function cancel() {
+		if (!unsavedChanges || await popup.leaveWithoutSaving()) {
+			goto("/profile");
+		}
 	}
+
 </script>
 
 <Page type="profile" {onkeydown}>
@@ -131,7 +158,7 @@
 				<ImagePicker id="set-profile-picture" bind:imageId={picture} aspectRatio={1 / 1} circular />
 
 				<div class="saves">
-					<a class="cancel save" href="/profile">Cancel</a>
+					<button class="cancel save" onclick={cancel}>Cancel</button>
 					<button disabled={!canSave} class="save" onclick={update}>Save</button>
 				</div>
 			</div>
@@ -223,6 +250,23 @@
 
 			<hr />
 
+			<div class="book-search">
+				<BookSearch
+					title="Currently Reading"
+					types={["search", "list"]} 
+					bind:books={chosenCurrentBooks} 
+				/>
+				<button
+					class="reset-current-book" 
+					disabled={!changedCurrentBook}
+					onclick={resetCurrentBook}
+				>
+					Reset
+				</button>
+			</div>
+
+			<hr />
+
 			<span class="badge-title">Badges</span>
 			{#if currentUser.tags.includes("dev")}
 				<span class="badge-line">
@@ -288,7 +332,7 @@
 	{/await}
 
 	<div class="saves bottom">
-		<a class="cancel save" href="/profile">Cancel</a>
+		<button class="cancel save" onclick={cancel}>Cancel</button>
 		<button disabled={!canSave} class="save" onclick={update}>Save</button>
 	</div>
 </Page>
@@ -296,6 +340,34 @@
 <LeavePagePopup bind:this={popup} />
 
 <style>
+	.book-search {
+		padding-left: 2rem;
+		padding-right: 2rem;
+	}
+
+	.reset-current-book {
+		margin-top: 1rem;
+		padding: 0.25rem 2rem 0.25rem 2rem;
+		border-radius: 100vmax;
+		font-size: 0.85rem;
+		transition: scale 0.1s;
+
+		&[disabled] {
+			color: var(--surface-2);
+			background: var(--crust);
+		}
+
+		&:not([disabled]) {
+			background-image: linear-gradient(to bottom right, var(--pink), var(--red));
+			color: var(--crust);
+			box-shadow: 0px 0px 0.5rem var(--box-shadow);
+			
+			&:hover {
+				scale: 105%;
+			}
+		}
+	}
+
 	.username {
 		width: calc(100% - 4rem);
 		display: flex;

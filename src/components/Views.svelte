@@ -34,7 +34,7 @@
 		view = newView;
 		const params = new URLSearchParams(window.location.search);
 		params.set("view", view);
-		goto(`${window.location.origin}${window.location.pathname}?${params}`);
+		goto(`${window.location.origin}${window.location.pathname}?${params}`, { replaceState: true });
 		left = `${availableViews.indexOf(view) * -width}px`;
 		onViewChange(view);
 	}

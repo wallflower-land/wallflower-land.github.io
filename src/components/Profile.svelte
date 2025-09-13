@@ -254,7 +254,7 @@
 			<PageWithViews
 				bind:view
 				views={["all", "books", "activity", "list", "other"]}
-				top="3rem"
+				top="2.7rem"
 				bind:contentElement
 			>
 				{#await posts}
@@ -348,7 +348,7 @@
 		padding: 0.5rem 1rem 0.5rem 1rem;
 		border-bottom: 1px solid var(--surface-0);
 		position: sticky;
-		top: 5.4rem;
+		top: 5.0rem;
 		z-index: 9999;
 
 		label {
@@ -497,14 +497,15 @@
 	.profile-line-1 {
 		display: flex;
 		padding: 1rem;
+		padding-bottom: 0.5rem;
 		padding-left: 0rem;
 		margin-bottom: -1rem;
 		position: sticky;
 		top: 0px;
 		z-index: 999;
 		background-color: var(--crust);
-		margin-top: -1.5rem;
-		padding-top: 1.5rem;
+		margin-top: -1.1rem;
+		padding-top: 1.1rem;
 
 		h1 {
 			font-size: 1.25rem;

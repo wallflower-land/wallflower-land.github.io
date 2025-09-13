@@ -20,6 +20,9 @@
 	import { logOut, user } from "../backend/auth.svelte";
 	import BarChartIcon from "../assets/images/icons/BarChartIcon.svelte";
 	import { onMount } from "svelte";
+	import SearchIcon from "../assets/images/icons/SearchIcon.svelte";
+	import BellIcon from "../assets/images/icons/BellIcon.svelte";
+	import PlusIcon from "../assets/images/icons/PlusIcon.svelte";
 
 	let innerHeight = $state(window.innerHeight);
 
@@ -138,6 +141,20 @@
 		<button class="listing" style:color="var(--subtext-1)" onclick={nav("/profile")}>
 			<ProfileIcon stroke="var(--subtext-1)" style="width: 1.5rem;" />
 			Profile
+		</button>
+	{/if}
+	<button class="listing" style:color="var(--subtext-1)" onclick={nav("/search")}>
+		<SearchIcon stroke="var(--subtext-1)" style="width: 1.5rem;" />
+		Search
+	</button>
+	{#if user()}
+		<button class="listing" style:color="var(--subtext-1)" onclick={nav("/inbox")}>
+			<BellIcon stroke="var(--subtext-1)" style="width: 1.5rem;" />
+			Inbox
+		</button>
+		<button class="listing" style:color="var(--subtext-1)" onclick={nav("/new")}>
+			<PlusIcon stroke="var(--subtext-1)" style="width: 1.5rem;" />
+			New Post
 		</button>
 		<button class="listing" style:color="var(--subtext-1)" onclick={nav("/activity")}>
 			<BarChartIcon stroke="var(--subtext-1)" style="width: 1.5rem;" />
