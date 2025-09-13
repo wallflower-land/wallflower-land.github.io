@@ -1,1 +1,0 @@
-import"../chunks/Bzak7iHL.js";import{p as t,g as r}from"../chunks/BXr1D8B6.js";import{F as a}from"../chunks/Dfev6B0j.js";const n=({params:e})=>e,l=Object.freeze(Object.defineProperty({__proto__:null,load:n},Symbol.toStringTag,{value:"Module"}));function m(e,o){t(o,!0),a(e,{get username(){return o.data.username}}),r()}export{m as component,l as universal};
