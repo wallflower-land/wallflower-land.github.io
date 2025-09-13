@@ -37,6 +37,9 @@
 		padding-top: 1rem;
 		padding-bottom: 1rem;
 		left: 0px;
+		padding-left: 4rem;
+		padding-right: 4rem;
+		text-align: center;
 		z-index: 9;
 
 		h1 {

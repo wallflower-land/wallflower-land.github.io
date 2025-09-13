@@ -560,5 +560,7 @@
 		margin-top: -0.5rem;
 		width: fit-content;
 		transition: margin-left 0.2s;
+		z-index: 1010;
+		background-color: var(--crust);
 	}
 </style>

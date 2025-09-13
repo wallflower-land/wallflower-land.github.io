@@ -11,6 +11,7 @@
 		viewFilter = (_name) => true,
 		formatViewName = (name) => name,
 		marginTop = "0px",
+		onViewChange = (_name) => {},
 		paddingTop = "0px"
 	}: { 
 		views: View[], 
@@ -19,7 +20,8 @@
 		content?: HTMLElement,
 		paddingTop?: string,
 		formatViewName?: (name: View) => string | Promise<string>
-		viewFilter?: (name: string) => (boolean | Promise<boolean>)
+		viewFilter?: (name: View) => (boolean | Promise<boolean>)
+		onViewChange?: (name: View) => void,
 		marginTop?: string
 	} = $props();
 
@@ -36,6 +38,7 @@
 		params.set("view", view);
 		goto(`${window.location.origin}${window.location.pathname}?${params}`);
 		left = `${availableViews.indexOf(view) * -width}px`;
+		onViewChange(view);
 	}
 
 	function gotoNext() {
@@ -49,7 +52,8 @@
 	}
 
 	onMount(() => {
-		width = element.getBoundingClientRect().width;
+		width = window.innerWidth;
+		left = `${availableViews.indexOf(view) * -width}px`;
 	});
 </script>
 

@@ -27,7 +27,8 @@
 		fullpage = false,
 		pagetype = undefined,
 		viewFilter = (_name) => true,
-		formatViewName = (name) => name
+		formatViewName = (name) => name,
+		onViewChange = (_name) => {},
 	}: {
 		views: View[],
 		view: View,
@@ -41,6 +42,7 @@
 		pagetype?: "home" | "search" | "new" | "inbox" | "profile",
 		subheader?: string | Promise<string>,
 		formatViewName?: (name: View) => (string | Promise<string>)
+		onViewChange?: (name: View) => void,
 		marginTop?: string
 	} = $props();
 
@@ -86,6 +88,7 @@
 		{/if}
 		{@render afterHeader?.()}
 		<Views 
+			{onViewChange}
 			content={contentElement}
 			{viewFilter} 
 			{formatViewName} 

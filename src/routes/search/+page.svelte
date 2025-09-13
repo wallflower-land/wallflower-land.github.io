@@ -51,6 +51,10 @@
 	let books: Promise<Promise<Book>[]> = $state(Promise.resolve([]));
 	let authors: Promise<Promise<Author>[]> = $state(Promise.resolve([]));
 	let users: Promise<User[]> = $state(Promise.resolve([]));
+
+	function onViewChange(_name: View) {
+		search();
+	}
 </script>
 
 {#snippet input()}
@@ -78,6 +82,7 @@
 	afterHeader={input}
 	header="Search"
 	pagetype="search"
+	{onViewChange}
 >
 	<!-- Posts -->
 	<div>
@@ -287,6 +292,7 @@
 		padding-top: 1rem;
 		padding-bottom: 1rem;
 		padding-right: 2rem;
+		gap: 1rem;
 
 		.loading-cover {
 			width: 3.25rem;

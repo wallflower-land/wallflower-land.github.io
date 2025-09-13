@@ -10,6 +10,7 @@ import {
 	getAggregateFromServer,
 	average,
 	count,
+	updateDoc,
 } from "firebase/firestore";
 import initializeFirebase from "../backend/backend";
 import { internalPostToPost, type InternalPost, type Post } from "./postapi";
@@ -46,6 +47,10 @@ export async function getBookDiscussions(isbn: ISBN): Promise<InternalPost[]> {
 	).docs.map(doc => doc.data()) as InternalPost[];
 
 	return posts;
+}
+
+export async function updateBook(book: Book, bookInfo: Partial<Book>) {
+	await updateDoc(doc(db, "books", book.id), bookInfo);
 }
 
 /**

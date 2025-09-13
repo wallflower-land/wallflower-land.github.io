@@ -33,7 +33,7 @@
 				</h1>
 			</div>
 			<a href={`/book/${book?.isbn}`} aria-label={`Go to details for book "${book?.title}"`}>
-				<BookCover {book} style="width: 6rem; margin-left: 1rem;" />
+				<BookCover clickable={false} {book} style="width: 6rem; margin-left: 1rem;" />
 			</a>
 		</div>
 		<PostBody body={review} />

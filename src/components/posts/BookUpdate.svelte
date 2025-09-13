@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { getAuthor } from "../../api/authorapi";
 	import { getBook } from "../../api/bookapi";
+	import BookCover from "../BookCover.svelte";
 	import PostBody from "./PostBody.svelte";
 
 	let { isbn, body, user, updateType } = $props();
@@ -10,6 +11,7 @@
 
 <section>
 	{#await book then book}
+
 		<!-- Update information -->
 		<p class="rating-line">
 			{user.displayName}
@@ -37,8 +39,8 @@
 			</div>
 
 			<!-- Book cover image -->
-			<a aria-label={`Go to details for book "${book?.title}"`} href={`/book/${book?.isbn}`}>
-				<img alt={`Cover for book "${book?.title}"`} src={book?.cover} />
+			<a href={`/book/${book?.isbn}`} aria-label={`Go to details for book "${book?.title}"`}>
+				<BookCover clickable={false} {book} style="width: 6rem; margin-left: 1rem;" />
 			</a>
 		</div>
 	{/await}
@@ -90,10 +92,5 @@
 		i {
 			color: var(--text);
 		}
-	}
-
-	img {
-		width: 6rem;
-		height: 9rem;
 	}
 </style>

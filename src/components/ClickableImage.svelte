@@ -1,20 +1,25 @@
 <script lang="ts">
 	import type { Snippet } from "svelte";
 
-	let { src, children, element = $bindable(), ...rest }: { src: string, children?: Snippet, [key: string]: unknown } = $props();
+	let { src, children, clickable, element = $bindable(), ...rest }: { src: string, children?: Snippet, [key: string]: unknown } = $props();
 
 	let expanded = $state(false);
+
+	function click() {
+		if (!clickable) return;
+		expanded = true;
+	}
 </script>
 
 {#if children}
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<div {...rest} class="wrapper" onclick={() => expanded = true} style:cursor="pointer">
+	<div {...rest} class="wrapper" onclick={click} style:cursor="pointer">
 		{@render children()}
 	</div>
 {:else}
 	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-	<img bind:this={element} {src} {...rest} onclick={() => expanded = true} style:cursor="pointer" />
+	<img bind:this={element} {src} {...rest} onclick={click} style:cursor="pointer" />
 {/if}
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->

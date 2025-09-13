@@ -1,7 +1,16 @@
 <script lang="ts">
+	import type { Book } from "../api/bookapi";
 	import ClickableImage from "./ClickableImage.svelte";
 
-	let { book, ...rest } = $props();
+	let { 
+		book, 
+		clickable = true, 
+		...rest 
+	}: {
+		book: Book,
+		clickable?: boolean,
+		[key: string]: unknown
+	} = $props();
 
 	let image: HTMLImageElement | null = $state(null);
 
@@ -21,7 +30,7 @@
 </script>
 
 {#if visible}
-	<ClickableImage class="cover" bind:element={image} {...rest} src={book.cover} {onload} {onerror} />
+	<ClickableImage {clickable} class="cover" bind:element={image} {...rest} src={book.cover} {onload} {onerror} />
 {:else}
 	<div class="no cover" {...rest}>{book.title}</div>
 {/if}

@@ -2,12 +2,11 @@
 	import { goto } from "$app/navigation";
 	import { getAuthor } from "../../../api/authorapi";
 	import { getBookDiscussions, getBookRating } from "../../../api/bookapi";
+	import WrenchIcon from "../../../assets/images/icons/WrenchIcon.svelte";
 	import { updateUser, user } from "../../../backend/auth.svelte";
 	import BookCover from "../../../components/BookCover.svelte";
-	import Page from "../../../components/Page.svelte";
 	import PageWithViews from "../../../components/PageWithViews.svelte";
 	import AnyPost from "../../../components/posts/AnyPost.svelte";
-	import Sidebar from "../../../components/Sidebar.svelte";
 	import StarRating from "../../../components/StarRating.svelte";
 
 	let { data } = $props();
@@ -25,7 +24,6 @@
 	}
 
 	let discussions = $derived(getBookDiscussions(book.isbn));
-	let sidebar: Sidebar = $state(null!);
 	let isInReadingList = $derived(user()?.readingList.includes(book.isbn) ?? false)
 
 	async function addToReadingList() {
@@ -65,79 +63,91 @@
 
 			return formattedText;
 		} catch(error) {
-			console.log(description);
 			return description;
 		}
 	}
 </script>
 
-<Page type="search" bind:sidebar>
-	<PageWithViews bind:view views={["info", "discussion"]} header={book.title} subheader={author.then(author => author.name)}>
-		<div class="info">
-			<div class="book-info">
-				<div class="title">
-					<h1>{book.title}</h1>
-					{#await author}
-						<h2>Loading...</h2>
-					{:then author}
-						<h2>{author.name}</h2>
-					{/await}
-				</div>
-				<BookCover {book} style="width: 10rem" />
-				{#await getBookRating(book.isbn) then { rating, count } }
-					<button class="rating" onclick={setView("discussion")}>
-						<StarRating {rating} /> {rating.toFixed(1)}
-						<span class="count">({count})</span>
-					</button>
+<PageWithViews
+	pagetype="search"
+	fullpage
+	bind:view
+	views={["info", "discussion"]}
+	header={book.title} 
+	subheader={author.then(author => author.name)}
+>
+	<div class="info">
+		<div class="book-info">
+			<div class="title">
+				<h1>{book.title}</h1>
+				{#await author}
+					<h2>Loading...</h2>
+				{:then author}
+					<h2>{author.name}</h2>
 				{/await}
-				<p class="description">
-					{makeReadable(book.description)}
-				</p>
 			</div>
-
-			{#if user()}
-				{#if isInReadingList}
-					<button id="add-to-reading-list" class="remove-from-reading-list" onclick={removeFromReadingList}>
-						Remove from Reading List
-					</button>
-				{:else}
-					<button id="add-to-reading-list"onclick={addToReadingList}>
-						Add to Reading List
-					</button>
-				{/if}
-			{/if}
-
-			<div class="product-info">
-				<h2>Product Information</h2>
-				<span><span>Title: </span>{book.title}</span>
-				<span>
-					<span>Author: </span>
-					<span>
-						{#await author then author}
-							<a href="/author/{author.key}">{author.name}</a>
-						{/await}
-					</span>
-				</span>
-				<span><span>ISBN-13: </span>{book.isbn}</span>
-				<span><span>Page Count: </span>{book.pageCount}</span>
-				<span><span>Publish Date: </span>{book.publishDate}</span>
-				<span><span>Publisher{book.publishers.length === 1 ? "" : "s"}: </span>{book.publishers.join(", ")}</span>
-				{#if book.characters.length > 0}
-					<span><span>Characters: </span>{book.characters.join(", ")}</span>
-				{/if}
-				<span><span>Tags: </span>{book.genres.join(", ")}</span>
-			</div>
-
-		</div>
-		<div>
-			{#await discussions then discussions}
-				{#each discussions as post}
-					<AnyPost {post} />
-				{/each}
+			<BookCover {book} style="width: 10rem" />
+			{#await getBookRating(book.isbn) then { rating, count } }
+				<button class="rating" onclick={setView("discussion")}>
+					<StarRating {rating} /> {rating.toFixed(1)}
+					<span class="count">({count})</span>
+				</button>
 			{/await}
+			<p class="description">
+				{makeReadable(book.description)}
+			</p>
 		</div>
-	</PageWithViews>
-</Page>
+
+		{#if user()}
+			{#if user()!.tags.includes("mod")}
+				<a class="add-to-reading-list edit-book-details" href="/book/{book.isbn}/edit">
+					<WrenchIcon stroke="var(--crust)" style="width: 1rem; height: 1rem;" />
+					Edit Book Details
+				</a>
+			{/if}
+			{#if isInReadingList}
+				<button class="add-to-reading-list remove-from-reading-list" onclick={removeFromReadingList}>
+					Remove from Reading List
+				</button>
+			{:else}
+				<button class="add-to-reading-list" onclick={addToReadingList}>
+					Add to Reading List
+				</button>
+			{/if}
+		{/if}
+
+		<div class="product-info">
+			<h2>Product Information</h2>
+			<span><span>Title: </span>{book.title}</span>
+			<span>
+				<span>Author: </span>
+				<span>
+					{#await author then author}
+						<a href="/author/{author.key}">{author.name}</a>
+					{/await}
+				</span>
+			</span>
+			<span><span>ISBN-13: </span>{book.isbn}</span>
+			{#if book.pageCount}
+				<span><span>Page Count: </span>{book.pageCount}</span>
+			{/if}
+			<span><span>Publish Date: </span>{book.publishDate}</span>
+			<span><span>Publisher{book.publishers.length === 1 ? "" : "s"}: </span>{book.publishers.join(", ")}</span>
+			{#if book.characters.length > 0}
+				<span><span>Characters: </span>{book.characters.join(", ")}</span>
+			{/if}
+			<span><span>Tags: </span>{book.genres.join(", ")}</span>
+		</div>
+
+	</div>
+	<div>
+		{#await discussions then discussions}
+			{#each discussions as post}
+				<AnyPost {post} />
+			{/each}
+		{/await}
+	</div>
+</PageWithViews>
 
 <style>
 	.info {
@@ -190,14 +200,20 @@
 		}
 	}
 
-	#add-to-reading-list {
+	.add-to-reading-list {
 		padding: 0.5rem 1rem 0.5rem 1rem;
 		border-radius: 100vmax;
 		box-shadow: 0px 0px 0.5rem var(--box-shadow);
 		transition: scale 0.1s;
 		margin-top: 1rem;
+		font-size: 0.85rem;
+		width: 15rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
 
-		&:not(.remove-from-reading-list) {
+		&:not(.remove-from-reading-list, .edit-book-details) {
 			background: linear-gradient(to bottom right, var(--lavender), var(--blue));
 		}
 
@@ -208,6 +224,10 @@
 
 	.remove-from-reading-list {
 		background: linear-gradient(to bottom right, var(--peach), var(--red));
+	}
+
+	.edit-book-details {
+		background: linear-gradient(to bottom right, var(--pink), var(--lavender));
 	}
 
 	.book-info {
