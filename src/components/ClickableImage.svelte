@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from "svelte";
 
-	let { src, children, clickable, element = $bindable(), ...rest }: { src: string, children?: Snippet, [key: string]: unknown } = $props();
+	let { src, children, clickable = true, element = $bindable(), ...rest }: { src: string, children?: Snippet, [key: string]: unknown } = $props();
 
 	let expanded = $state(false);
 

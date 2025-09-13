@@ -83,7 +83,7 @@
 				{#await author}
 					<h2>Loading...</h2>
 				{:then author}
-					<h2>{author.name}</h2>
+					<a href="/author/{author.key}">{author.name}</a>
 				{/await}
 			</div>
 			<BookCover {book} style="width: 10rem" />
@@ -254,6 +254,14 @@
 			h2 {
 				color: var(--overlay-1);
 				font-size: 1rem;
+			}
+
+			a {
+				color: var(--blue);
+
+				&:hover {
+					text-decoration: underline;
+				}
 			}
 		}
 	}

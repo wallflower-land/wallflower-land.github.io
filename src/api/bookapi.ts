@@ -91,8 +91,8 @@ export async function getBookRating(isbn: ISBN): Promise<{ rating: number; count
  *
  * @returns The book data
  */
-export async function getBook(isbn: ISBN): Promise<Book> {
-	const response = await fetch(`https://getbook-psqyhrtnra-uc.a.run.app?isbn=${isbn}`);
+export async function getBook(isbn: ISBN, fetch_: typeof fetch = fetch): Promise<Book> {
+	const response = await fetch_(`https://getbook-psqyhrtnra-uc.a.run.app?isbn=${isbn}`);
 	const data = await response.json();
 	return data as Book;
 }

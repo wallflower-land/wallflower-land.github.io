@@ -46,6 +46,7 @@
 
 		:global(.picture) {
 			border-radius: 0.5rem;
+			max-width: 80%;
 		}
 	}
 

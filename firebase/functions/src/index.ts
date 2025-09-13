@@ -9,6 +9,88 @@ initializeApp();
 const db = getFirestore();
 const corsHandler = cors({ origin: true });
 
+type Author = {
+	name: string;
+	birthday: string;
+	key: string;
+	books: string[];
+	picture: string;
+	bio: string;
+	id: string;
+};
+
+async function getAuthorInfo(key: string): Promise<Author> {
+	const snapshot = await db.collection("authors").where("key", "==", key).get();
+
+	const docs: any[] = [];
+	snapshot.forEach(doc => docs.push(doc.data()));
+
+	// Already in database - return the data
+	if (docs.length > 0) {
+		return docs[0] as Author;
+	}
+
+	const authorResponse = await fetch(`https://openlibrary.org/authors/${key}.json`);
+	const authorData = await authorResponse.json();
+
+	const worksResponse = await fetch(
+		`https://openlibrary.org/authors/${key}/works.json?limit=100`,
+	);
+	const worksData = await worksResponse.json();
+
+	const books = (
+		await Promise.all(
+			worksData?.entries?.map(async (work: any) => {
+				const workResponse = await fetch(
+					`https://openlibrary.org${work.key}/editions.json`,
+				);
+				const workData = await workResponse.json();
+
+				const language = workData.entries?.[0]?.languages?.[0].key ?? null;
+				if (language !== "/languages/eng") {
+					return null;
+				}
+
+				const isbn = workData.entries?.[0]?.isbn_13?.[0] ?? null;
+				return isbn;
+			}) ?? [],
+		)
+	).filter(isbn => isbn);
+
+	const author: Author = {
+		key,
+		name: authorData?.name ?? "",
+		birthday: authorData?.birth_date ?? "",
+		bio: authorData.bio?.value ?? "",
+		picture:
+			authorData?.photos && authorData?.photos?.length
+				? `https://covers.openlibrary.org/a/id/${authorData.photos[0]}-L.jpg`
+				: "",
+		books: books ?? [],
+		id: "",
+	};
+
+	const authorDoc = db.collection("authors").doc();
+	author.id = authorDoc.id;
+	await authorDoc.set(author);
+	return author;
+}
+
+export const getAuthor = onRequest(async (request, response) => {
+	corsHandler(request, response, async () => {
+		try {
+			const key = request.query.key as string;
+			const author = await getAuthorInfo(key);
+			response.json(author);
+			return;
+		} catch (error) {
+			response.statusCode = 500;
+			response.json({ error: `${error}` });
+			return;
+		}
+	});
+});
+
 export const getBook = onRequest(async (request, response) => {
 	corsHandler(request, response, async () => {
 		try {
@@ -21,7 +103,16 @@ export const getBook = onRequest(async (request, response) => {
 
 			// Already in database - return the data
 			if (docs.length > 0) {
-				response.json(docs[0] as any);
+				const book = docs[0] as any;
+
+				// Update author
+				const author = await getAuthorInfo(book.authorKey);
+				if (!author.books.includes(book.isbn)) {
+					author.books.push(book.isbn);
+					db.collection("authors").doc(author.id).update(author);
+				}
+
+				response.json(book);
 				return;
 			}
 
@@ -70,77 +161,14 @@ export const getBook = onRequest(async (request, response) => {
 			book.id = bookDoc.id;
 			bookDoc.set(book);
 
-			response.json(book);
-			return;
-		} catch (error) {
-			response.statusCode = 500;
-			response.json({ error: `${error}` });
-			return;
-		}
-	});
-});
-
-export const getAuthor = onRequest(async (request, response) => {
-	corsHandler(request, response, async () => {
-		try {
-			const key = request.query.key;
-
-			const snapshot = await db.collection("authors").where("key", "==", key).get();
-
-			const docs: any[] = [];
-			snapshot.forEach(doc => docs.push(doc.data()));
-
-			// Already in database - return the data
-			if (docs.length > 0) {
-				response.json(docs[0] as any);
-				return;
+			// Update author
+			const author = await getAuthorInfo(book.authorKey);
+			if (!author.books.includes(book.isbn)) {
+				author.books.push(book.isbn);
+				db.collection("authors").doc(author.id).update(author);
 			}
 
-			const authorResponse = await fetch(`https://openlibrary.org/authors/${key}.json`);
-			const authorData = await authorResponse.json();
-
-			const worksResponse = await fetch(
-				`https://openlibrary.org/authors/${key}/works.json?limit=100`,
-			);
-			const worksData = await worksResponse.json();
-
-			const books = (
-				await Promise.all(
-					worksData?.entries?.map(async (work: any) => {
-						const workResponse = await fetch(
-							`https://openlibrary.org${work.key}/editions.json`,
-						);
-						const workData = await workResponse.json();
-
-						const language = workData.entries?.[0]?.languages?.[0].key ?? null;
-						if (language !== "/languages/eng") {
-							return null;
-						}
-
-						const isbn = workData.entries?.[0]?.isbn_13?.[0] ?? null;
-						return isbn;
-					}) ?? [],
-				)
-			).filter(isbn => isbn);
-
-			const author = {
-				key,
-				name: authorData?.name ?? "",
-				birthday: authorData?.birth_date ?? "",
-				bio: authorData.bio?.value ?? "",
-				picture:
-					authorData?.photos && authorData?.photos?.length
-						? `https://covers.openlibrary.org/a/id/${authorData.photos[0]}-L.jpg`
-						: "",
-				books: books ?? [],
-				id: "",
-			};
-
-			const authorDoc = db.collection("authors").doc();
-			author.id = authorDoc.id;
-			authorDoc.set(author);
-
-			response.json(author);
+			response.json(book);
 			return;
 		} catch (error) {
 			response.statusCode = 500;

@@ -201,7 +201,7 @@
 				{#each authors as author}
 					{#await author then author}
 						{#if author.picture}
-							<a href={`/author/${author.id}`} class="book">
+							<a href={`/author/${author.key}`} class="book">
 								<div class="author-info">
 									<h1>
 										{author.name}
