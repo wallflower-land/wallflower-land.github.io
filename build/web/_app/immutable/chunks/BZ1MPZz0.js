@@ -1,1 +1,0 @@
-import"./D8Bn94rb.js";async function h(a,t=10,s=fetch){const r=new URLSearchParams({q:a,limit:t});return(await(await s(`https://openlibrary.org/search/authors.json?${r}`)).json()).docs.map(n=>e(n.key))}async function e(a,t=fetch){return await(await t(`https://getauthor-psqyhrtnra-uc.a.run.app?key=${a}`)).json()}export{e as g,h as s};
