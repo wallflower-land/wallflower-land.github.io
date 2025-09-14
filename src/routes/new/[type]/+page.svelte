@@ -8,6 +8,8 @@
 	import CharacterLimitMeter from "../../../components/CharacterLimitMeter.svelte";
 	import { updateUser, user } from "../../../backend/auth.svelte";
 	import BookSearch from "../../../components/BookSearch.svelte";
+	import ImagePicker from "../../../components/ImagePicker.svelte";
+	import ImageCarousel from "../../../components/ImageCarousel.svelte";
 
 	let { data }: { data: { type: PostType } } = $props();
 	let type = $derived(data.type);
@@ -55,6 +57,8 @@
 	);
 
 	let markAsFinished = $state(true);
+
+	let images: string[] = $state([]);
 </script>
 
 <Page header="New {type} Post">
@@ -110,9 +114,25 @@
 			<BookSearch title="Add a book (Optional)" bind:books={chosenBooks} />
 		{/if}
 
+		<ImagePicker
+			id="add-post-images"
+			onupload={imageId => images.push(imageId)}
+			aspectRatio={1} 
+			disabled={images.length >= 10}
+		/>
+		<ImageCarousel bind:images editable style="box-shadow: 0px 0px 0.5rem black;" />
+
+		<label
+			class={["add-image", images.length >= 10 && "disabled"]}
+			for="add-post-images"
+		>
+			Add Images
+		</label>
+
 		<button onclick={uploadPost} class="post-button" disabled={!canPost}>
 			Post
 		</button>
+
 	</div>
 </Page>
 
@@ -131,6 +151,30 @@
 		gap: 0.5rem
 	}
 
+	.add-image {
+		padding: 0.5rem;
+		border-radius: 0.5rem;
+		box-shadow: 0px 0px 0.5rem var(--box-shadow);
+		transition: scale 0.1s;
+		font-size: 0.85rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		&.disabled {
+			background-color: var(--surface-0);
+			color: var(--overlay-0);
+		}
+
+		&:not(.disabled) {
+			background-image: linear-gradient(to bottom right, var(--lavender), var(--blue));
+
+			&:hover {
+				scale: 105%;
+			}
+		}
+	}
+
 	.body-header {
 		display: flex;
 		justify-content: space-between;
@@ -145,7 +189,6 @@
 	.text-container {
 		position: relative;
 	}
-
 
 	.mark-as-finished {
 		padding-top: 0.5rem;

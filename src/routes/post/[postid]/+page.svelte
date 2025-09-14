@@ -74,20 +74,16 @@
 	let mainPost: HTMLElement = $state(null!);
 	let container: HTMLElement;
 	
-	let scrolled = $derived(parentChain.then(chain => {
-		setTimeout(() => {
-			container.scrollTop = mainPost.getBoundingClientRect().top;
-		}, 100);
-		return chain.length;
-	}));
-
-	// svelte-ignore state_referenced_locally
-	// Without this, scrolled is considered dead code and removed
-	scrolled;
-
 	let parents: HTMLElement[] = $state([]);
 	let parentContainer: HTMLElement | null = $state(null);
 	let height = $derived.by(() => `calc(100dvh + ${parentContainer?.getBoundingClientRect().height ?? 0}px)`);
+
+	let replyLineHeight = $state(`0px`);
+	let replyLine: HTMLElement | null = $state(null);
+	setInterval(() => {
+		if (!mainPost) return;
+		replyLineHeight = `${mainPost.getBoundingClientRect().top - (replyLine?.getBoundingClientRect().top ?? 0)}px`;;
+	}, 100)
 </script>
 
 <Page type="search" class="post">
@@ -96,9 +92,17 @@
 			{#await parentChain then parentChain}
 				<div class="parents" bind:this={parentContainer}>
 					{#each parentChain as parent, index}
-						<AnyPost bind:element={parents[index]} post={parent} />
+						<AnyPost
+							bind:element={parents[index]}
+							post={parent}
+							noborder={index === parents.length - 1}
+						/>
 					{/each}
 				</div>
+
+				{#if parentChain.length > 0}
+					<div bind:this={replyLine} class="reply-line" style:height={replyLineHeight}></div>
+				{/if}
 			{/await}
 
 			<AnyPost bind:element={mainPost} post={post!} postpage />
@@ -165,6 +169,42 @@
 		overflow-y: auto;
 		height: 100%;
 		width: 100%;
+		position: relative;
+	}
+
+	.reply-line {
+		outline: 0.5rem solid var(--base);
+		width: 1px;
+		background: var(--surface-2);
+		height: 8rem;
+		left: 2.5rem;
+		top: 2.5rem;
+		position: absolute;
+		z-index: 2;
+
+		&::before {
+			content: "";
+			position: absolute;
+			display: block;
+			width: 1px;
+			height: 1rem;
+			top: 100%;
+			left: -0.5rem;
+			background: var(--crust);
+			padding-left: 0.5rem;
+			padding-right: 0.5rem;
+		}
+
+		&::after {
+			content: "";
+			position: absolute;
+			display: block;
+			width: 1px;
+			height: 1rem;
+			top: 100%;
+			left: 0px;
+			background: inherit;
+		}
 	}
 
 	label {

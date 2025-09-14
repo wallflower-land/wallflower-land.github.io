@@ -31,7 +31,17 @@
 	import Rating from "./Rating.svelte";
 	import Reply from "./Reply.svelte";
 
-	let { post, postpage, element = $bindable() }: { post: InternalPost; postpage?: boolean; element?: HTMLElement } = $props();
+	let {
+		post,
+		postpage,
+		noborder = false,
+		element = $bindable()
+	}: { 
+		post: InternalPost;
+		postpage?: boolean;
+		noborder?: boolean;
+		element?: HTMLElement
+	} = $props();
 
 	/**
 	 * The context menu that appears when clicking the post actions button, which
@@ -253,7 +263,7 @@
 	tabindex="0"
 	role="link"
 	onclick={clickPost}
-	style:border-bottom={postpage ? "none" : `1px solid var(--surface-0)`}
+	style:border-bottom={(postpage || noborder) ? "none" : `1px solid var(--surface-0)`}
 	bind:this={element}
 >
 	<!-- Poster's profile picture -->
@@ -264,7 +274,12 @@
 			{#await getFile(poster.picture)}
 				<div class="no-picture"></div>
 			{:then pfp}
-				<a aria-label="Go to poster's profile" style:background-image={`url("${pfp}")`} href={`/profile/${poster.username}`}></a>
+				<a
+					style:outline="0.75rem solid {postpage ? "var(--crust)" : "var(--base)"}"
+					aria-label="Go to poster's profile"
+					style:background-image={`url("${pfp}")`}
+					href={`/profile/${poster.username}`}>
+				</a>
 			{/await}
 		{/await}
 	</div>
@@ -320,7 +335,7 @@
 				<Rating isbn={book.isbn} rating={post.rating} review={post.body} user={post.poster} />
 			{/await}
 		{:else if post.type === "general"}
-			<Discussion body={post.body} images={post.pictures} />
+			<Discussion isbns={post.books} body={post.body} images={post.pictures} />
 		{:else if post.type === "reply"}
 			<Reply body={post.body} />
 		{:else if post.type === "update"}
@@ -462,6 +477,7 @@
 		}
 
 		a, .no-picture {
+			z-index: 99;
 			width: 3rem;
 			height: 3rem;
 			border-radius: 50%;

@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { type Author } from "../../../api/authorapi";
 	import { getBook } from "../../../api/bookapi";
+	import WrenchIcon from "../../../assets/images/icons/WrenchIcon.svelte";
+	import { user } from "../../../backend/auth.svelte";
 	import BookCover from "../../../components/BookCover.svelte";
 	import ClickableImage from "../../../components/ClickableImage.svelte";
 	import Header from "../../../components/Header.svelte";
@@ -21,6 +23,13 @@
 
 		<p>{author.bio || "No description provided."}</p>
 
+		{#if user() && user()!.tags.includes("mod")}
+			<a class="edit-details" href="/author/{author.id}/edit">
+				<WrenchIcon stroke="var(--crust)" style="width: 1rem; height: 1rem;" />
+				Edit Author Details
+			</a>
+		{/if}
+
 		<h2>Books</h2>
 		<div class="books">
 			{#each books as book}
@@ -37,6 +46,26 @@
 </Page>
 
 <style>
+	.edit-details {
+		padding: 0.5rem 1rem 0.5rem 1rem;
+		margin-bottom: 1rem;
+		border-radius: 100vmax;
+		box-shadow: 0px 0px 0.5rem var(--box-shadow);
+		transition: scale 0.1s;
+		margin-top: 1rem;
+		font-size: 0.85rem;
+		width: 15rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		background: linear-gradient(to bottom right, var(--pink), var(--lavender));
+
+		&:hover {
+			scale: 105%;
+		}
+	}
+	
 	.content {
 		margin-top: 7rem;
 		width: 100%;

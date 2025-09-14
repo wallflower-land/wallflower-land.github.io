@@ -8,11 +8,13 @@
 	let { 
 		images = $bindable(), 
 		clickable = true, 
-		editable = false 
+		editable = false,
+		...rest
 	}: { 
 		images: string[], 
 		clickable?: boolean,
-		editable?: boolean 
+		editable?: boolean,
+		[key: string]: unknown
 	} = $props();
 
 	let imageIndex = $state(0);
@@ -26,7 +28,7 @@
 </script>
 
 {#if images.length > 0}
-	<div class="media">
+	<div class="media" {...rest}>
 		{#if editable}
 			<button class="delete" onclick={deleteCurrentImage}>
 				<TrashIcon stroke="var(--red)" style="width: 1rem; height: 1rem;" />
@@ -37,13 +39,9 @@
 				{#await getFile(image)}
 					<div class="media-wrapper" style:background-color="var(--surface-0)"></div>
 				{:then image}
-					{#if clickable}
-						<ClickableImage src={image!}>
-							<div class="media-wrapper" style:background-image="url('{image}')"></div>
-						</ClickableImage>
-					{:else}
+					<ClickableImage {clickable} src={image!}>
 						<div class="media-wrapper" style:background-image="url('{image}')"></div>
-					{/if}
+					</ClickableImage>
 				{/await}
 			{/each}
 		</div>
@@ -69,7 +67,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		border: 1px solid var(--overlay-1);
+		border: 1px solid var(--surface-0);
 	}
 
 	.media {
@@ -79,6 +77,7 @@
 		position: relative;
 		margin-bottom: 1rem;
 		max-width: 20rem;
+		border-radius: 1rem;
 
 		&:hover :global(.rotate-image) {
 			opacity: 100%;
@@ -129,7 +128,6 @@
 		.media-wrapper {
 			height: 100%;
 			aspect-ratio: 1.5;
-			border-radius: 1rem;
 			display: flex;
 			align-items: center;
 			justify-content: center;

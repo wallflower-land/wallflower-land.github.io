@@ -27,12 +27,29 @@
 	function onerror() {
 		visible = false;
 	}
+
+	let size = $state(0);
+
+	function setFontSize(element: HTMLElement) {
+		size = element.getBoundingClientRect().width;
+	}
 </script>
 
 {#if visible}
 	<ClickableImage {clickable} class="cover" bind:element={image} {...rest} src={book.cover} {onload} {onerror} />
 {:else}
-	<div class="no cover" {...rest}>{book.title}</div>
+	<div
+		{@attach setFontSize} 
+		style:font-size="{size / 10}px"
+		style:border-radius="{size / 16}px"
+		style:padding="{size / 8}px"
+		class="no cover"
+		{...rest}
+	>
+		{#if size >= 80}
+			{book.title}
+		{/if}
+	</div>
 {/if}
 
 <style>
@@ -45,9 +62,5 @@
 		align-items: center;
 		justify-content: center;
 		text-decoration: none;
-	}
-
-	.no {
-		border-radius: 0.5rem;
 	}
 </style>

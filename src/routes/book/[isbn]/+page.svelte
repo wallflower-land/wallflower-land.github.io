@@ -83,7 +83,7 @@
 				{#await author}
 					<h2>Loading...</h2>
 				{:then author}
-					<a href="/author/{author.key}">{author.name}</a>
+					<a href="/author/{author.id}">{author.name}</a>
 				{/await}
 			</div>
 			<BookCover {book} style="width: 10rem" />
@@ -123,7 +123,7 @@
 				<span>Author: </span>
 				<span>
 					{#await author then author}
-						<a href="/author/{author.key}">{author.name}</a>
+						<a href="/author/{author.id}">{author.name}</a>
 					{/await}
 				</span>
 			</span>

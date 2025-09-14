@@ -2,7 +2,7 @@
 	import { onMount } from "svelte";
 	import { uploadFile } from "../api/storageapi";
 
-	let files: FileList | null = $state(null);
+	let files: FileList = $state(new DataTransfer().files);
 	let preview: HTMLImageElement;
 	let previewDiv: HTMLElement;
 	let input: HTMLInputElement;
@@ -34,7 +34,7 @@
 	}
 
 	function reset() {
-		files = null;
+		files = new DataTransfer().files;
 		file = null;
 		previewDiv.style.display = "none";
 	}
@@ -151,7 +151,7 @@
 	let cropper: HTMLElement;
 
 	let panning = $state(false);
-	let draggingHandle: string | null = $state(null);
+	let draggingHandle: Handle | null = $state(null);
 
 	let imageLeft = $state(0);
 	let imageTop = $state(0);
@@ -192,34 +192,18 @@
 		return 0;
 	});
 
+	type Handle = "top left" | "top right" | "bottom left" | "bottom right";
+
+	function setDraggingHandle(handle: Handle) {
+		return function() {
+			draggingHandle = handle;
+		}
+	}
+
 	onMount(() => {
 		cropper.addEventListener("wheel", event => {
 			scale = Math.min(Math.max(minimumScale, scale - event.deltaY / 5), 10);
 		}, true);
-
-		preview.addEventListener("mousedown", () => {
-			panning = true;
-		});
-
-		cropper.addEventListener("mousedown", () => {
-			panning = true;
-		});
-
-		topLeftHandle.addEventListener("mousedown", () => {
-			draggingHandle = "top left";
-		});
-
-		topRightHandle.addEventListener("mousedown", () => {
-			draggingHandle = "top right";
-		});
-
-		bottomLeftHandle.addEventListener("mousedown", () => {
-			draggingHandle = "bottom left";
-		});
-		
-		bottomRightHandle.addEventListener("mousedown", () => {
-			draggingHandle = "bottom right";
-		});
 
 		document.addEventListener("mousemove", event => {
 			if (draggingHandle == "top left") {
@@ -271,7 +255,6 @@
 				imageTop = Math.max(Math.min(cropperTop, rawTop), cropperTop + cropperHeight - imageHeight * scale);
 			}
 		}, true); // me when true
-
 	})
 
 	function onmouseup() {
@@ -302,7 +285,8 @@
 
 <input {...rest} bind:this={input} bind:files onchange={openImage} type="file" />
 
-<div class="preview" bind:this={previewDiv}>
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<div class="preview" bind:this={previewDiv} onmousedown={() => panning = true}>
 	<div class="image" bind:this={imageContainer}>
 		<img
 			style:cursor={panning ? "grabbing" : "grab"}
@@ -340,12 +324,29 @@
 			style:left="{cropperLeft}px"
 			style:cursor={panning ? "grabbing" : "grab"}
 			bind:this={cropper} 
+			onmousedown={() => panning = true}
 			class="cropper {circular ? "circular" : ""}"
 		>
-			<div bind:this={topLeftHandle} class="top left handle"></div>
-			<div bind:this={topRightHandle} class="top right handle"></div>
-			<div bind:this={bottomLeftHandle} class="bottom left handle"></div>
-			<div bind:this={bottomRightHandle} class="bottom right handle"></div>
+			<div
+				bind:this={topLeftHandle} 
+				onmousedown={setDraggingHandle("top left")} 
+				class="top left handle"
+			></div>
+			<div
+				bind:this={topRightHandle}
+				onmousedown={setDraggingHandle("top right")}
+				class="top right handle"
+			></div>
+			<div
+				bind:this={bottomLeftHandle}
+				onmousedown={setDraggingHandle("bottom left")}
+				class="bottom left handle"
+			></div>
+			<div
+				bind:this={bottomRightHandle}
+				onmousedown={setDraggingHandle("bottom right")}
+				class="bottom right handle"
+			></div>
 		</div>
 	</div>
 	<button class="upload" onclick={upload}>Done</button>
@@ -386,21 +387,39 @@
 		.upload {
 			padding: 0.5rem 1rem 0.5rem 1rem;
 			border-radius: 0.5rem;
-			background-image: linear-gradient(#a6e3a1, #81c8be);
+			background-image: linear-gradient(to bottom right, var(--green), var(--teal));
+			transition: scale 0.1s;
+			box-shadow: 0px 0px 0.5rem var(--box-shadow);
+
+			&:hover {
+				scale: 105%;
+			}
 		}
 
 		.cancel {
 			padding: 0.5rem 1rem 0.5rem 1rem;
 			border-radius: 0.5rem;
-			background-image: linear-gradient(#f38ba8, #ff7788);
+			background-image: linear-gradient(to bottom right, var(--peach), var(--red));
 			margin-top: -1rem;
+			transition: scale 0.1s;
+			box-shadow: 0px 0px 0.5rem var(--box-shadow);
+
+			&:hover {
+				scale: 105%;
+			}
 		}
 
 		.choose-again {
 			padding: 0.5rem 1rem 0.5rem 1rem;
 			border-radius: 0.5rem;
-			background-image: linear-gradient(var(--lavender), var(--blue));
+			background-image: linear-gradient(to bottom right, var(--lavender), var(--blue));
 			margin-top: -1rem;
+			transition: scale 0.1s;
+			box-shadow: 0px 0px 0.5rem var(--box-shadow);
+
+			&:hover {
+				scale: 105%;
+			}
 		}
 
 		img {
@@ -472,7 +491,7 @@
 
 	.overlay {
 		position: absolute;
-		background: rgba(0,0,0,0.65);
+		background: rgba(0, 0, 0, 65%);
 		pointer-events: none;
 	}
 
