@@ -174,7 +174,7 @@
 
 	.reply-line {
 		outline: 0.5rem solid var(--base);
-		width: 1px;
+		width: 2px;
 		background: var(--surface-2);
 		height: 8rem;
 		left: 2.5rem;
@@ -186,7 +186,7 @@
 			content: "";
 			position: absolute;
 			display: block;
-			width: 1px;
+			width: 100%;
 			height: 1rem;
 			top: 100%;
 			left: -0.5rem;
@@ -199,7 +199,7 @@
 			content: "";
 			position: absolute;
 			display: block;
-			width: 1px;
+			width: 100%;
 			height: 1rem;
 			top: 100%;
 			left: 0px;

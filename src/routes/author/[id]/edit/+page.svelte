@@ -192,12 +192,4 @@
 		margin-bottom: 1rem;
 		font-size: 1rem;
 	}
-
-	h3 {
-		font-weight: normal;
-		color: var(--overlay-1);
-		font-size: 0.85rem;
-		margin-bottom: 1rem;
-		margin-top: 0.25rem;
-	}
 </style>
