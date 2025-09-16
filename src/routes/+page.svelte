@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { getFollowedPosts, getForYouPosts } from "../api/postapi";
-	import CatIcon from "../assets/images/icons/CatIcon.svelte";
+	import CatIcon from "../components/icons/CatIcon.svelte";
 	import { user } from "../backend/auth.svelte";
-	import AnyPost from "../components/posts/AnyPost.svelte";
-	import PageWithViews, { wallflowerHeader } from "../components/PageWithViews.svelte";
+	import AnyPost from "../components/post/AnyPost.svelte";
+	import PageWithViews, { wallflowerHeader } from "../components/layout/PageWithViews.svelte";
 
 	type View = "following" | "discover";
 

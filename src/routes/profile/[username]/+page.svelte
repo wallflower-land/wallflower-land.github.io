@@ -1,5 +1,5 @@
 <script lang="ts">
-	import ProfilePage from '../../../components/ProfilePage.svelte';
+	import ProfilePage from '../../../components/pages/ProfilePage.svelte';
 
 	let { data } = $props();
 

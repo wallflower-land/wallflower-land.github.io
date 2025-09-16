@@ -1,15 +1,15 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
 	import { format, post, type PostType } from "../../../api/postapi";
-	import Page from "../../../components/Page.svelte";
+	import Page from "../../../components/layout/Page.svelte";
 	import { type Book } from "../../../api/bookapi";
-	import Select from "../../../components/Select.svelte";
-	import EyeIcon from "../../../assets/images/icons/EyeIcon.svelte";
-	import CharacterLimitMeter from "../../../components/CharacterLimitMeter.svelte";
+	import Select from "../../../components/util/Select.svelte";
+	import EyeIcon from "../../../components/icons/EyeIcon.svelte";
+	import CharacterLimitMeter from "../../../components/util/CharacterLimitMeter.svelte";
 	import { updateUser, user } from "../../../backend/auth.svelte";
-	import BookSearch from "../../../components/BookSearch.svelte";
-	import ImagePicker from "../../../components/ImagePicker.svelte";
-	import ImageCarousel from "../../../components/ImageCarousel.svelte";
+	import BookSearch from "../../../components/book/BookSearch.svelte";
+	import ImagePicker from "../../../components/util/ImagePicker.svelte";
+	import ImageCarousel from "../../../components/util/ImageCarousel.svelte";
 
 	let { data }: { data: { type: PostType } } = $props();
 	let type = $derived(data.type);

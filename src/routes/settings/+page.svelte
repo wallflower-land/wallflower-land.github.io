@@ -1,10 +1,10 @@
 <script>
-	import BellIcon from "../../assets/images/icons/BellIcon.svelte";
-	import DeveloperIcon from "../../assets/images/icons/DeveloperIcon.svelte";
-	import InfoIcon2 from "../../assets/images/icons/InfoIcon2.svelte";
-	import PaintRollerIcon from "../../assets/images/icons/PaintRollerIcon.svelte";
-	import ProfileIcon from "../../assets/images/icons/ProfileIcon.svelte";
-	import Page from "../../components/Page.svelte";
+	import BellIcon from "../../components/icons/BellIcon.svelte";
+	import DeveloperIcon from "../../components/icons/DeveloperIcon.svelte";
+	import InfoIcon2 from "../../components/icons/InfoIcon2.svelte";
+	import PaintRollerIcon from "../../components/icons/PaintRollerIcon.svelte";
+	import ProfileIcon from "../../components/icons/ProfileIcon.svelte";
+	import Page from "../../components/layout/Page.svelte";
 </script>
 
 <Page class="settings" header="Settings">

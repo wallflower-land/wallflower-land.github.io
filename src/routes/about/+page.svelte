@@ -1,7 +1,7 @@
 <script>
-import Wallflower from "../../assets/images/icons/Wallflower.svelte";
-	import Link from "../../components/Link.svelte";
-	import Page from "../../components/Page.svelte";
+	import WallflowerIcon from "../../components/icons/WallflowerIcon.svelte";
+	import Link from "../../components/util/Link.svelte";
+	import Page from "../../components/layout/Page.svelte";
 </script>
 
 <Page class="about" header="About">
@@ -9,7 +9,7 @@ import Wallflower from "../../assets/images/icons/Wallflower.svelte";
 		<span>
 			<h2 class="wallflower"><i>Wall&middot;flow&middot;er</i></h2>
 			<span class="ipa" aria-label="US IPA">&#x2F;&#x2C8;w&#x0251;l;&#x02D0;fla&#x028A;.&#x0259;r&#x2F;</span>
-			<Wallflower stroke="var(--overlay-1)" style="width: 1rem; height: 1rem; margin-left: auto; margin-right: 0.25rem;" />
+			<WallflowerIcon stroke="var(--overlay-1)" style="width: 1rem; height: 1rem; margin-left: auto; margin-right: 0.25rem;" />
 		</span>
 		<p class="body">
 			<i>(noun)</i>

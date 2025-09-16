@@ -3,19 +3,19 @@
 	import { getBook, type Book } from "../../../api/bookapi";
 	import { getFile } from "../../../api/storageapi";
 	import { awaitUser, usernameErrors } from "../../../api/userapi";
-	import AuthorIcon from "../../../assets/images/icons/AuthorIcon.svelte";
-	import DeveloperIcon from "../../../assets/images/icons/DeveloperIcon.svelte";
-	import EditIcon from "../../../assets/images/icons/EditIcon.svelte";
-	import SproutIcon from "../../../assets/images/icons/SproutIcon.svelte";
-	import WrenchIcon from "../../../assets/images/icons/WrenchIcon.svelte";
+	import AuthorIcon from "../../../components/icons/AuthorIcon.svelte";
+	import DeveloperIcon from "../../../components/icons/DeveloperIcon.svelte";
+	import EditIcon from "../../../components/icons/EditIcon.svelte";
+	import SproutIcon from "../../../components/icons/SproutIcon.svelte";
+	import WrenchIcon from "../../../components/icons/WrenchIcon.svelte";
 	import { updateUser, user, usernameIsTaken } from "../../../backend/auth.svelte";
-	import BackButton from "../../../components/BackButton.svelte";
-	import BookSearch from "../../../components/BookSearch.svelte";
-	import CharacterLimitMeter from "../../../components/CharacterLimitMeter.svelte";
-	import ImagePicker from "../../../components/ImagePicker.svelte";
+	import BackButton from "../../../components/util/BackButton.svelte";
+	import BookSearch from "../../../components/book/BookSearch.svelte";
+	import CharacterLimitMeter from "../../../components/util/CharacterLimitMeter.svelte";
+	import ImagePicker from "../../../components/util/ImagePicker.svelte";
 	import LeavePagePopup from "../../../components/LeavePagePopup.svelte";
-	import Page from "../../../components/Page.svelte";
-	import RadioInput from "../../../components/RadioInput.svelte";
+	import Page from "../../../components/layout/Page.svelte";
+	import RadioInput from "../../../components/util/RadioInput.svelte";
 
 	awaitUser.then(user => {
 		displayName = user.displayName;

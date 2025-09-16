@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { type Author } from "../../../api/authorapi";
 	import { getBook } from "../../../api/bookapi";
-	import WrenchIcon from "../../../assets/images/icons/WrenchIcon.svelte";
+	import WrenchIcon from "../../../components/icons/WrenchIcon.svelte";
 	import { user } from "../../../backend/auth.svelte";
-	import BookCover from "../../../components/BookCover.svelte";
-	import ClickableImage from "../../../components/ClickableImage.svelte";
-	import Header from "../../../components/Header.svelte";
-	import Page from "../../../components/Page.svelte";
+	import BookCover from "../../../components/book/BookCover.svelte";
+	import ClickableImage from "../../../components/util/ClickableImage.svelte";
+	import Header from "../../../components/elements/Header.svelte";
+	import Page from "../../../components/layout/Page.svelte";
 
 	let { data }: { data: { author: Author } } = $props();
 

@@ -9,20 +9,20 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
 	import { getFile } from "../api/storageapi";
-	import CloseIcon from "../assets/images/icons/CloseIcon.svelte";
-	import EmptyHomeIcon from "../assets/images/icons/EmptyHomeIcon.svelte";
-	import EnterIcon from "../assets/images/icons/EnterIcon.svelte";
-	import ExitIcon from "../assets/images/icons/ExitIcon.svelte";
-	import GearIcon from "../assets/images/icons/GearIcon.svelte";
-	import InfoIcon2 from "../assets/images/icons/InfoIcon2.svelte";
-	import PersonIcon from "../assets/images/icons/PersonIcon.svelte";
-	import ProfileIcon from "../assets/images/icons/ProfileIcon.svelte";
+	import CloseIcon from "./icons/CloseIcon.svelte";
+	import EmptyHomeIcon from "./icons/EmptyHomeIcon.svelte";
+	import EnterIcon from "./icons/EnterIcon.svelte";
+	import ExitIcon from "./icons/ExitIcon.svelte";
+	import GearIcon from "./icons/GearIcon.svelte";
+	import InfoIcon2 from "./icons/InfoIcon2.svelte";
+	import PersonIcon from "./icons/PersonIcon.svelte";
+	import ProfileIcon from "./icons/ProfileIcon.svelte";
 	import { logOut, user } from "../backend/auth.svelte";
-	import BarChartIcon from "../assets/images/icons/BarChartIcon.svelte";
+	import BarChartIcon from "./icons/BarChartIcon.svelte";
 	import { onMount } from "svelte";
-	import SearchIcon from "../assets/images/icons/SearchIcon.svelte";
-	import BellIcon from "../assets/images/icons/BellIcon.svelte";
-	import PlusIcon from "../assets/images/icons/PlusIcon.svelte";
+	import SearchIcon from "./icons/SearchIcon.svelte";
+	import BellIcon from "./icons/BellIcon.svelte";
+	import PlusIcon from "./icons/PlusIcon.svelte";
 
 	let innerHeight = $state(window.innerHeight);
 

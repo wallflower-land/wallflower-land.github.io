@@ -1,5 +1,5 @@
 <script lang="ts">
-	import CloseIcon from "../assets/images/icons/CloseIcon.svelte";
+	import CloseIcon from "./icons/CloseIcon.svelte";
 	import Popup from "./Popup.svelte";
 
 	let { visible = $bindable(false) } = $props();

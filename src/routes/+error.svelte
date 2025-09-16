@@ -1,7 +1,7 @@
 <script lang="ts">
-	import CatIcon from "../assets/images/icons/CatIcon.svelte";
-	import Header from "../components/Header.svelte";
-	import Page from "../components/Page.svelte";
+	import CatIcon from "../components/icons/CatIcon.svelte";
+	import Header from "../components/elements/Header.svelte";
+	import Page from "../components/layout/Page.svelte";
 </script>
 
 <Page>

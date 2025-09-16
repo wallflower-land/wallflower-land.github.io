@@ -2,8 +2,8 @@
 	import { goto } from "$app/navigation";
 	import { getAuthor } from "../../../../api/authorapi";
 	import { updateBook } from "../../../../api/bookapi";
-	import ImagePicker from "../../../../components/ImagePicker.svelte";
-	import Page from "../../../../components/Page.svelte";
+	import ImagePicker from "../../../../components/util/ImagePicker.svelte";
+	import Page from "../../../../components/layout/Page.svelte";
 
 	let { data } = $props();
 	let book = $derived(data.book);

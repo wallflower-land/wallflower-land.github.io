@@ -1,5 +1,5 @@
 <script>
-	import Page from "../../../components/Page.svelte";
+	import Page from "../../../components/layout/Page.svelte";
 </script>
 
 <Page class="about" header="API Usage">

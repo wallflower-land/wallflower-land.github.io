@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Follows from "../../../../components/Follows.svelte";
+	import Follows from "../../../../components/pages/Follows.svelte";
 
 	let { data }: { data: { username: string } } = $props();
 </script>

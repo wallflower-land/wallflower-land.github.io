@@ -10,7 +10,9 @@ export type UserId = string;
 export type User = {
 	username: string;
 	email: string;
-	id: string;
+	id: UserId;
+
+	notifyingPosters: UserId[];
 
 	// Profile
 	displayName: string;
@@ -243,6 +245,20 @@ export async function getFollowingPosts(): Promise<InternalPost[]> {
 			query(
 				collection(db, "posts"),
 				where("poster", "in", user().following),
+				orderBy("timestamp", "desc"),
+			),
+		)
+	).docs.map(doc => doc.data() as InternalPost);
+
+	return allPosts;
+}
+
+export async function getNotifyingPosts(): Promise<InternalPost[]> {
+	const allPosts = (
+		await getDocs(
+			query(
+				collection(db, "posts"),
+				where("poster", "in", user().notifyingPosters),
 				orderBy("timestamp", "desc"),
 			),
 		)

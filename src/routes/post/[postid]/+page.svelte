@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { getPostFromId, getReplies, post, type InternalPost, type PostId } from "../../../api/postapi";
 	import { getFile } from "../../../api/storageapi";
-	import AddImageIcon from "../../../assets/images/icons/AddImageIcon.svelte";
-	import SendIcon from "../../../assets/images/icons/SendIcon.svelte";
+	import AddImageIcon from "../../../components/icons/AddImageIcon.svelte";
+	import SendIcon from "../../../components/icons/SendIcon.svelte";
 	import { user } from "../../../backend/auth.svelte";
-	import CharacterLimitMeter from "../../../components/CharacterLimitMeter.svelte";
-	import ImageCarousel from "../../../components/ImageCarousel.svelte";
-	import ImagePicker from "../../../components/ImagePicker.svelte";
-	import Page from "../../../components/Page.svelte";
-	import AnyPost from "../../../components/posts/AnyPost.svelte";
+	import CharacterLimitMeter from "../../../components/util/CharacterLimitMeter.svelte";
+	import ImageCarousel from "../../../components/util/ImageCarousel.svelte";
+	import ImagePicker from "../../../components/util/ImagePicker.svelte";
+	import Page from "../../../components/layout/Page.svelte";
+	import AnyPost from "../../../components/post/AnyPost.svelte";
 
 	let { data }: { data: { postid: PostId } } = $props();
 	let postid = $derived(data.postid);

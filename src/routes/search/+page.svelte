@@ -4,12 +4,12 @@
 	import { searchBooks, type Book } from "../../api/bookapi";
 	import { searchPosts, type InternalPost} from "../../api/postapi";
 	import { searchUsers, type User } from "../../api/userapi";
-	import Loading from "../../components/Loading.svelte";
-	import AnyPost from "../../components/posts/AnyPost.svelte";
+	import Loading from "../../components/util/Loading.svelte";
+	import AnyPost from "../../components/post/AnyPost.svelte";
 	import UserListing from "../../components/UserListing.svelte";
-	import BookCover from "../../components/BookCover.svelte";
+	import BookCover from "../../components/book/BookCover.svelte";
 	import { getAuthor, searchAuthors, type Author } from "../../api/authorapi";
-	import PageWithViews from "../../components/PageWithViews.svelte";
+	import PageWithViews from "../../components/layout/PageWithViews.svelte";
 
 	type View = "posts" | "books" | "users" | "authors";
 

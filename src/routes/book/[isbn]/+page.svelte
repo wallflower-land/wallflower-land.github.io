@@ -2,12 +2,12 @@
 	import { goto } from "$app/navigation";
 	import { getAuthor } from "../../../api/authorapi";
 	import { getBookDiscussions, getBookRating } from "../../../api/bookapi";
-	import WrenchIcon from "../../../assets/images/icons/WrenchIcon.svelte";
+	import WrenchIcon from "../../../components/icons/WrenchIcon.svelte";
 	import { updateUser, user } from "../../../backend/auth.svelte";
-	import BookCover from "../../../components/BookCover.svelte";
-	import PageWithViews from "../../../components/PageWithViews.svelte";
-	import AnyPost from "../../../components/posts/AnyPost.svelte";
-	import StarRating from "../../../components/StarRating.svelte";
+	import BookCover from "../../../components/book/BookCover.svelte";
+	import PageWithViews from "../../../components/layout/PageWithViews.svelte";
+	import AnyPost from "../../../components/post/AnyPost.svelte";
+	import StarRating from "../../../components/book/StarRating.svelte";
 
 	let { data } = $props();
 	let book = $derived(data.book);

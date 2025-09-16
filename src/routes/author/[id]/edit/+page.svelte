@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
 	import { updateAuthor } from "../../../../api/authorapi";
-	import Page from "../../../../components/Page.svelte";
+	import Page from "../../../../components/layout/Page.svelte";
 
 	let { data } = $props();
 	let author = $derived(data.author);

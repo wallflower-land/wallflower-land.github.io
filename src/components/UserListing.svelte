@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { getFile } from "../api/storageapi";
+	import type { User } from "../api/userapi";
 	import Badges from "./Badges.svelte";
 
-	let { user } = $props();
+	let { user }: { user: User } = $props();
 </script>
 
 <a

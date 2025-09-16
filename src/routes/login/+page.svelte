@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
 	import { logIn, user } from "../../backend/auth.svelte";
-	import Page from "../../components/Page.svelte";
-	import Link from "../../components/Link.svelte";
+	import Page from "../../components/layout/Page.svelte";
+	import Link from "../../components/util/Link.svelte";
 
 	let email: string = $state("");
 	let password: string = $state("");

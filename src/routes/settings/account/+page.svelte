@@ -1,16 +1,16 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
-	import AuthorIcon from "../../../assets/images/icons/AuthorIcon.svelte";
-	import ClosedEyeIcon from "../../../assets/images/icons/ClosedEyeIcon.svelte";
-	import CloseIcon from "../../../assets/images/icons/CloseIcon.svelte";
-	import DeveloperIcon from "../../../assets/images/icons/DeveloperIcon.svelte";
-	import EditMailIcon from "../../../assets/images/icons/EditMailIcon.svelte";
-	import EyeIcon from "../../../assets/images/icons/EyeIcon.svelte";
-	import PasswordIcon from "../../../assets/images/icons/PasswordIcon.svelte";
-	import TrashIcon from "../../../assets/images/icons/TrashIcon.svelte";
-	import WrenchIcon from "../../../assets/images/icons/WrenchIcon.svelte";
+	import AuthorIcon from "../../../components/icons/AuthorIcon.svelte";
+	import ClosedEyeIcon from "../../../components/icons/ClosedEyeIcon.svelte";
+	import CloseIcon from "../../../components/icons/CloseIcon.svelte";
+	import DeveloperIcon from "../../../components/icons/DeveloperIcon.svelte";
+	import EditMailIcon from "../../../components/icons/EditMailIcon.svelte";
+	import EyeIcon from "../../../components/icons/EyeIcon.svelte";
+	import PasswordIcon from "../../../components/icons/PasswordIcon.svelte";
+	import TrashIcon from "../../../components/icons/TrashIcon.svelte";
+	import WrenchIcon from "../../../components/icons/WrenchIcon.svelte";
 	import { changeEmail, changePassword, deleteAccount, passwordErrors, updateUser, user } from "../../../backend/auth.svelte";
-	import Page from "../../../components/Page.svelte";
+	import Page from "../../../components/layout/Page.svelte";
 	import Popup from "../../../components/Popup.svelte";
 
 	$effect(() => {

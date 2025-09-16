@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { setTheme } from "../../../api/themes.svelte";
 	import { getPreference, setPreference } from "../../../api/userapi";
-	import MoonIcon from "../../../assets/images/icons/MoonIcon.svelte";
-	import ScaleIcon from "../../../assets/images/icons/ScaleIcon.svelte";
-	import Header from "../../../components/Header.svelte";
-	import Page from "../../../components/Page.svelte";
-	import RadioInput from "../../../components/RadioInput.svelte";
-	import Select from "../../../components/Select.svelte";
+	import MoonIcon from "../../../components/icons/MoonIcon.svelte";
+	import ScaleIcon from "../../../components/icons/ScaleIcon.svelte";
+	import Header from "../../../components/elements/Header.svelte";
+	import Page from "../../../components/layout/Page.svelte";
+	import RadioInput from "../../../components/util/RadioInput.svelte";
+	import Select from "../../../components/util/Select.svelte";
 </script>
 
 <Page class="settings">

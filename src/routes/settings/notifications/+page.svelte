@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Page from "../../../components/Page.svelte";
+	import Page from "../../../components/layout/Page.svelte";
 </script>
 
 <Page class="settings" header="Notification Settings">

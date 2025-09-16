@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { getFollowingPosts, getMentions, getRepliesToUser } from "../../api/userapi";
-	import AnyPost from "../../components/posts/AnyPost.svelte";
+	import { getMentions, getNotifyingPosts, getRepliesToUser } from "../../api/userapi";
+	import AnyPost from "../../components/post/AnyPost.svelte";
 	import { user } from "../../backend/auth.svelte";
-	import PageWithViews from "../../components/PageWithViews.svelte";
-	import GearIcon from "../../assets/images/icons/GearIcon.svelte";
+	import PageWithViews from "../../components/layout/PageWithViews.svelte";
+	import GearIcon from "../../components/icons/GearIcon.svelte";
 
 	type View = "mentions" | "replies" | "following";
 
@@ -11,7 +11,7 @@
 
 	const mentions = $derived(user() ? getMentions() : []);
 	const replies = $derived(user() ? getRepliesToUser(user()!) : []);
-	const following = $derived(user() ? getFollowingPosts() : []);
+	const following = $derived(user() ? getNotifyingPosts() : []);
 </script>
 
 <PageWithViews 

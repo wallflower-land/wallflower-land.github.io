@@ -4,23 +4,25 @@
 	import { getBook } from "../api/bookapi";
 	import { type InternalPost } from "../api/postapi";
 	import { getFavoriteBook, getFollowers, getUserPosts, type User } from "../api/userapi";
-	import BookIcon from "../assets/images/icons/BookIcon.svelte";
-	import ClockIcon from "../assets/images/icons/ClockIcon.svelte";
-	import LeftArrowIcon from "../assets/images/icons/LeftArrowIcon.svelte";
-	import SortIcon from "../assets/images/icons/SortIcon.svelte";
-	import StarIcon from "../assets/images/icons/StarIcon.svelte";
+	import BookIcon from "./icons/BookIcon.svelte";
+	import ClockIcon from "./icons/ClockIcon.svelte";
+	import LeftArrowIcon from "./icons/LeftArrowIcon.svelte";
+	import SortIcon from "./icons/SortIcon.svelte";
+	import StarIcon from "./icons/StarIcon.svelte";
 	import { updateUser, user } from "../backend/auth.svelte";
 	import Badges from "./Badges.svelte";
-	import BookListing from "./BookListing.svelte";
-	import ContextMenu from "./ContextMenu.svelte";
-	import AnyPost from "./posts/AnyPost.svelte";
-	import RadioInput from "./RadioInput.svelte";
+	import BookListing from "./book/BookListing.svelte";
+	import ContextMenu from "./util/ContextMenu.svelte";
+	import AnyPost from "./post/AnyPost.svelte";
+	import RadioInput from "./util/RadioInput.svelte";
 	import { cssVar } from "../api/themes.svelte";
 	import { getFile } from "../api/storageapi";
 	import Sidebar from "./Sidebar.svelte";
-	import ClickableImage from "./ClickableImage.svelte";
-	import PostBody from "./posts/PostBody.svelte";
-	import PageWithViews from "./PageWithViews.svelte";
+	import ClickableImage from "./util/ClickableImage.svelte";
+	import PostBody from "./post/PostBody.svelte";
+	import PageWithViews from "./layout/PageWithViews.svelte";
+	import BellIcon from "./icons/BellIcon.svelte";
+	import SlashedBellIcon from "./icons/SlashedBellIcon.svelte";
 
 	let { sidebar, user: profileUser }: { sidebar: Sidebar, user: User } = $props();
 
@@ -44,6 +46,8 @@
 
 	/** The total number of books this user has read */
 	let booksRead = posts.then(posts => posts.filter(post => post.type === "rating").length);
+
+	let notificationsOn = $derived(user()?.notifyingPosters.includes(profileUser.id));
 
 	let showFullReviews = $state(false);
 	let ratingSortMenu: ContextMenu = $state(null!);
@@ -140,6 +144,14 @@
 	});
 
 	let picture = $derived(getFile(profileUser.picture));
+
+	async function toggleNotifications() {
+		let notifyingPosters = user()!.notifyingPosters;
+		if (notificationsOn) notifyingPosters = notifyingPosters.filter(poster => poster !== profileUser.id);
+		else notifyingPosters.push(profileUser.id);
+
+		await updateUser({ notifyingPosters: [...new Set(notifyingPosters)] })
+	}
 </script>
 
 <section>
@@ -189,21 +201,37 @@
 		</div>
 
 		<!-- Edit profile button -->
-		{#if isCurrentUser}
-			<button class="edit button" onclick={() => goto("/profile/edit")}>
-				Edit Profile
-			</button>
-		{:else if user()}
-			{#if user()!.following.includes(profileUser.id)}
-				<button class="unfollow button" onclick={unfollow}>
-					Unfollow
-				</button>
-			{:else}
-				<button class="follow button" onclick={follow}>
-					Follow
+		<div class="buttons">
+			{#if !isCurrentUser}
+				<button
+					class="circle"
+					onclick={toggleNotifications}
+					style:border-color={notificationsOn ? "var(--green)" : "var(--red)"}
+				>
+					{#if notificationsOn}
+						<BellIcon style="width: 1rem; height: 1rem;" stroke="var(--green)" />
+					{:else}
+						<SlashedBellIcon style="width: 1rem; height: 1rem;" stroke="var(--red)" />
+					{/if}
 				</button>
 			{/if}
-		{/if}
+
+			{#if isCurrentUser}
+				<button class="edit button" onclick={() => goto("/profile/edit")}>
+					Edit Profile
+				</button>
+			{:else if user()}
+				{#if user()!.following.includes(profileUser.id)}
+					<button class="unfollow button" onclick={unfollow}>
+						Unfollow
+					</button>
+				{:else}
+					<button class="follow button" onclick={follow}>
+						Follow
+					</button>
+				{/if}
+			{/if}
+		</div>
 
 		<!-- Line 2: Profile stats -->
 		<div class="profile-line-2">
@@ -520,10 +548,27 @@
 
 	}
 
-	.button {
+	.buttons {
 		position: absolute;
 		right: 0px;
 		top: 8.5rem;
+		display: flex;
+		gap: 0.75rem;
+
+		.circle {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 2rem;
+			height: 2rem;
+			border-width: 1px;
+			border-style: solid;
+			border-radius: 50%;
+			z-index: 999;
+		}
+	}
+
+	.button {
 		width: 7rem;
 		height: 2rem;
 		margin-right: 1rem;

@@ -1,8 +1,8 @@
 
 <script>
-	import DeveloperIcon from "../../../../assets/images/icons/DeveloperIcon.svelte";
-	import Link from "../../../../components/Link.svelte";
-	import Page from "../../../../components/Page.svelte";
+	import DeveloperIcon from "../../../../components/icons/DeveloperIcon.svelte";
+	import Link from "../../../../components/util/Link.svelte";
+	import Page from "../../../../components/layout/Page.svelte";
 </script>
 
 <Page class="about" header="Become a developer">

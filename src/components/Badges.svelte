@@ -1,10 +1,10 @@
 <script lang="ts">
 	import type { User } from "../api/userapi";
-	import DeveloperIcon from "../assets/images/icons/DeveloperIcon.svelte";
-	import EditIcon from "../assets/images/icons/EditIcon.svelte";
-	import HeartIcon from "../assets/images/icons/HeartIcon.svelte";
-	import SproutIcon from "../assets/images/icons/SproutIcon.svelte";
-	import WrenchIcon from "../assets/images/icons/WrenchIcon.svelte";
+	import DeveloperIcon from "./icons/DeveloperIcon.svelte";
+	import EditIcon from "./icons/EditIcon.svelte";
+	import HeartIcon from "./icons/HeartIcon.svelte";
+	import SproutIcon from "./icons/SproutIcon.svelte";
+	import WrenchIcon from "./icons/WrenchIcon.svelte";
 
 	let { forUser, size }: { forUser: User; size: number } = $props();
 </script>

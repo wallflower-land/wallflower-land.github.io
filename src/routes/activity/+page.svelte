@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { getUserReplies, user } from "../../backend/auth.svelte";
 	import { getPostFromId, type InternalPost } from "../../api/postapi";
-	import AnyPost from "../../components/posts/AnyPost.svelte";
-	import PageWithViews from "../../components/PageWithViews.svelte";
+	import AnyPost from "../../components/post/AnyPost.svelte";
+	import PageWithViews from "../../components/layout/PageWithViews.svelte";
 
 	type View = "liked" | "replied" | "saved" | "shared" | "viewed";
 
