@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { getMentions, getNotifyingPosts, getRepliesToUser } from "../../api/userapi";
+	import { getMentions, getNotifyingPosts, getRepliesToUser, user } from "../../api/userapi.svelte";
 	import AnyPost from "../../components/post/AnyPost.svelte";
-	import { user } from "../../backend/auth.svelte";
 	import PageWithViews from "../../components/layout/PageWithViews.svelte";
 	import GearIcon from "../../components/icons/GearIcon.svelte";
 

@@ -6,6 +6,12 @@
 		size = 1,
 		display = "flex",
 		...rest 
+	}: {
+		limit: number,
+		text: string,
+		threshold?: number,
+		size?: number,
+		display?: string
 	} = $props();
 
 	let thresholdValue = $derived(threshold * limit);

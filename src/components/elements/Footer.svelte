@@ -5,7 +5,7 @@
 	import PlusIcon from "../icons/PlusIcon.svelte";
 	import ProfileIcon from "../icons/ProfileIcon.svelte";
 	import SearchIcon from "../icons/SearchIcon.svelte";
-	import { user } from "../../backend/auth.svelte";
+	import { user } from "../../api/userapi.svelte";
 
 	let { selected = undefined }: { selected?: "home" | "profile" | "search" | "new" | "inbox" } = $props();
 </script>

@@ -2,7 +2,7 @@
 	import { getAuthor } from "../../api/authorapi";
 	import { getBook, searchBooks, type Book } from "../../api/bookapi";
 	import TrashIcon from "../icons/TrashIcon.svelte";
-	import { user } from "../../backend/auth.svelte";
+	import { user } from "../../api/userapi.svelte";
 
 	let { 
 		title = "Choose a book",

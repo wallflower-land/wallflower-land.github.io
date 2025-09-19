@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
-	import { user } from "../../backend/auth.svelte";
+	import { user } from "../../api/userapi.svelte";
 
 	$effect(() => {
 		if (!user()) {

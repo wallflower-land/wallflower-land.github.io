@@ -2,8 +2,8 @@
 	import { goto } from "$app/navigation";
 	import { onMount } from "svelte";
 	import { searchBooks, type Book } from "../../api/bookapi";
-	import { searchPosts, type InternalPost} from "../../api/postapi";
-	import { searchUsers, type User } from "../../api/userapi";
+	import { searchPosts, type Post } from "../../api/postapi";
+	import { searchUsers, type User } from "../../api/userapi.svelte";
 	import Loading from "../../components/util/Loading.svelte";
 	import AnyPost from "../../components/post/AnyPost.svelte";
 	import UserListing from "../../components/UserListing.svelte";
@@ -47,7 +47,7 @@
 		}
 	}
 
-	let posts: Promise<InternalPost[]> = $state(Promise.resolve([]));
+	let posts: Promise<Post[]> = $state(Promise.resolve([]));
 	let books: Promise<Promise<Book>[]> = $state(Promise.resolve([]));
 	let authors: Promise<Promise<Author>[]> = $state(Promise.resolve([]));
 	let users: Promise<User[]> = $state(Promise.resolve([]));
@@ -258,7 +258,6 @@
 <style>
 	section {
 		background-color: var(--crust);
-		view-transition-name: search-box;
 	}
 
 	.loading {

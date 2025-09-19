@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
-	import { usernameErrors } from "../../api/userapi";
-	import { emailIsTaken, passwordErrors, signUp, user, usernameIsTaken } from "../../backend/auth.svelte";
+	import { emailIsTaken, passwordErrors, signUp, user, usernameIsTaken, usernameErrors } from "../../api/userapi.svelte";
 	import Page from "../../components/layout/Page.svelte";
 	import Header from "../../components/elements/Header.svelte";
 	import Link from "../../components/util/Link.svelte";

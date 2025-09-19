@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import WrenchIcon from "../../../../components/icons/WrenchIcon.svelte";
 	import Link from "../../../../components/util/Link.svelte";
 	import Page from "../../../../components/layout/Page.svelte";

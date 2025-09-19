@@ -4,19 +4,17 @@ import {
 	orderBy,
 	query,
 	where,
-	getCountFromServer,
 	doc,
-	setDoc,
 	getAggregateFromServer,
 	average,
 	count,
 	updateDoc,
 } from "firebase/firestore";
-import initializeFirebase from "../backend/backend";
-import { internalPostToPost, type InternalPost, type Post } from "./postapi";
-import { awaitUser } from "./userapi";
+import { type Post } from "./postapi";
+import firebase from "./firebase";
+import type { Nominal } from "./util";
 
-export type ISBN = string;
+export type ISBN = Nominal<string, "ISBN">;
 
 export type Book = {
 	backupCover: string;
@@ -33,9 +31,9 @@ export type Book = {
 	id: string;
 };
 
-let { db } = initializeFirebase();
+let { db } = firebase();
 
-export async function getBookDiscussions(isbn: ISBN): Promise<InternalPost[]> {
+export async function getBookDiscussions(isbn: ISBN): Promise<Post[]> {
 	let posts = (
 		await getDocs(
 			query(
@@ -44,7 +42,7 @@ export async function getBookDiscussions(isbn: ISBN): Promise<InternalPost[]> {
 				orderBy("timestamp", "desc"),
 			),
 		)
-	).docs.map(doc => doc.data()) as InternalPost[];
+	).docs.map(doc => doc.data()) as Post[];
 
 	return posts;
 }
@@ -98,17 +96,17 @@ export async function getBook(isbn: ISBN, fetch_: typeof fetch = fetch): Promise
 }
 
 export async function searchBooks(searchTerm: string, max = 10): Promise<Promise<Book>[]> {
-	if (/^\d{3}\-?\d{10}$/.test(searchTerm)) getBook(searchTerm).then(book => [book]);
+	if (/^\d{3}\-?\d{10}$/.test(searchTerm)) getBook(searchTerm as ISBN).then(book => [book]);
 
 	const query = new URLSearchParams({ q: searchTerm });
 	let response = await fetch(`https://openlibrary.org/search.json?${query}&fields=isbn,editions`);
 	const data = await response.json();
 	let books: { isbn: string[] }[] = data.docs.filter((book: Book) => book.isbn).slice(0, max);
-	return books.map(book => getBook(book.isbn.find(isbn => /^\d{13}$/.test(isbn))!));
+	return books.map(book => getBook(book.isbn.find(isbn => /^\d{13}$/.test(isbn))! as ISBN));
 }
 
 export async function searchBookISBNs(searchTerm: string, max = 10): Promise<string[]> {
-	if (/^\d{3}\-?\d{10}$/.test(searchTerm)) getBook(searchTerm).then(book => [book]);
+	if (/^\d{3}\-?\d{10}$/.test(searchTerm)) getBook(searchTerm as ISBN).then(book => [book]);
 	const query = new URLSearchParams({ q: searchTerm });
 	let response = await fetch(`https://openlibrary.org/search.json?${query}&fields=isbn,editions`);
 	const data = await response.json();

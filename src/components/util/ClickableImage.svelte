@@ -1,7 +1,19 @@
 <script lang="ts">
 	import type { Snippet } from "svelte";
+	import type { HTMLAttributes, HTMLImgAttributes } from "svelte/elements";
 
-	let { src, children, clickable = true, element = $bindable(), ...rest }: { src: string, children?: Snippet, [key: string]: unknown } = $props();
+	let { 
+		src, 
+		children, 
+		clickable = true, 
+		element = $bindable(), 
+		...rest 
+	}: { 
+		src: string,
+		children?: Snippet,
+		clickable?: boolean,
+		element?: HTMLElement
+	} & (HTMLAttributes<HTMLDivElement> | HTMLImgAttributes) = $props();
 
 	let expanded = $state(false);
 
@@ -14,7 +26,7 @@
 {#if children}
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<div {...rest} class="wrapper" onclick={click} style:cursor="pointer">
+	<div {...(rest as any)} class="wrapper" onclick={click} style:cursor="pointer">
 		{@render children()}
 	</div>
 {:else}

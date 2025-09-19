@@ -2,7 +2,11 @@
 	import CloseIcon from "./icons/CloseIcon.svelte";
 	import Popup from "./Popup.svelte";
 
-	let { visible = $bindable(false) } = $props();
+	let { 
+		visible = $bindable(false) 
+	}: { 
+		visible?: boolean 
+	} = $props();
 
 	let confirmLeave: (value: boolean) => void = (_value => {});
 

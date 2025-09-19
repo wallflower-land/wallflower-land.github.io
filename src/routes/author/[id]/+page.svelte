@@ -2,7 +2,7 @@
 	import { type Author } from "../../../api/authorapi";
 	import { getBook } from "../../../api/bookapi";
 	import WrenchIcon from "../../../components/icons/WrenchIcon.svelte";
-	import { user } from "../../../backend/auth.svelte";
+	import { user } from "../../../api/userapi.svelte";
 	import BookCover from "../../../components/book/BookCover.svelte";
 	import ClickableImage from "../../../components/util/ClickableImage.svelte";
 	import Header from "../../../components/elements/Header.svelte";
@@ -33,8 +33,7 @@
 		<h2>Books</h2>
 		<div class="books">
 			{#each books as book}
-				{#await book}
-				{:then book}
+				{#await book then book}
 					<a class="book" href="/book/{book.isbn}">
 						<h1>{book.title}</h1>
 						<BookCover {book} style="width: 2rem;" />

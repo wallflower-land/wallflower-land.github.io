@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { getAuthor } from "../../api/authorapi";
 	import type { Book } from "../../api/bookapi";
-	import type { User } from "../../api/userapi";
+	import type { User } from "../../api/userapi.svelte";
 	import BookCover from "./BookCover.svelte";
 	import StarRating from "./StarRating.svelte";
 

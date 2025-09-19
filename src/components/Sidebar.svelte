@@ -17,7 +17,7 @@
 	import InfoIcon2 from "./icons/InfoIcon2.svelte";
 	import PersonIcon from "./icons/PersonIcon.svelte";
 	import ProfileIcon from "./icons/ProfileIcon.svelte";
-	import { logOut, user } from "../backend/auth.svelte";
+	import { logOut, user } from "../api/userapi.svelte";
 	import BarChartIcon from "./icons/BarChartIcon.svelte";
 	import { onMount } from "svelte";
 	import SearchIcon from "./icons/SearchIcon.svelte";

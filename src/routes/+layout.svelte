@@ -2,8 +2,9 @@
 	import { onNavigate } from '$app/navigation';
 	import globalCss from "../global.css?url";
 	import favicon from "../assets/images/favicon.png";
+	import type { Snippet } from 'svelte';
 
-	let { children } = $props();
+	let { children }: { children: Snippet } = $props();
 
 	onNavigate((navigation) => {
 		if (!document.startViewTransition) return;

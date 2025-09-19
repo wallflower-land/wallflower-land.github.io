@@ -3,7 +3,7 @@
 	import Sidebar from "../Sidebar.svelte";
 	import Footer from "../elements/Footer.svelte";
 	import { setTheme } from "../../api/themes.svelte";
-	import { getPreference } from "../../api/userapi";
+	import { getPreference } from "../../api/userapi.svelte";
 	import Header from "../elements/Header.svelte";
 
 	let { 

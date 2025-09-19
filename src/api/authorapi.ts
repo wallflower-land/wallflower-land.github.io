@@ -1,25 +1,25 @@
-import { getBook } from "./bookapi.ts";
 import { doc, updateDoc, getDoc } from "firebase/firestore";
-import initializeFirebase from "../backend/backend";
+import firebase from "./firebase";
+import type { ISBN } from "./bookapi";
 
 export type Author = {
 	name: string;
 	birthday: string;
 	key: string;
-	books: string[];
+	books: ISBN[];
 	picture: string;
 	bio: string;
 	id: string;
 };
 
-let { db } = initializeFirebase();
+let { db } = firebase();
 
 export async function searchAuthors(
 	searchTerm: string,
 	limit = 10,
 	fetch_: typeof fetch = fetch,
 ): Promise<Promise<Author>[]> {
-	const query = new URLSearchParams({ q: searchTerm, limit });
+	const query = new URLSearchParams({ q: searchTerm, limit: limit as unknown as string });
 	const response = await fetch_(`https://openlibrary.org/search/authors.json?${query}`);
 	const data = await response.json();
 	return data.docs.map((author: any) => getAuthor(author.key));

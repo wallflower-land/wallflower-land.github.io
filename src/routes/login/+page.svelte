@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
-	import { logIn, user } from "../../backend/auth.svelte";
+	import { logIn, user } from "../../api/userapi.svelte";
 	import Page from "../../components/layout/Page.svelte";
 	import Link from "../../components/util/Link.svelte";
 

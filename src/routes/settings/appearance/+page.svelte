@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { setTheme } from "../../../api/themes.svelte";
-	import { getPreference, setPreference } from "../../../api/userapi";
+	import { getPreference, setPreference } from "../../../api/userapi.svelte";
 	import MoonIcon from "../../../components/icons/MoonIcon.svelte";
 	import ScaleIcon from "../../../components/icons/ScaleIcon.svelte";
 	import Header from "../../../components/elements/Header.svelte";

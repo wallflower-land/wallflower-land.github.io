@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { getUserFromId, getUserFromUsername } from "../../api/userapi";
+	import { getUserFromId, getUserFromUsername, type UserId } from "../../api/userapi.svelte";
 	import Page from "../layout/Page.svelte";
 	import Profile from "../Profile.svelte";
 	import Sidebar from "../Sidebar.svelte";
 
-	let { userid = undefined, username = undefined }: { userid?: string; username?: string } = $props();
+	let { userid = undefined, username = undefined }: { userid?: UserId; username?: string } = $props();
 
 	let userProfile = $derived(userid ? getUserFromId(userid) : getUserFromUsername(username!));
 	let sidebar: Sidebar = $state(null!);

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import PostBody from "./PostBody.svelte";
 
-	let { body } = $props();
+	let { body }: { body: string } = $props();
 </script>
 
 <section>

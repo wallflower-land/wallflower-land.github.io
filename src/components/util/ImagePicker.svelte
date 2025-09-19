@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from "svelte";
-	import { uploadFile } from "../../api/storageapi";
+	import { uploadFile, type FileId } from "../../api/storageapi";
+	import type { HTMLInputAttributes } from "svelte/elements";
 
 	let files: FileList = $state(new DataTransfer().files);
 	let preview: HTMLImageElement;
@@ -9,19 +10,18 @@
 
 	let { 
 		aspectRatio = undefined, 
-		onupload = (_imageId: string) => {}, 
+		onupload = (_imageId: FileId) => {}, 
 		imageId = $bindable(null),
 		circular = false,
 		allowEdit = true,
 		...rest 
 	}: {
 		aspectRatio?: number;
-		onupload?: (imageId: string) => void;
-		imageId?: string | null;
+		onupload?: (imageId: FileId) => void;
+		imageId?: FileId | null;
 		circular?: boolean;
 		allowEdit?: boolean;
-		[key: string]: unknown
-	} = $props();
+	} & HTMLInputAttributes = $props();
 
 	let scale = $state(1);
 

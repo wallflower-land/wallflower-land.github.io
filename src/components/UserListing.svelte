@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { getFile } from "../api/storageapi";
-	import type { User } from "../api/userapi";
+	import type { User } from "../api/userapi.svelte";
 	import Badges from "./Badges.svelte";
 
 	let { user }: { user: User } = $props();

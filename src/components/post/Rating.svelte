@@ -1,11 +1,22 @@
 <script lang="ts">
 	import { getAuthor } from "../../api/authorapi";
-	import { getBook } from "../../api/bookapi";
+	import { getBook, type ISBN } from "../../api/bookapi";
+	import type { User } from "../../api/userapi.svelte";
 	import BookCover from "../book/BookCover.svelte";
 	import StarRating from "../book/StarRating.svelte";
 	import PostBody from "./PostBody.svelte";
 
-	let { isbn, rating, review, user } = $props();
+	let {
+		isbn,
+		rating,
+		review,
+		user
+	}: {
+		isbn: ISBN,
+		rating: number,
+		review: string,
+		user: User
+	} = $props();
 
 	let book = getBook(isbn);
 </script>

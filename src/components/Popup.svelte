@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from "svelte";
+	import type { HTMLAttributes } from "svelte/elements";
 
 	let { 
 		children, 
@@ -10,8 +11,7 @@
 		children: Snippet,
 		element?: HTMLElement,
 		visible?: boolean
-		[key: string]: unknown
-	}= $props();
+	} & HTMLAttributes<HTMLDivElement> = $props();
 	
 	function onclick(event: MouseEvent) {
 		if (event.target === element) {

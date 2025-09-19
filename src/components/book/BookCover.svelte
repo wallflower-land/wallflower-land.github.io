@@ -1,4 +1,5 @@
 <script lang="ts">
+	import type { HTMLAttributes } from "svelte/elements";
 	import type { Book } from "../../api/bookapi";
 	import ClickableImage from "../util/ClickableImage.svelte";
 
@@ -9,10 +10,9 @@
 	}: {
 		book: Book,
 		clickable?: boolean,
-		[key: string]: unknown
-	} = $props();
+	} & (HTMLAttributes<HTMLDivElement>) = $props();
 
-	let image: HTMLImageElement | null = $state(null);
+	let image: HTMLImageElement | undefined = $state(undefined);
 
 	function onload() {
 		if (!image) return;

@@ -1,7 +1,15 @@
 <script lang="ts">
+	import type { HTMLAttributes } from "svelte/elements";
 	import RightArrowIcon from "../icons/RightArrowIcon.svelte";
 
-	let { options, value = $bindable(), ...rest }: { options: string[], value?: string, [key: string]: unknown } = $props();
+	let {
+		options, 
+		value = $bindable(), 
+		...rest 
+	}: { 
+		options: string[], 
+		value?: string, 
+	} & HTMLAttributes<HTMLDivElement> = $props();
 
 	let expanded = $state(false);
 

@@ -1,5 +1,8 @@
-import initializeFirebase from "../backend/backend";
 import { collection, getDocs, query } from "firebase/firestore";
+import firebase from "./firebase";
+
+declare const nominalSymbol: unique symbol;
+export type Nominal<T, U extends string> = T & { [nominalSymbol]: U };
 
 export function levenshteinDistance(a: string, b: string): number {
 	a = a.toLowerCase();
@@ -46,7 +49,7 @@ export function distance(value: string, searchTerm: string) {
 	return levenshteinDistance(value, searchTerm);
 }
 
-const { db } = initializeFirebase();
+const { db } = firebase();
 
 const defaultFuzzyQueryOptions = {
 	limit: Infinity,

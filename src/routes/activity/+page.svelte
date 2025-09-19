@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { getUserReplies, user } from "../../backend/auth.svelte";
-	import { getPostFromId, type InternalPost } from "../../api/postapi";
+	import { getUserReplies, user } from "../../api/userapi.svelte";
+	import { getPostFromId, type Post } from "../../api/postapi";
 	import AnyPost from "../../components/post/AnyPost.svelte";
 	import PageWithViews from "../../components/layout/PageWithViews.svelte";
 
@@ -8,11 +8,11 @@
 
 	let view: View = $state(new URLSearchParams(window.location.search).get("view") as View ?? "liked");
 
-	let viewed: InternalPost[] = $state([]);
-	let liked: InternalPost[] = $state([]);
-	let shared: InternalPost[] = $state([]);
-	let saved: InternalPost[] = $state([]);
-	let replied: InternalPost[] = $state([]);
+	let viewed: Post[] = $state([]);
+	let liked: Post[] = $state([]);
+	let shared: Post[] = $state([]);
+	let saved: Post[] = $state([]);
+	let replied: Post[] = $state([]);
 
 	$effect(() => {
 		if (user()) load();

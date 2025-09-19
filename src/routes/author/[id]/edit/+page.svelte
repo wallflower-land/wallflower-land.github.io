@@ -172,18 +172,6 @@
 			padding: 0.5rem;
 			color: var(--subtext-1);
 		}
-
-		div:has(img) {
-			color: var(--overlay-1);
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-
-			img {
-				height: 4rem;
-				border-radius: 0.25rem;
-			}
-		}
 	}
 
 	h2 {

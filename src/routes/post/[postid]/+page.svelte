@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { getPostFromId, getReplies, post, type InternalPost, type PostId } from "../../../api/postapi";
-	import { getFile } from "../../../api/storageapi";
+	import { getPostFromId, getReplies, post, type Post, type PostId } from "../../../api/postapi";
+	import { getFile, type FileId } from "../../../api/storageapi";
 	import AddImageIcon from "../../../components/icons/AddImageIcon.svelte";
 	import SendIcon from "../../../components/icons/SendIcon.svelte";
-	import { user } from "../../../backend/auth.svelte";
+	import { user } from "../../../api/userapi.svelte";
 	import CharacterLimitMeter from "../../../components/util/CharacterLimitMeter.svelte";
 	import ImageCarousel from "../../../components/util/ImageCarousel.svelte";
 	import ImagePicker from "../../../components/util/ImagePicker.svelte";
@@ -19,7 +19,7 @@
 	let replyState: "contracted" | "expanded" = $state("contracted");
 
 	let replies = $derived(thePost.then(post => getReplies(post!)));
-	let newReplies: InternalPost[] = $state([]);
+	let newReplies: Post[] = $state([]);
 
 	function expand() {
 		replyState = "expanded";
@@ -40,7 +40,7 @@
 	let replyBody = $state("");
 	let canReply = $derived(/\S/.test(replyBody));
 
-	let images: string[] = $state([]);
+	let images: FileId[] = $state([]);
 
 	async function sendReply() {
 		let body = replyBody;
@@ -56,7 +56,7 @@
 
 	let parentChain = $derived.by(async () => {
 		let current = (await thePost)!;
-		let chain: InternalPost[] = [];
+		let chain: Post[] = [];
 		while (true) {
 			if (current.type !== "reply") return chain.toReversed();	
 			current = (await getPostFromId(current.parent))!;

@@ -2,14 +2,13 @@
 	import { goto } from "$app/navigation";
 	import { onMount } from "svelte";
 	import { getBook } from "../api/bookapi";
-	import { type InternalPost } from "../api/postapi";
-	import { getFavoriteBook, getFollowers, getUserPosts, type User } from "../api/userapi";
+	import { type Post } from "../api/postapi";
+	import { getFavoriteBook, getFollowers, getUserPosts, type User, updateUser, user } from "../api/userapi.svelte";
 	import BookIcon from "./icons/BookIcon.svelte";
 	import ClockIcon from "./icons/ClockIcon.svelte";
 	import LeftArrowIcon from "./icons/LeftArrowIcon.svelte";
 	import SortIcon from "./icons/SortIcon.svelte";
 	import StarIcon from "./icons/StarIcon.svelte";
-	import { updateUser, user } from "../backend/auth.svelte";
 	import Badges from "./Badges.svelte";
 	import BookListing from "./book/BookListing.svelte";
 	import ContextMenu from "./util/ContextMenu.svelte";
@@ -61,8 +60,8 @@
 			return posts
 				.filter(post => post.type === "rating")
 				.toSorted({
-					best: (a: InternalPost, b: InternalPost) => b.rating - a.rating,
-					recent: (a: InternalPost, b: InternalPost) => b.timestamp - a.timestamp,
+					best: (a: Post, b: Post) => b.rating - a.rating,
+					recent: (a: Post, b: Post) => b.timestamp - a.timestamp,
 				}[ratingSort]);
 		});
 	});

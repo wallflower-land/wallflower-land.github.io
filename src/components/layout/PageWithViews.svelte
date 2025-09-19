@@ -7,7 +7,7 @@
 	import Views from './Views.svelte';
 	import Header from "../elements/Header.svelte";
 	import Page from './Page.svelte';
-	import { user } from '../../backend/auth.svelte';
+	import { user } from '../../api/userapi.svelte';
 	import { getFile } from '../../api/storageapi';
 	import WallflowerIcon from '../icons/WallflowerIcon.svelte';
 	import BellIcon from '../icons/BellIcon.svelte';

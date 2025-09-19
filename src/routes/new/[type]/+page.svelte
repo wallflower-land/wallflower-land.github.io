@@ -6,10 +6,11 @@
 	import Select from "../../../components/util/Select.svelte";
 	import EyeIcon from "../../../components/icons/EyeIcon.svelte";
 	import CharacterLimitMeter from "../../../components/util/CharacterLimitMeter.svelte";
-	import { updateUser, user } from "../../../backend/auth.svelte";
+	import { updateUser, user } from "../../../api/userapi.svelte";
 	import BookSearch from "../../../components/book/BookSearch.svelte";
 	import ImagePicker from "../../../components/util/ImagePicker.svelte";
 	import ImageCarousel from "../../../components/util/ImageCarousel.svelte";
+	import type { FileId } from "../../../api/storageapi";
 
 	let { data }: { data: { type: PostType } } = $props();
 	let type = $derived(data.type);
@@ -58,7 +59,7 @@
 
 	let markAsFinished = $state(true);
 
-	let images: string[] = $state([]);
+	let images: FileId[] = $state([]);
 </script>
 
 <Page header="New {type} Post">

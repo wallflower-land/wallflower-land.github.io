@@ -1,14 +1,13 @@
 <script lang="ts">
-	import { beforeNavigate, goto } from "$app/navigation";
+	import { goto } from "$app/navigation";
 	import { getBook, type Book } from "../../../api/bookapi";
-	import { getFile } from "../../../api/storageapi";
-	import { awaitUser, usernameErrors } from "../../../api/userapi";
+	import { getFile, type FileId } from "../../../api/storageapi";
+	import { awaitUser, usernameErrors, updateUser, user, usernameIsTaken } from "../../../api/userapi.svelte";
 	import AuthorIcon from "../../../components/icons/AuthorIcon.svelte";
 	import DeveloperIcon from "../../../components/icons/DeveloperIcon.svelte";
 	import EditIcon from "../../../components/icons/EditIcon.svelte";
 	import SproutIcon from "../../../components/icons/SproutIcon.svelte";
 	import WrenchIcon from "../../../components/icons/WrenchIcon.svelte";
-	import { updateUser, user, usernameIsTaken } from "../../../backend/auth.svelte";
 	import BackButton from "../../../components/util/BackButton.svelte";
 	import BookSearch from "../../../components/book/BookSearch.svelte";
 	import CharacterLimitMeter from "../../../components/util/CharacterLimitMeter.svelte";
@@ -27,11 +26,11 @@
 	});
 
 	let displayName = $state("");
-	let banner = $state("");
+	let banner: FileId = $state("" as FileId);
 	let username = $state("");
 	let bio = $state("");
 	let pronouns = $state("");
-	let picture = $state("")
+	let picture: FileId = $state("" as FileId)
 
 	let popup: LeavePagePopup;
 

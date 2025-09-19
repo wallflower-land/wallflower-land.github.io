@@ -4,6 +4,7 @@
 	import ImageCarousel from "../util/ImageCarousel.svelte";
 	import PostBody from "./PostBody.svelte";
 	import { getBook, type ISBN } from "../../api/bookapi";
+	import type { FileId } from "../../api/storageapi";
 
 	let { 
 		body, 
@@ -11,7 +12,7 @@
 		isbns 
 	}: {
 		body: string,
-		images: string[],
+		images: FileId[],
 		isbns: ISBN[],
 	} = $props();
 

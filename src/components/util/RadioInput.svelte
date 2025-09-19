@@ -1,4 +1,6 @@
 <script lang="ts">
+	import type { HTMLButtonAttributes } from "svelte/elements";
+
 	let { 
 		value = $bindable(), 
 		size = 1, 
@@ -12,8 +14,7 @@
 		onenable?: () => void,
 		ondisable?: () => void,
 		onchange?: (value: boolean) => void,
-		[key: string]: unknown
-	} = $props();
+	} & Omit<Omit<HTMLButtonAttributes, "onchange">, "value"> = $props();
 
 	function toggle() {
 		value = !value;

@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { getFile } from "../../api/storageapi";
+	import type { HTMLAttributes } from "svelte/elements";
+	import { getFile, type FileId } from "../../api/storageapi";
 	import TrashIcon from "../icons/TrashIcon.svelte";
 	import TriangleLeftIcon from "../icons/TriangleLeftIcon.svelte";
 	import TriangleRightIcon from "../icons/TriangleRightIcon.svelte";
@@ -11,11 +12,10 @@
 		editable = false,
 		...rest
 	}: { 
-		images: string[], 
+		images: FileId[], 
 		clickable?: boolean,
 		editable?: boolean,
-		[key: string]: unknown
-	} = $props();
+	} & HTMLAttributes<HTMLDivElement> = $props();
 
 	let imageIndex = $state(0);
 	function cycleImage(amount: number) {

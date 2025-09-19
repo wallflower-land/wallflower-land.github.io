@@ -1,11 +1,16 @@
 <script lang="ts">
+	import type { HTMLAttributes } from "svelte/elements";
 	import { format } from "../../api/postapi";
 	import Link from "../util/Link.svelte";
 
-	let { body, ...rest } = $props();
+	let { 
+		body,
+		...rest 
+	}: { body: string } & HTMLAttributes<HTMLDivElement> = $props();
 
 	let formatted = $derived(format(body));
-	let segments = $derived(formatted.then(formatted => formatted.split(/(<a(?:.+)? href="(?:.+)"(?:.+?)?>(?:.+?)<\/a>)/).map(segment => {
+	type Segment = { type: "link", href: string, text: string } | { type: "plain", text: string };
+	let segments: Promise<Segment[]> = $derived(formatted.then(formatted => formatted.split(/(<a(?:.+)? href="(?:.+)"(?:.+?)?>(?:.+?)<\/a>)/).map(segment => {
 		const match = segment.match(/^<a(?:.+)? href="(.+)"(?:.+?)?>(.+?)<\/a>$/);
 		if (match) {
 			return {

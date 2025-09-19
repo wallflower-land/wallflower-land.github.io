@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { User } from "../api/userapi";
+	import type { User } from "../api/userapi.svelte";
 	import DeveloperIcon from "./icons/DeveloperIcon.svelte";
 	import EditIcon from "./icons/EditIcon.svelte";
 	import HeartIcon from "./icons/HeartIcon.svelte";

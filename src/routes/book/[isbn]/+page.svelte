@@ -3,7 +3,7 @@
 	import { getAuthor } from "../../../api/authorapi";
 	import { getBookDiscussions, getBookRating } from "../../../api/bookapi";
 	import WrenchIcon from "../../../components/icons/WrenchIcon.svelte";
-	import { updateUser, user } from "../../../backend/auth.svelte";
+	import { updateUser, user } from "../../../api/userapi.svelte";
 	import BookCover from "../../../components/book/BookCover.svelte";
 	import PageWithViews from "../../../components/layout/PageWithViews.svelte";
 	import AnyPost from "../../../components/post/AnyPost.svelte";

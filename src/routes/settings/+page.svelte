@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import BellIcon from "../../components/icons/BellIcon.svelte";
 	import DeveloperIcon from "../../components/icons/DeveloperIcon.svelte";
 	import InfoIcon2 from "../../components/icons/InfoIcon2.svelte";

@@ -9,7 +9,7 @@
 	import PasswordIcon from "../../../components/icons/PasswordIcon.svelte";
 	import TrashIcon from "../../../components/icons/TrashIcon.svelte";
 	import WrenchIcon from "../../../components/icons/WrenchIcon.svelte";
-	import { changeEmail, changePassword, deleteAccount, passwordErrors, updateUser, user } from "../../../backend/auth.svelte";
+	import { changeEmail, changePassword, deleteAccount, passwordErrors, updateUser, user } from "../../../api/userapi.svelte";
 	import Page from "../../../components/layout/Page.svelte";
 	import Popup from "../../../components/Popup.svelte";
 

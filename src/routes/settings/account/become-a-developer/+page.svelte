@@ -1,5 +1,4 @@
-
-<script>
+<script lang="ts">
 	import DeveloperIcon from "../../../../components/icons/DeveloperIcon.svelte";
 	import Link from "../../../../components/util/Link.svelte";
 	import Page from "../../../../components/layout/Page.svelte";

@@ -12,15 +12,14 @@
 		likePost,
 		sharePost,
 		unlikePost,
-		type InternalPost,
+		type Post,
 	} from "../../api/postapi";
 	import { getFile } from "../../api/storageapi";
-	import { getUserFromId } from "../../api/userapi";
+	import { getUserFromId, updateUser, user } from "../../api/userapi.svelte";
 	import CommentIcon from "../icons/CommentIcon.svelte";
 	import DotMenuIcon from "../icons/DotMenuIcon.svelte";
 	import EyeIcon from "../icons/EyeIcon.svelte";
 	import HeartIcon from "../icons/HeartIcon.svelte";
-	import { updateUser, user } from "../../backend/auth.svelte";
 	import Badges from "../Badges.svelte";
 	import ContextMenu from "../util/ContextMenu.svelte";
 	import ImageCarousel from "../util/ImageCarousel.svelte";
@@ -37,7 +36,7 @@
 		noborder = false,
 		element = $bindable()
 	}: { 
-		post: InternalPost;
+		post: Post;
 		postpage?: boolean;
 		noborder?: boolean;
 		element?: HTMLElement
@@ -332,7 +331,9 @@
 		<!-- The post content itself -->
 		{#if post.type === "rating"}
 			{#await books[0] then book}
-				<Rating isbn={book.isbn} rating={post.rating} review={post.body} user={post.poster} />
+				{#await poster then poster}
+					<Rating isbn={book.isbn} rating={post.rating} review={post.body} user={poster} />
+				{/await}
 			{/await}
 		{:else if post.type === "general"}
 			<Discussion isbns={post.books} body={post.body} images={post.pictures} />
@@ -340,7 +341,9 @@
 			<Reply body={post.body} />
 		{:else if post.type === "update"}
 			{#await books[0] then book}
-				<BookUpdate updateType={post.updateType} body={post.body} isbn={book.isbn} user={post.poster} />
+				{#await poster then poster}
+					<BookUpdate updateType={post.updateType} body={post.body} isbn={book.isbn} user={poster} />
+				{/await}
 			{/await}
 		{/if}
 

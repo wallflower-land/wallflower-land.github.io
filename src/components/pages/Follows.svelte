@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getUserFromId, getUserFromUsername, getFollowers } from "../../api/userapi";
+	import { getUserFromId, getUserFromUsername, getFollowers } from "../../api/userapi.svelte";
 	import PageWithViews from "../layout/PageWithViews.svelte";
 	import UserListing from "../UserListing.svelte";
 

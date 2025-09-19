@@ -1,7 +1,16 @@
 <script lang="ts">
+	import type { Snippet } from "svelte";
 	import ExternalLinkIcon from "../icons/ExternalLinkIcon.svelte";
+	import type { HTMLAnchorAttributes } from "svelte/elements";
 
-	let { href, children, ...rest } = $props();
+	let {
+		href,
+		children,
+		...rest
+	}: {
+		href: string,
+		children: Snippet,
+	} & HTMLAnchorAttributes = $props();
 
 	let isExternal = $derived(!/^[\.\/]/.test(href));
 </script>
