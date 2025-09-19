@@ -55,7 +55,7 @@
 	});
 </script>
 
-<SideSwiper {content} {gotoNext} {gotoPrevious} bind:left />
+<SideSwiper {content} {gotoNext} {gotoPrevious} bind:left viewCount={availableViews.length} />
 
 <div 
 	class="views" 

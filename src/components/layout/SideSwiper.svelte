@@ -2,6 +2,7 @@
 	let {
 		gotoNext,
 		gotoPrevious,
+		viewCount,
 		left = $bindable("0px"),
 		content = undefined,
 		swipeThreshold = 40,
@@ -11,6 +12,7 @@
 		left: string,
 		content?: HTMLElement,
 		swipeThreshold?: number,
+		viewCount: number
 	} = $props();
 
 	let startX = 0;
@@ -83,6 +85,12 @@
 
 		axisLocked = "none";
 	}
+
+	$effect.pre(() => {
+		const totalWidth = content?.clientWidth || window.innerWidth;
+		const panelWidth = totalWidth / viewCount;
+		left = `${Math.max(Math.min(0, pxToNumber(left)), -(totalWidth - panelWidth))}px`;
+	});
 
 	$effect(() => {
 		const target = content ?? document;
