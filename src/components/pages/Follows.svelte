@@ -21,7 +21,6 @@
 <PageWithViews
 	bind:view 
 	views={["following", "followers"]} 
-	marginTop="3rem" 
 	{formatViewName} 
 	header="Follows"
 	fullpage

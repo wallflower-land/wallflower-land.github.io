@@ -57,6 +57,12 @@
 			setTimeout(() => spinLogo = false, 2000);
 		}
 	}
+
+	let viewComponent: Views<View>;
+
+	export function setView(view: View): void {
+		viewComponent.setView(view);
+	}
 </script>
 
 {#snippet nav()}
@@ -89,6 +95,7 @@
 		{@render afterHeader?.()}
 		<Views 
 			{onViewChange}
+			bind:this={viewComponent}
 			content={contentElement}
 			{viewFilter} 
 			{formatViewName} 

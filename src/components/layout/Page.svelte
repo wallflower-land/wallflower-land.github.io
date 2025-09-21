@@ -5,6 +5,7 @@
 	import { setTheme } from "../../api/themes.svelte";
 	import { getPreference } from "../../api/userapi.svelte";
 	import Header from "../elements/Header.svelte";
+	import type { HTMLAttributes } from "svelte/elements";
 
 	let { 
 		sidebar = $bindable(), 
@@ -17,8 +18,7 @@
 		sidebar?: Sidebar,
 		type?: "home" | "search" | "new" | "inbox" | "profile",
 		header?: string,
-		[key: string]: unknown,
-	} = $props();
+	} & HTMLAttributes<HTMLElement> = $props();
 
 	onMount(() => {
 		setTheme(getPreference("darkMode") ? "Catppuccin Mocha" : "Catppuccin Latte");

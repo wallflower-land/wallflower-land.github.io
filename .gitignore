@@ -12,3 +12,4 @@ src/env.json
 /cache
 /build/**/*/source/
 *debug.log
+serviceAccountKey.json

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { User } from "../api/userapi.svelte";
+	import CherriesIcon from "./icons/CherriesIcon.svelte";
 	import DeveloperIcon from "./icons/DeveloperIcon.svelte";
 	import EditIcon from "./icons/EditIcon.svelte";
 	import HeartIcon from "./icons/HeartIcon.svelte";
@@ -11,6 +12,32 @@
 
 {#if forUser.tags.length > 0}
 	<span class="badges" style:gap="{size / 3.5}rem">
+
+		<!-- Special Badges -->
+		{#if forUser.tags.includes("vi")}
+			<div
+				style:width="{size * 1.5}rem"
+				style:height="{size * 1.5}rem"
+				style:border-radius="{size / 2}rem"
+				title="vi is cherry flavored"
+				class="badge cherry"
+			>
+				<CherriesIcon stroke="var(--crust)" style="width: {size}rem;" />
+			</div>
+		{/if}
+		{#if forUser.tags.includes("love")}
+			<div
+				style:width="{size * 1.5}rem"
+				style:height="{size * 1.5}rem"
+				style:border-radius="{size / 2}rem"
+				title="{forUser.displayName} is loved by @vi <3"
+				class="badge love"
+			>
+				<HeartIcon fill="var(--crust)" stroke="var(--crust)" style="width: {size}rem;" />
+			</div>
+		{/if}
+
+		<!-- Regluar Badges -->
 		{#if forUser.tags.includes("dev") && forUser.showDeveloperBadge}
 			<a
 				style:width="{size * 1.5}rem"
@@ -33,18 +60,6 @@
 				class="badge author"
 			>
 				<EditIcon stroke="var(--crust)" style="width: {size}rem;" />
-			</a>
-		{/if}
-		{#if forUser.tags.includes("love")}
-			<a
-				style:width="{size * 1.5}rem"
-				style:height="{size * 1.5}rem"
-				style:border-radius="{size / 2}rem"
-				href="/settings/account"
-				title="{forUser.displayName} is loved by @vi <3"
-				class="badge love"
-			>
-				<HeartIcon fill="var(--crust)" stroke="var(--crust)" style="width: {size}rem;" />
 			</a>
 		{/if}
 		{#if forUser.tags.includes("mod") && forUser.showModeratorBadge}
@@ -103,5 +118,10 @@
 
 	.love {
 		background-image: linear-gradient(to bottom right, var(--pink), var(--red));
+	}
+
+	.cherry {
+		background-image: linear-gradient(to bottom right, var(--pink), var(--red));
+		transform: scaleX(-100%);
 	}
 </style>

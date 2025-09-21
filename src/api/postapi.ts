@@ -1,6 +1,5 @@
 import {
 	collection,
-	deleteDoc,
 	doc,
 	getDoc,
 	getDocs,
@@ -19,7 +18,13 @@ import type { FileId } from "./storageapi";
 
 export type PostType = "general" | "rating" | "update" | "reply";
 
-export type UpdateType = "start" | "finish" | "abandon" | "update";
+export type UpdateType =
+	| "start"
+	| "finish"
+	| "abandon"
+	| "update"
+	| "add to reading list"
+	| "remove from reading list";
 
 /**
  * A `PostId` is just an alias for `string`; The type exists to convey the semantic meaning
@@ -83,6 +88,7 @@ export type Post<T extends PostType = PostType> = {
 	rating: T extends "rating" ? number : never;
 	updateType: T extends "update" ? UpdateType : never;
 	parent: T extends "reply" ? PostId : never;
+	deletionStatus: "none" | "deleted" | "removed";
 };
 
 let { db } = firebase();
@@ -97,7 +103,10 @@ let { db } = firebase();
  * @returns The created post object.
  */
 export async function post(
-	post: Partial<Omit<Post, "id">> & { body: string; type: PostType },
+	post: Partial<Omit<Post, "timestamp" | "id" | "deletionStatus">> & {
+		body: string;
+		type: PostType;
+	},
 ): Promise<Post> {
 	let toPost: Post = {
 		timestamp: Date.now(),
@@ -105,6 +114,7 @@ export async function post(
 		authors: [],
 		books: [],
 		pictures: [],
+		deletionStatus: "none",
 		id: "",
 		...post,
 	} as Post;
@@ -113,19 +123,9 @@ export async function post(
 	return { ...toPost, id: postDoc.id as PostId };
 }
 
-/**
- * Deletes a post from the database. The posts are compared by `id`, meaning any post that matches
- * the given post's `id` will be deleted, regardless of if the post's contents match.
- *
- * This will *not* update anything on the UI; If you want to hide a post after it's deleted without
- * refreshing the page, that requires its own handling in the UI.
- *
- * @param post The post to delete.
- *
- * @returns A promise that resolves when the database has deleted the post.
- */
 export async function deletePost(post: Post): Promise<void> {
-	await deleteDoc(doc(db, "posts", post.id));
+	post.deletionStatus = "deleted";
+	await updateDoc(doc(db, "posts", post.id), { deletionStatus: "deleted" });
 }
 
 /**

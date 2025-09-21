@@ -1,11 +1,23 @@
 <script lang="ts">
-	import { onMount } from "svelte";
+	import { onMount, type Snippet } from "svelte";
 
 	let menu: HTMLElement;
 
-	export function open(event: MouseEvent) {
-		menu.style.left = `${event.clientX - menu.clientWidth}px`;
-		menu.style.top = `${event.clientY}px`;
+	let { 
+		top = undefined, 
+		left = undefined, 
+		right = undefined, 
+		bottom = undefined,
+		children
+	}: {
+		top?: string;
+		left?: string;
+		right?: string;
+		bottom?: string;
+		children: Snippet
+	} = $props();
+
+	export function open() {
 		visible = true;
 		menu.focus();
 	}
@@ -16,12 +28,10 @@
 		visible = false;
 	}
 
-	export function toggle(event: MouseEvent) {
+	export function toggle() {
 		if (visible) close();
-		else open(event);
+		else open();
 	}
-
-	let { children } = $props();
 
 	onMount(() => {
 		menu.addEventListener("focusout", event => {
@@ -29,11 +39,24 @@
 				close();
 			}
 		});
+
+		document.addEventListener("touchstart", close, true);
+		document.addEventListener("scroll", close, true);
+		document.addEventListener("wheel", close, true);
 	});
 </script>
 
 <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-<section tabindex="0" bind:this={menu} class="contextmenu" style:scale={visible ? 1 : 0}>
+<section
+	tabindex="0" 
+	bind:this={menu} 
+	class="contextmenu" 
+	style:scale={visible ? 1 : 0}
+	style:top
+	style:bottom
+	style:left
+	style:right
+>
 	{@render children()}
 </section>
 
@@ -41,7 +64,7 @@
 	.contextmenu {
 		display: flex;
 		flex-direction: column;
-		position: fixed;
+		position: absolute;
 		overflow: hidden;
 		border-radius: 0.5rem;
 		border: 1px solid var(--surface-0);

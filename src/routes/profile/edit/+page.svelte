@@ -23,6 +23,10 @@
 		pronouns = user.pronouns;
 		picture = user.picture;
 		banner = user.banner;
+		showNewbieBadge = user.showNewbieBadge;
+		showModeratorBadge = user.showModeratorBadge;
+		showDeveloperBadge = user.showDeveloperBadge;
+		showAuthorBadge = user.showAuthorBadge;
 	});
 
 	let displayName = $state("");
@@ -31,6 +35,10 @@
 	let bio = $state("");
 	let pronouns = $state("");
 	let picture: FileId = $state("" as FileId)
+	let showNewbieBadge = $state(true);
+	let showAuthorBadge = $state(true);
+	let showDeveloperBadge = $state(true);
+	let showModeratorBadge = $state(true);
 
 	let popup: ConfirmationPopup;
 
@@ -56,12 +64,16 @@
 	let unsavedChanges = $derived.by(() => {
 		if (!user() || saved) return false;
 
-		if (displayName !== user()!.displayName) return true;
+		if (displayName.trim() !== user()!.displayName) return true;
 		if (banner !== user()!.banner) return true;
 		if (bio !== user()!.bio) return true;
 		if (pronouns !== user()!.pronouns) return true;
 		if (picture !== user()!.picture) return true;
 		if (changedCurrentBook) return true;
+		if (showAuthorBadge !== user()!.showAuthorBadge) return true;
+		if (showDeveloperBadge !== user()!.showDeveloperBadge) return true;
+		if (showNewbieBadge !== user()!.showNewbieBadge) return true;
+		if (showModeratorBadge !== user()!.showModeratorBadge) return true;
 
 		return false;
 	});
@@ -99,13 +111,17 @@
 		}
 
 		await updateUser({ 
-			displayName,
+			displayName: displayName.trim(),
 			bio,
 			username,
 			pronouns,
 			picture,
 			banner,
-			currentBook: chosenCurrentBooks.length === 0 ? null : chosenCurrentBooks[0].isbn
+			currentBook: chosenCurrentBooks.length === 0 ? null : chosenCurrentBooks[0].isbn,
+			showAuthorBadge,
+			showNewbieBadge,
+			showDeveloperBadge,
+			showModeratorBadge
 		});
 		saved = true;
 		await goto("/profile");
@@ -251,11 +267,7 @@
 			<hr />
 
 			<div class="book-search">
-				<BookSearch
-					title="Currently Reading"
-					types={["search", "list"]} 
-					bind:books={chosenCurrentBooks} 
-				/>
+				<BookSearch title="Currently Reading" bind:books={chosenCurrentBooks} />
 				<button
 					class="reset-current-book" 
 					disabled={!changedCurrentBook}
@@ -274,13 +286,7 @@
 						<DeveloperIcon stroke="var(--crust)" style="width: 1rem; height: 1rem;" />
 					</div>
 					Show developer badge
-					<RadioInput 
-						size={0.6}
-						bind:value={
-							() => currentUser.showDeveloperBadge,
-							(value) => updateUser({ showDeveloperBadge: value })
-						}
-					/>
+					<RadioInput size={0.6} bind:value={showDeveloperBadge} />
 				</span>
 			{/if}
 			{#if currentUser.tags.includes("mod")}
@@ -289,13 +295,7 @@
 						<WrenchIcon stroke="var(--crust)" style="width: 1rem; height: 1rem;" />
 					</div>
 					Show moderator badge
-					<RadioInput 
-						size={0.6}
-						bind:value={
-							() => currentUser.showModeratorBadge,
-							(value) => updateUser({ showModeratorBadge: value })
-						}
-					/>
+					<RadioInput size={0.6} bind:value={showModeratorBadge} />
 				</span>
 			{/if}
 			{#if currentUser.tags.includes("author")}
@@ -304,13 +304,7 @@
 						<AuthorIcon stroke="var(--crust)" style="width: 1rem; height: 1rem;" />
 					</div>
 					Show author badge
-					<RadioInput 
-						size={0.6}
-						bind:value={
-							() => currentUser.showAuthorBadge,
-							(value) => updateUser({ showAuthorBadge: value })
-						}
-					/>
+					<RadioInput size={0.6} bind:value={showAuthorBadge} />
 				</span>
 			{/if}
 			{#if Date.now() - currentUser.birthmoment < 1000 * 60 * 60 * 24 * 7}
@@ -319,13 +313,7 @@
 						<SproutIcon stroke="var(--crust)" style="width: 1rem; height: 1rem;" />
 					</div>
 					Show newbie badge
-					<RadioInput 
-						size={0.6}
-						bind:value={
-							() => currentUser.showNewbieBadge,
-							(value) => updateUser({ showNewbieBadge: value })
-						}
-					/>
+					<RadioInput size={0.6} bind:value={showNewbieBadge} />
 				</span>
 			{/if}
 		</div>

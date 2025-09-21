@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { goto } from "$app/navigation";
 	import { getAuthor } from "../../../api/authorapi";
 	import { getBookDiscussions, getBookRating } from "../../../api/bookapi";
 	import WrenchIcon from "../../../components/icons/WrenchIcon.svelte";
@@ -9,20 +8,14 @@
 	import AnyPost from "../../../components/post/AnyPost.svelte";
 	import StarRating from "../../../components/book/StarRating.svelte";
 	import { haptic } from "ios-haptics";
+	import { post } from "../../../api/postapi";
 
 	let { data } = $props();
 	let book = $derived(data.book);
 	let author = $derived(getAuthor(book.authorKey));
 
 	let view: "info" | "discussion" = $state("info");
-
-	function setView(viewName: "info" | "discussion") {
-		return function() {
-			view = viewName;
-			const params = new URLSearchParams({ view });
-			goto(`/book/${book.isbn}?${params}`);
-		}
-	}
+	let page: PageWithViews<"info" | "discussion">;
 
 	let discussions = $derived(getBookDiscussions(book.isbn));
 	let isInReadingList = $derived(user()?.readingList.includes(book.isbn) ?? false)
@@ -30,15 +23,27 @@
 	async function addToReadingList() {
 		haptic();
 		const readingList = user()!.readingList;
-		updateUser({ readingList: [...readingList, book.isbn]  })
+		updateUser({ readingList: [...new Set([...readingList, book.isbn])] });
 		user()?.readingList.push(book.isbn);
+		post({ 
+			type: "update",
+			updateType: "add to reading list",
+			books: [book.isbn],
+			body: "",
+		});
 	}
 
 	async function removeFromReadingList() {
 		haptic();
 		const readingList = user()!.readingList.filter(isbn => isbn !== book.isbn);
-		updateUser({ readingList })
+		updateUser({ readingList });
 		user()!.readingList = readingList;
+		post({ 
+			type: "update",
+			updateType: "remove from reading list",
+			books: [book.isbn],
+			body: "",
+		});
 	}
 
 	function makeReadable(description: string, interval = 3) {
@@ -78,6 +83,7 @@
 	views={["info", "discussion"]}
 	header={book.title} 
 	subheader={author.then(author => author.name)}
+	bind:this={page}
 >
 	<div class="info">
 		<div class="book-info">
@@ -91,7 +97,7 @@
 			</div>
 			<BookCover {book} style="width: 10rem" />
 			{#await getBookRating(book.isbn) then { rating, count } }
-				<button class="rating" onclick={setView("discussion")}>
+				<button class="rating" onclick={() => page.setView("discussion")}>
 					<StarRating {rating} /> {rating.toFixed(1)}
 					<span class="count">({count})</span>
 				</button>

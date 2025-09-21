@@ -46,7 +46,7 @@
 	}
 
 	export async function confirmed(): Promise<boolean> {
-		visible = true;
+		open();
 		return new Promise((resolve) => {
 			confirmLeave = resolve;
 		});

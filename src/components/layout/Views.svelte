@@ -30,7 +30,7 @@
 
 	let width = 0;
 
-	function setView(newView: View) {
+	export function setView(newView: View) {
 		view = newView;
 		const params = new URLSearchParams(window.location.search);
 		params.set("view", view);

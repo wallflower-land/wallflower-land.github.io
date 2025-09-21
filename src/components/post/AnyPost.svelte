@@ -30,6 +30,7 @@
 	import Rating from "./Rating.svelte";
 	import Reply from "./Reply.svelte";
 	import { haptic } from "ios-haptics";
+	import ConfirmationPopup from "../ConfirmationPopup.svelte";
 
 	let {
 		post,
@@ -48,7 +49,7 @@
 	 * allows things like deleting the post (if you're the poster), reporting the
 	 * post, etc.
 	 */
-	let actionsMenu: ContextMenu;
+	let actionsMenu: ContextMenu | null = $state(null);
 
 	/**
 	 * The amount of seconds that have elapsed since the post was posted.
@@ -188,19 +189,15 @@
 	}
 
 	/**
-	 * Whether or not this post has been deleted. This is used to hide the post
-	 * in the UI when it's deleted, since deleting it in the database won't immediately
-	 * update the UI.
-	 */
-	let isDeleted = $state(false);
-
-	/**
 	 * Deletes this post. This deletes it internally in the database and
 	 * updates the UI to hide the post.
 	 */
 	async function deleteAndUpdate() {
-		isDeleted = true;
+		actionsMenu?.close();
 		await deletePost(post);
+		if (postpage) {
+			goto("/profile");
+		}
 	}
 
 	let shareNotification: Notification = $state(null!);
@@ -220,7 +217,7 @@
 	 * reflect the shared post. The This needn't be awaited to update the UI.
 	 */
 	async function share() {
-		actionsMenu.close();
+		actionsMenu?.close();
 		if (navigator.share) {
 			navigator.share({
 				url: `https://wallflower.land/post/${post.id}`
@@ -242,187 +239,207 @@
 	}
 
 	async function save() {
-		actionsMenu.close();
+		actionsMenu?.close();
 		saveNotification.show();
 		await updateUser({ saved: [...user()!.saved, post.id] });
 	}
 
 	async function unsave() {
-		actionsMenu.close();
+		actionsMenu?.close();
 		unsaveNotification.show();
 		await updateUser({ saved: user()!.saved.filter(id => id !== post.id) });
 	}
 
 	const poster = getUserFromId(post.poster);
 	const books = post.books.map(isbn => getBook(isbn));
+	let deletePostConfirmation: ConfirmationPopup;
 </script>
 
-<!-- svelte-ignore a11y_click_events_have_key_events -->
-<section
-	style:background={postpage ? "var(--crust)" : "var(--base)"}
-	style:display={isDeleted ? "none" : "flex"}
-	tabindex="0"
-	role="link"
-	onclick={clickPost}
-	style:border-bottom={(postpage || noborder) ? "none" : `1px solid var(--surface-0)`}
-	bind:this={element}
->
-	<!-- Poster's profile picture -->
-	<div class="profile">
-		{#await poster}
-			<div class="no-picture"></div>
-		{:then poster}
-			{#await getFile(poster.picture)}
+{#if postpage || post.deletionStatus === "none"}
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
+	<section
+		style:background={postpage ? "var(--crust)" : "var(--base)"}
+		tabindex="0"
+		role="link"
+		onclick={clickPost}
+		style:border-bottom={(postpage || noborder) ? "none" : `1px solid var(--surface-0)`}
+		bind:this={element}
+	>
+		<!-- Poster's profile picture -->
+		<div class="profile">
+			{#await poster}
 				<div class="no-picture"></div>
-			{:then pfp}
-				<a
-					style:outline="0.75rem solid {postpage ? "var(--crust)" : "var(--base)"}"
-					aria-label="Go to poster's profile"
-					style:background-image={`url("${pfp}")`}
-					href={`/profile/${poster.username}`}>
-				</a>
-			{/await}
-		{/await}
-	</div>
-
-	<div class="content-outer">
-		<!-- User info: Display Name & Username -->
-		{#await poster}
-			<span class="user">
-				<span class="missing-username"></span>
-				<button class="timestamp" onclick={toggleTimeFormat}>
-					{@html elapsedTime}
-				</button>
-			</span>
-		{:then poster}
-			<span class="user">
-				<div class="name">
-					<a href="/@{poster.username}" class="display-name {timeFormat === "absolute" ? "absolute-timestamp" : ""}">{poster.displayName}</a>
-					<a href="/@{poster.username}" class="username">{`@${poster.username}`}</a>
-				</div>
-
-				<Badges forUser={poster} size={0.7} />
-
-				{#if poster.pronouns && poster.showPronounsOnProfile}
-					<div class="pronouns">
-						<div class="dot"></div>
-						<h2 class="pronouns">{poster.pronouns}</h2>
-					</div>
-				{/if}
-
-				<button class="timestamp" onclick={toggleTimeFormat}>
-					{@html elapsedTime}
-				</button>
-			</span>
-		{/await}
-
-		<!-- Reply: Show "replying to @user" text -->
-		{#if post.type === "reply"}
-			<span class="replying-to">
-				Replying to
-				{#await parent then parent}
-					{#await getUserFromId(parent!.poster)}
-						<div class="loading-replying"></div>
-					{:then parentPoster}
-						<Link href="/profile/{parentPoster.username}">@{parentPoster.username}</Link>
-					{/await}
-				{/await}
-			</span>
-		{/if}
-
-		<!-- The post content itself -->
-		{#if post.type === "rating"}
-			{#await books[0] then book}
-				{#await poster then poster}
-					<Rating isbn={book.isbn} rating={post.rating} review={post.body} user={poster} />
+			{:then poster}
+				{#await getFile(poster.picture)}
+					<div class="no-picture"></div>
+				{:then pfp}
+					<a
+						style:outline="0.75rem solid {postpage ? "var(--crust)" : "var(--base)"}"
+						aria-label="Go to poster's profile"
+						style:background-image={`url("${pfp}")`}
+						href={`/profile/${poster.username}`}>
+					</a>
 				{/await}
 			{/await}
-		{:else if post.type === "general"}
-			<Discussion isbns={post.books} body={post.body} images={post.pictures} />
-		{:else if post.type === "reply"}
-			<Reply body={post.body} />
-		{:else if post.type === "update"}
-			{#await books[0] then book}
-				{#await poster then poster}
-					<BookUpdate updateType={post.updateType} body={post.body} isbn={book.isbn} user={poster} />
-				{/await}
-			{/await}
-		{/if}
-
-		{#if post.pictures.length > 0}
-			<ImageCarousel clickable={postpage} images={post.pictures} />
-		{/if}
-
-		<!-- Post stats (views, likes, replies, etc.) -->
-		<div class="stats">
-			<!-- Views Button -->
-			<span style:color="var(--teal)">
-				<EyeIcon stroke="var(--teal)" style="width: 1rem;" />
-				{#await views}
-					0
-				{:then views}
-					{views}
-				{/await}
-			</span>
-
-			<!-- Like Button -->
-			<button onclick={toggleLike} style:color={liked ? "var(--pink)" : "var(--surface-2)"}>
-				<HeartIcon fill={liked ? "var(--pink)" : "none"} stroke={liked ? "var(--pink)" : "var(--surface-2)"} style="width: 1rem;" />
-				{#await likes}
-					0
-				{:then likes}
-					{likes}
-				{/await}
-			</button>
-
-			<!-- Reply Button -->
-			{#await commented}
-				<button onclick={goToPost} style:color="var(--overlay-1)">
-					<CommentIcon stroke="var(--overlay-1)" style="width: 1rem;" />
-					0
-				</button>
-			{:then commented}
-				<button onclick={goToPost} style:color={commented ? "var(--blue)" : "var(--surface-2)"}>
-					<CommentIcon stroke={commented ? "var(--blue)" : "var(--surface-2)"} style="width: 1rem;" />
-					{#await comments}
-						0
-					{:then comments}
-						{comments}
-					{/await}
-				</button>
-			{/await}
-
-			<Notification message="Saved" bind:this={saveNotification} />
-			<Notification message="Unsaved" bind:this={unsaveNotification} />
-			<Notification message="Link copied!" bind:this={shareNotification} />
-
-			<!-- Post Actions Button -->
-			<button onclick={event => actionsMenu.open(event)}>
-				<DotMenuIcon stroke="var(--overlay-1)" style="width: 1.25rem;" />
-			</button>
-
-			<ContextMenu bind:this={actionsMenu}>
-				{#if user()}
-					{#if saved}
-						<button onclick={unsave}>Unsave</button>
-					{:else}
-						<button onclick={save}>Save</button>
-					{/if}
-				{/if}
-				<button onclick={share}>Share</button>
-				{#if isCurrentUser}
-					<button onclick={deleteAndUpdate}>
-						Delete Post
-					</button>
-				{:else}
-					<button>Report</button>
-				{/if}
-			</ContextMenu>
 		</div>
-	</div>
-</section>
+
+		<div class="content-outer">
+
+			<!-- User info: Display Name & Username -->
+			{#await poster}
+				<span class="user">
+					<span class="missing-username"></span>
+					<button class="timestamp" onclick={toggleTimeFormat}>
+						{@html elapsedTime}
+					</button>
+				</span>
+			{:then poster}
+				<span class="user">
+					<div class="name">
+						<a href="/@{poster.username}" class="display-name {timeFormat === "absolute" ? "absolute-timestamp" : ""}">{poster.displayName}</a>
+						<a href="/@{poster.username}" class="username">{`@${poster.username}`}</a>
+					</div>
+
+					<Badges forUser={poster} size={0.7} />
+
+					{#if poster.pronouns && poster.showPronounsOnProfile}
+						<div class="pronouns">
+							<div class="dot"></div>
+							<h2 class="pronouns">{poster.pronouns}</h2>
+						</div>
+					{/if}
+
+					<button class="timestamp" onclick={toggleTimeFormat}>
+						{@html elapsedTime}
+					</button>
+				</span>
+			{/await}
+
+			<!-- Reply: Show "replying to @user" text -->
+			{#if post.type === "reply"}
+				<span class="replying-to">
+					Replying to
+					{#await parent then parent}
+						{#await getUserFromId(parent!.poster)}
+							<div class="loading-replying"></div>
+						{:then parentPoster}
+							<Link href="/profile/{parentPoster.username}">@{parentPoster.username}</Link>
+						{/await}
+					{/await}
+				</span>
+			{/if}
+
+			<!-- Post Content -->
+			{#if post.deletionStatus === "deleted"}
+				<span class="deleted">[deleted post]</span>
+			{:else if post.deletionStatus === "none"}
+				<!-- The post content itself -->
+				{#if post.type === "rating"}
+					{#await books[0] then book}
+						{#await poster then poster}
+							<Rating isbn={book.isbn} rating={post.rating} review={post.body} user={poster} />
+						{/await}
+					{/await}
+				{:else if post.type === "general"}
+					<Discussion isbns={post.books} body={post.body} images={post.pictures} />
+				{:else if post.type === "reply"}
+					<Reply body={post.body} />
+				{:else if post.type === "update"}
+					{#await books[0] then book}
+						{#await poster then poster}
+							<BookUpdate updateType={post.updateType} body={post.body} isbn={book.isbn} user={poster} />
+						{/await}
+					{/await}
+				{/if}
+
+				{#if post.pictures.length > 0}
+					<ImageCarousel clickable={postpage} images={post.pictures} />
+				{/if}
+			{/if}
+
+			<!-- Post stats (views, likes, replies, etc.) -->
+			<div class="stats">
+				<!-- Views Button -->
+				<span style:color="var(--teal)">
+					<EyeIcon stroke="var(--teal)" style="width: 1rem;" />
+					{#await views}
+						0
+					{:then views}
+						{views}
+					{/await}
+				</span>
+
+				<!-- Like Button -->
+				<button onclick={toggleLike} style:color={liked ? "var(--pink)" : "var(--surface-2)"}>
+					<HeartIcon fill={liked ? "var(--pink)" : "none"} stroke={liked ? "var(--pink)" : "var(--surface-2)"} style="width: 1rem;" />
+					{#await likes}
+						0
+					{:then likes}
+						{likes}
+					{/await}
+				</button>
+
+				<!-- Reply Button -->
+				{#await commented}
+					<button onclick={goToPost} style:color="var(--overlay-1)">
+						<CommentIcon stroke="var(--overlay-1)" style="width: 1rem;" />
+						0
+					</button>
+				{:then commented}
+					<button onclick={goToPost} style:color={commented ? "var(--blue)" : "var(--surface-2)"}>
+						<CommentIcon stroke={commented ? "var(--blue)" : "var(--surface-2)"} style="width: 1rem;" />
+						{#await comments}
+							0
+						{:then comments}
+							{comments}
+						{/await}
+					</button>
+				{/await}
+
+				<Notification message="Saved" bind:this={saveNotification} />
+				<Notification message="Unsaved" bind:this={unsaveNotification} />
+				<Notification message="Link copied!" bind:this={shareNotification} />
+
+				<!-- Post Actions Button -->
+				<button style="position: relative;" onclick={() => actionsMenu?.open()}>
+					<DotMenuIcon stroke="var(--overlay-1)" style="width: 1.25rem;" />
+					<ContextMenu bind:this={actionsMenu} right="0px" top="100%">
+						{#if user()}
+							{#if saved}
+								<button onclick={unsave}>Unsave</button>
+							{:else}
+								<button onclick={save}>Save</button>
+							{/if}
+						{/if}
+						<button onclick={share}>Share</button>
+						{#if isCurrentUser}
+							<button onclick={() => { deletePostConfirmation.open(); actionsMenu?.close() }}>
+								Delete Post
+							</button>
+						{:else}
+							<button>Report</button>
+						{/if}
+					</ContextMenu>
+				</button>
+			</div>
+		</div>
+	</section>
+{/if}
+
+<ConfirmationPopup 
+	title="Delete Post?"
+	body="Other users will not be able to view this post. You can un-delete this post at any time."
+	confirmText="Delete"
+	onconfirm={deleteAndUpdate}
+	bind:this={deletePostConfirmation}
+/>
 
 <style>
+	.deleted {
+		color: var(--overlay-1);
+		font-size: 0.85rem;
+	}
+
 	.stats {
 		display: flex;
 		justify-content: space-between;
@@ -469,7 +486,6 @@
 		display: flex;
 		flex-direction: column;
 		width: 100%;
-		overflow: hidden;
 	}
 
 	.profile {

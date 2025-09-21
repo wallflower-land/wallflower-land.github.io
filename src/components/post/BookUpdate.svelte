@@ -16,7 +16,7 @@
 		body: string,
 		user: User,
 		updateType: UpdateType
-	}= $props();
+	} = $props();
 
 	let book = getBook(isbn);
 </script>
@@ -26,6 +26,11 @@
 
 		<!-- Update information -->
 		<p class="rating-line">
+		{#if updateType === "add to reading list"}
+			{user.displayName} added <i>{book?.title}</i> to their reading list:
+		{:else if updateType === "remove from reading list"}
+			{user.displayName} removed <i>{book?.title}</i> from their reading list:
+		{:else}
 			{user.displayName}
 			{#if updateType === "start"}
 				started reading
@@ -36,6 +41,7 @@
 			{/if}
 			<i>{book?.title}</i>
 			:
+		{/if}
 		</p>
 
 		<!-- Book info -->
