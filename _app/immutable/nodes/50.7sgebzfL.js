@@ -1,1 +1,0 @@
-import"../chunks/Bzak7iHL.js";import"../chunks/69_IOA4Y.js";import{a9 as e,a as s}from"../chunks/XCIDlCng.js";import{P as r}from"../chunks/BHyWbXKP.js";var i=e('<div class="content svelte-e87wh7"></div>');function d(t){r(t,{class:"settings",header:"Notification Settings",children:(o,n)=>{var a=i();s(o,a)},$$slots:{default:!0}})}export{d as component};
