@@ -8,6 +8,7 @@
 	import PageWithViews from "../../../components/layout/PageWithViews.svelte";
 	import AnyPost from "../../../components/post/AnyPost.svelte";
 	import StarRating from "../../../components/book/StarRating.svelte";
+	import { haptic } from "ios-haptics";
 
 	let { data } = $props();
 	let book = $derived(data.book);
@@ -27,12 +28,14 @@
 	let isInReadingList = $derived(user()?.readingList.includes(book.isbn) ?? false)
 
 	async function addToReadingList() {
+		haptic();
 		const readingList = user()!.readingList;
 		updateUser({ readingList: [...readingList, book.isbn]  })
 		user()?.readingList.push(book.isbn);
 	}
 
 	async function removeFromReadingList() {
+		haptic();
 		const readingList = user()!.readingList.filter(isbn => isbn !== book.isbn);
 		updateUser({ readingList })
 		user()!.readingList = readingList;

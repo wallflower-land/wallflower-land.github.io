@@ -1,7 +1,10 @@
 <script lang="ts">
+	import { haptic } from "ios-haptics";
+
 	let { message } = $props();
 
 	export function show() {
+		haptic();
 		isHidden = false;
 		setTimeout(() => {
 			isHidden = true;

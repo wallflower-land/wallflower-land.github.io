@@ -22,6 +22,7 @@
 	import PageWithViews from "./layout/PageWithViews.svelte";
 	import BellIcon from "./icons/BellIcon.svelte";
 	import SlashedBellIcon from "./icons/SlashedBellIcon.svelte";
+	import { haptic } from "ios-haptics";
 
 	let { sidebar, user: profileUser }: { sidebar: Sidebar, user: User } = $props();
 
@@ -74,15 +75,17 @@
 	}
 
 	/** Follows this user. */
-	function follow() {
-		updateUser({
+	async function follow() {
+		haptic();
+		await updateUser({
 			following: [...new Set([...user()!.following, profileUser.id])],
 		});
 	}
 
 	/** Unfollows this user. */
-	function unfollow() {
-		updateUser({
+	async function unfollow() {
+		haptic();
+		await updateUser({
 			following: user()!.following.filter(id => id !== profileUser.id),
 		});
 	}

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { HTMLAttributes } from "svelte/elements";
 	import RightArrowIcon from "../icons/RightArrowIcon.svelte";
+	import { haptic } from "ios-haptics";
 
 	let {
 		options, 
@@ -20,12 +21,17 @@
 			expanded = false;
 		}
 	}
+	
+	function toggle() {
+		haptic();
+		expanded = !expanded;
+	}
 </script>
 
 <svelte:document {onclick} />
 
 <div {...rest} class="select" bind:this={optionsElement}>
-	<button class="value" onclick={() => expanded = !expanded}>
+	<button class="value" onclick={toggle}>
 		{value}
 		<RightArrowIcon stroke="var(--subtext-1)" style="width: 1rem; height: 1rem; rotate: {expanded ? "90deg" : "0deg"}; transition: rotate 0.2s;" />
 	</button>

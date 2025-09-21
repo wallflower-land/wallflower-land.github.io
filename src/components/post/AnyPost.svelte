@@ -29,6 +29,7 @@
 	import Discussion from "./Discussion.svelte";
 	import Rating from "./Rating.svelte";
 	import Reply from "./Reply.svelte";
+	import { haptic } from "ios-haptics";
 
 	let {
 		post,
@@ -168,6 +169,7 @@
 	 * @returns A promise that resolves when the database is finished updating.
 	 */
 	async function toggleLike() {
+		haptic();
 		if (!user()) return;
 
 		liked = !liked;
