@@ -1,9 +1,0 @@
-import"../chunks/Bzak7iHL.js";import"../chunks/69_IOA4Y.js";import{a9 as $,f as y,e as m,d as s,ad as r,a as o,r as p,aa as t}from"../chunks/XCIDlCng.js";import{W as b}from"../chunks/BBxqL16n.js";import{L as i}from"../chunks/Bl80hxlH.js";import{P as _}from"../chunks/CS5bLJz6.js";var I=$(`<div class="wrench svelte-1slsiwg"><!></div> <h2 class="svelte-1slsiwg">Becoming a Moderator</h2> <p class="svelte-1slsiwg">If you're interested in becoming a moderator for wallflower.land, reach out
-		to <!> at <!>,
-		or the whole staff team at <!>.
-		I'll try get in touch with you soon after.</p> <h2 class="svelte-1slsiwg">Moderating Details</h2> <p class="svelte-1slsiwg">Moderators for wallflower.land can delete other users posts, ban
-		their accounts, unban their accounts, etc. It's a lot of responsibility.</p> <p class="svelte-1slsiwg">Because of that, I'm currently only accepting moderator requests from people
-		I trust. This may change in the future as wallflower.land expands, but right
-		now, I will admit that your chances of becoming a moderator&mdash;if I don't know
-		you personally&mdash;are slim.</p> <p class="svelte-1slsiwg">That being said, it's not impossible. Reach out to me and we can chat. It helps
-		if you have a long-standing active account on wallflower.land.</p>`,1);function W(u){_(u,{class:"about",header:"Become a moderator",children:(w,x)=>{var n=I(),l=y(n),v=m(l);b(v,{stroke:"var(--crust)",style:"width: 3rem; height: 3rem;"}),p(l);var d=s(l,4),c=s(m(d));i(c,{href:"/@vi",children:(e,f)=>{t();var a=r("@vi");o(e,a)},$$slots:{default:!0}});var h=s(c,2);i(h,{href:"mailto:vi@wallflower.land",children:(e,f)=>{t();var a=r("vi@wallflower.land");o(e,a)},$$slots:{default:!0}});var g=s(h,2);i(g,{href:"mailto:staff@wallflower.land",children:(e,f)=>{t();var a=r("staff@wallflower.land");o(e,a)},$$slots:{default:!0}}),t(),p(d),t(8),o(w,n)},$$slots:{default:!0}})}export{W as component};
