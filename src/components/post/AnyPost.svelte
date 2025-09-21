@@ -34,7 +34,7 @@
 
 	let {
 		post,
-		postpage,
+		postpage = false,
 		noborder = false,
 		element = $bindable()
 	}: { 
@@ -341,7 +341,7 @@
 						{/await}
 					{/await}
 				{:else if post.type === "general"}
-					<Discussion isbns={post.books} body={post.body} images={post.pictures} />
+					<Discussion isbns={post.books} body={post.body} />
 				{:else if post.type === "reply"}
 					<Reply body={post.body} />
 				{:else if post.type === "update"}

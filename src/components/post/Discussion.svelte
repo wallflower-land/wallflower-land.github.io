@@ -1,18 +1,14 @@
 <script lang="ts">
 	import { getAuthor } from "../../api/authorapi";
 	import BookCover from "../book/BookCover.svelte";
-	import ImageCarousel from "../util/ImageCarousel.svelte";
 	import PostBody from "./PostBody.svelte";
 	import { getBook, type ISBN } from "../../api/bookapi";
-	import type { FileId } from "../../api/storageapi";
 
 	let { 
 		body, 
-		images, 
 		isbns 
 	}: {
 		body: string,
-		images: FileId[],
 		isbns: ISBN[],
 	} = $props();
 
@@ -44,8 +40,6 @@
 			</div>
 		{/await}
 	{/each}
-
-	<ImageCarousel {images} />
 </section>
 
 <style>
