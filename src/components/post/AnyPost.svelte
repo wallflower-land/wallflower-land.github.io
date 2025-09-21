@@ -10,6 +10,7 @@
 		getPostViews,
 		getReplies,
 		likePost,
+		removePost,
 		sharePost,
 		unlikePost,
 		type Post,
@@ -31,6 +32,7 @@
 	import Reply from "./Reply.svelte";
 	import { haptic } from "ios-haptics";
 	import ConfirmationPopup from "../ConfirmationPopup.svelte";
+	import WrenchIcon from "../icons/WrenchIcon.svelte";
 
 	let {
 		post,
@@ -200,6 +202,14 @@
 		}
 	}
 
+	async function removeAndUpdate() {
+		actionsMenu?.close();
+		await removePost(post);
+		if (postpage) {
+			goto("/profile");
+		}
+	}
+
 	let shareNotification: Notification = $state(null!);
 	let saveNotification: Notification = $state(null!);
 	let unsaveNotification: Notification = $state(null!);
@@ -253,6 +263,7 @@
 	const poster = getUserFromId(post.poster);
 	const books = post.books.map(isbn => getBook(isbn));
 	let deletePostConfirmation: ConfirmationPopup;
+	let modDeletePostConfirmation: ConfirmationPopup;
 </script>
 
 {#if postpage || post.deletionStatus === "none"}
@@ -416,6 +427,11 @@
 							<button onclick={() => { deletePostConfirmation.open(); actionsMenu?.close() }}>
 								Delete Post
 							</button>
+						{:else if user()?.tags.includes("mod")}
+							<button class="action" onclick={() => { modDeletePostConfirmation.open(); actionsMenu?.close() }}>
+								<WrenchIcon stroke="var(--subtext-1)" style="width: 1rem; height: 1rem;" />
+								Delete Post
+							</button>
 						{:else}
 							<button>Report</button>
 						{/if}
@@ -432,6 +448,13 @@
 	confirmText="Delete"
 	onconfirm={deleteAndUpdate}
 	bind:this={deletePostConfirmation}
+/>
+<ConfirmationPopup 
+	title="Delete Post?"
+	body="You are about to exercise moderator powers to delete another user's post. Only continue if this post violates wallflower.land rules. Continue?"
+	confirmText="Delete"
+	onconfirm={removeAndUpdate}
+	bind:this={modDeletePostConfirmation}
 />
 
 <style>
@@ -454,6 +477,11 @@
 			font-size: 0.85rem;
 			text-decoration: none;
 		}
+	}
+
+	.action {
+		display: flex;
+		gap: 0.5rem;
 	}
 
 	.replying-to {

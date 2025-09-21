@@ -40,7 +40,7 @@
 			}
 		});
 
-		document.addEventListener("touchstart", close, true);
+		document.addEventListener("touchend", close, true);
 		document.addEventListener("scroll", close, true);
 		document.addEventListener("wheel", close, true);
 	});

@@ -128,6 +128,11 @@ export async function deletePost(post: Post): Promise<void> {
 	await updateDoc(doc(db, "posts", post.id), { deletionStatus: "deleted" });
 }
 
+export async function removePost(post: Post): Promise<void> {
+	post.deletionStatus = "removed";
+	await updateDoc(doc(db, "posts", post.id), { deletionStatus: "removed" });
+}
+
 /**
  * Returns a `Post` object from it's unique `id`. If no such post exists with the given `id`,
  * `null` is returned.
