@@ -12,7 +12,7 @@
 	import BookSearch from "../../../components/book/BookSearch.svelte";
 	import CharacterLimitMeter from "../../../components/util/CharacterLimitMeter.svelte";
 	import ImagePicker from "../../../components/util/ImagePicker.svelte";
-	import LeavePagePopup from "../../../components/LeavePagePopup.svelte";
+	import ConfirmationPopup from "../../../components/ConfirmationPopup.svelte";
 	import Page from "../../../components/layout/Page.svelte";
 	import RadioInput from "../../../components/util/RadioInput.svelte";
 
@@ -32,7 +32,7 @@
 	let pronouns = $state("");
 	let picture: FileId = $state("" as FileId)
 
-	let popup: LeavePagePopup;
+	let popup: ConfirmationPopup;
 
 	let chosenCurrentBooks: Book[] = $state([]);
 
@@ -43,7 +43,7 @@
 	let changedCurrentBook = $derived.by(() => {
 		if (!user()!.currentBook) return chosenCurrentBooks.length !== 0;
 		if (chosenCurrentBooks.length === 0) return true;
-		return chosenCurrentBooks[0].isbn === user()!.currentBook;
+		return chosenCurrentBooks[0].isbn !== user()!.currentBook;
 	});
 
 	async function resetCurrentBook() {
@@ -120,11 +120,12 @@
 	}
 
 	async function cancel() {
-		if (!unsavedChanges || await popup.leaveWithoutSaving()) {
+		if (unsavedChanges) {
+			popup.open();
+		} else {
 			goto("/profile");
 		}
 	}
-
 </script>
 
 <Page type="profile" {onkeydown}>
@@ -336,7 +337,13 @@
 	</div>
 </Page>
 
-<LeavePagePopup bind:this={popup} />
+<ConfirmationPopup 
+	bind:this={popup}
+	title="Leave without saving?"
+	body="If you leave now, your changes will be lost."
+	onconfirm={() => window.location.href = "/profile"}
+	confirmText="Leave"
+/>
 
 <style>
 	.book-search {

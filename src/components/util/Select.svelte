@@ -26,6 +26,14 @@
 		haptic();
 		expanded = !expanded;
 	}
+
+	function clickOption(option: string) {
+		return function() {
+			haptic();
+			value = option;
+			expanded = !expanded;
+		}
+	}
 </script>
 
 <svelte:document {onclick} />
@@ -37,7 +45,7 @@
 	</button>
 	<div class={{ options: true, expanded }}>
 		{#each options as option}
-			<button class="option" onclick={() => { value = option; expanded = false; }}>
+			<button class="option" onclick={clickOption(option)}>
 				{option}
 			</button>
 		{/each}
@@ -77,7 +85,7 @@
 		border-radius: 0.5rem;
 		background-color: var(--crust);
 		color: var(--subtext-1);
-		transition: max-height 0.2s;
+		transition: max-height 0.1s;
 
 		&:not(.expanded) {
 			max-height: 0rem;

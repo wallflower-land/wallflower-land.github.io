@@ -1,36 +1,43 @@
 <script lang="ts">
 	import type { Snippet } from "svelte";
 	import ExternalLinkIcon from "../icons/ExternalLinkIcon.svelte";
-	import type { HTMLAnchorAttributes } from "svelte/elements";
+	import type { HTMLAttributes } from "svelte/elements";
+	import ConfirmationPopup from "../ConfirmationPopup.svelte";
 
 	let {
 		href,
 		children,
+		confirm = true,
 		...rest
 	}: {
 		href: string,
+		confirm?: boolean,
 		children: Snippet,
-	} & HTMLAnchorAttributes = $props();
+	} & HTMLAttributes<any> = $props();
 
 	let isExternal = $derived(!/^[\.\/]/.test(href));
+	let popup: ConfirmationPopup | null = $state(null);
 </script>
 
-<a
-	{...rest} 
-	{href} 
-	target={isExternal ? "_blank" : undefined} 
-	rel={isExternal ? "noopener noreferrer" : undefined} 
-	class={isExternal ? "external" : "local"}
->
-	{@render children()}
-
-	{#if isExternal}
+{#if isExternal}
+	<ConfirmationPopup
+		bind:this={popup}
+		title="Hold Up!"
+		body="This link redirects to <span style='color: var(--subtext-1)'>{href}</span>, outside of wallflower.land. It may be dangerous. Continue to external website?"
+		onconfirm={() => window.open(href, "_blank")?.focus()}
+	/>
+	<button {...rest} onclick={() => popup?.open()} class={"external"}>
+		{@render children()}
 		<ExternalLinkIcon stroke="var(--blue)" style="width: 0.9em; height: 0.9em; position: relative; top: 1px;" />
-	{/if}
-</a>
+	</button>
+{:else}
+	<a {...rest} {href}>
+		{@render children()}
+	</a>
+{/if}
 
 <style>
-	a {
+	a, button {
 		color: var(--blue);
 		text-decoration: none;
 		font-size: 0.85rem;

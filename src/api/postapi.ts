@@ -81,7 +81,7 @@ export type Post<T extends PostType = PostType> = {
 	pictures: FileId[];
 
 	rating: T extends "rating" ? number : never;
-	updateType: T extends "update" ? "start" : never;
+	updateType: T extends "update" ? UpdateType : never;
 	parent: T extends "reply" ? PostId : never;
 };
 

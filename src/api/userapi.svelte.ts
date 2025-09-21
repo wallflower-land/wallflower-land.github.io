@@ -451,3 +451,26 @@ export async function deleteAccount(password: string) {
 	await reauthenticateWithCredential(auth.currentUser!, credential);
 	await deleteUser(auth.currentUser!);
 }
+
+export async function getCurrentlyReading(userId: UserId): Promise<ISBN[]> {
+	const updates = (
+		await getDocs(
+			query(
+				collection(db, "posts"),
+				where("poster", "==", userId),
+				where("type", "==", "update"),
+				where("updateType", "in", ["start", "finish", "abandon"]),
+			),
+		)
+	).docs.map(doc => doc.data() as Post);
+
+	let books = updates.filter(post => post.updateType === "start").map(post => post.books[0]);
+	books = books.filter(
+		book =>
+			!updates.some(
+				post =>
+					["finish", "abandon"].includes(post.updateType) && post.books.includes(book),
+			),
+	);
+	return books;
+}

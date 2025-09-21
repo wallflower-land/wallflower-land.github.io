@@ -2,7 +2,7 @@
 	import { getAuthor } from "../../api/authorapi";
 	import { getBook, searchBooks, type Book } from "../../api/bookapi";
 	import TrashIcon from "../icons/TrashIcon.svelte";
-	import { user } from "../../api/userapi.svelte";
+	import { getCurrentlyReading, user } from "../../api/userapi.svelte";
 
 	let { 
 		title = "Choose a book",
@@ -28,10 +28,10 @@
 		}
 	}
 
-	let results = $derived.by(() => {
+	let results = $derived.by(async () => {
 		if (bookSearchType === "search") return Promise.resolve(searchResults);
 		if (bookSearchType === "list") return Promise.resolve(user()!.readingList.map(isbn => getBook(isbn)));
-		if (bookSearchType === "current") return Promise.resolve(user()!.currentlyReading.map(isbn => getBook(isbn)));
+		if (bookSearchType === "current") return getCurrentlyReading(user()!.id).then(isbns => isbns.map(isbn => getBook(isbn)));
 		return Promise.resolve([]);
 	});
 
@@ -57,24 +57,27 @@
 
 <div class="outer">
 	<h2>{title}</h2>
-	<div class="books">
-		{#each books as book (book.isbn) }
-			<div class="book">
-				<img alt="{book.title} cover" src={book.cover} />
-				<div class="info">
-					<span class="title">{book.title}</span>
-					<span class="authors">
-						{#await getAuthor(book.authorKey) then author}
-							{author.name}
-						{/await}
-					</span>
+	
+	{#if books.length > 0}
+		<div class="books">
+			{#each books as book (book.isbn) }
+				<div class="book">
+					<img alt="{book.title} cover" src={book.cover} />
+					<div class="info">
+						<span class="title">{book.title}</span>
+						<span class="authors">
+							{#await getAuthor(book.authorKey) then author}
+								{author.name}
+							{/await}
+						</span>
+					</div>
+					<button class="close" onclick={removeBook(book)}>
+						<TrashIcon stroke="var(--red)" style="width: 1.25rem; height: 1.25rem;" />
+					</button>
 				</div>
-				<button class="close" onclick={removeBook(book)}>
-					<TrashIcon stroke="var(--red)" style="width: 1.25rem; height: 1.25rem;" />
-				</button>
-			</div>
-		{/each}
-	</div>
+			{/each}
+		</div>
+	{/if}
 
 	{#if books.length === 0 || multiple}
 		<div class="section">

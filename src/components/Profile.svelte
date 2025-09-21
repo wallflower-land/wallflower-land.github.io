@@ -26,7 +26,7 @@
 
 	let { sidebar, user: profileUser }: { sidebar: Sidebar, user: User } = $props();
 
-	let view: "all" | "books" | "other" | "activity" | "list" = $state(new URLSearchParams(window.location.search).get("view") as any ?? "all");
+	let view: "all" | "ratings" | "other" | "activity" | "list" = $state(new URLSearchParams(window.location.search).get("view") as any ?? "all");
 
 	/** This user's highest rated book */
 	let favoriteBook = getFavoriteBook(profileUser);
@@ -263,7 +263,7 @@
 				{/if}
 
 				<!-- Number of books read -->
-				<a onclick={gotoView("books")} href="/profile/{profileUser.username}?view=books" title="{profileUser.displayName} has read {booksRead} book{booksRead === 1 ? '' : 's'}">
+				<a onclick={gotoView("ratings")} href="/profile/{profileUser.username}?view=ratings" title="{profileUser.displayName} has read {booksRead} book{booksRead === 1 ? '' : 's'}">
 					<BookIcon stroke="var(--overlay-1)" style="width: 1rem; height: 1rem;" />
 					<span>{booksRead}</span>
 				</a>
@@ -283,7 +283,7 @@
 		<div>
 			<PageWithViews
 				bind:view
-				views={["all", "books", "activity", "list", "other"]}
+				views={["all", "ratings", "activity", "list", "other"]}
 				top="2.7rem"
 				bind:contentElement
 			>

@@ -54,6 +54,7 @@
 			flex-direction: column;
 			align-items: center;
 			padding: 2rem;
+			padding-top: 1.5rem;
 			border-radius: 0.5rem;
 			box-shadow: 0px 0px 0.5rem black;
 			gap: 1rem;
