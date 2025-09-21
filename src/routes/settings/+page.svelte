@@ -47,7 +47,7 @@
 			<DeveloperIcon style="width: 1.25rem; height: 1.25rem;" stroke="var(--text)" />
 			<span>API Usage</span>
 		</div>
-		<p>Use the wallflowr.land API to get data on books and authors.</p>
+		<p>Use the wallflower.land API to get data on books and authors.</p>
 	</a>
 </Page>
 
