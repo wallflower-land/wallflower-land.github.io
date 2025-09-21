@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { HTMLButtonAttributes } from "svelte/elements";
+	import { haptic } from "ios-haptics";
 
 	let { 
 		value = $bindable(), 
@@ -17,6 +18,7 @@
 	} & Omit<Omit<HTMLButtonAttributes, "onchange">, "value"> = $props();
 
 	function toggle() {
+		haptic();
 		value = !value;
 		if (value) onenable();
 		else ondisable();

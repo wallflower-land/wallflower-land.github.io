@@ -12,7 +12,8 @@
 	},
 	"license": "All rights reserved",
 	"dependencies": {
-		"firebase": "^11.2.0"
+		"firebase": "^11.2.0",
+		"ios-haptics": "^0.1.4"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-static": "^3.0.6",
