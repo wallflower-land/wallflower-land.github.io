@@ -123,10 +123,12 @@
 		h2 {
 			color: var(--subtext-1);
 			font-weight: normal;
+			font-size: 1rem;
 		}
 
 		span {
 			color: var(--overlay-1);
+			font-size: 0.85rem;
 		}
 	}
 </style>

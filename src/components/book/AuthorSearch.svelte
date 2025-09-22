@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { searchAuthors, type Author } from "../../api/authorapi";
+	import { getFile } from "../../api/storageapi";
 	import TrashIcon from "../icons/TrashIcon.svelte";
 
 	let {
@@ -47,7 +48,9 @@
 		<div class="books">
 			{#each authors as author (author.id)}
 				<div class="book">
-					<img alt={author.name} src={author.picture} />
+					{#await getFile(author.picture) then picture}
+						<img alt={author.name} src={picture ?? author.picture} />
+					{/await}
 					<div class="info">
 						<span class="title">{author.name}</span>
 					</div>
@@ -95,7 +98,9 @@
 							<!-- svelte-ignore a11y_click_events_have_key_events -->
 							<!-- svelte-ignore a11y_no_static_element_interactions -->
 							<div class="book search-book" onclick={chooseAuthor(author)}>
-								<img alt={author.name} src={author.picture} />
+								{#await getFile(author.picture) then picture}
+									<img alt={author.name} src={picture ?? author.picture} />
+								{/await}
 								<div class="info">
 									<span class="title">{author.name}</span>
 								</div>

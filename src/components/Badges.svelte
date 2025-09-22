@@ -120,7 +120,7 @@
 	}
 
 	.cherry {
-		background-image: linear-gradient(to bottom right, var(--pink), var(--red));
+		background-image: linear-gradient(to bottom left, var(--pink), var(--red));
 		transform: scaleX(-100%);
 	}
 </style>

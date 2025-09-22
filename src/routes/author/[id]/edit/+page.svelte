@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
 	import { updateAuthor } from "../../../../api/authorapi";
+	import { getFile } from "../../../../api/storageapi";
 	import Page from "../../../../components/layout/Page.svelte";
+	import ImagePicker from "../../../../components/util/ImagePicker.svelte";
 
 	let { data } = $props();
 	let author = $derived(data.author);
@@ -12,12 +14,16 @@
 	let name = $state(author.name);
 	// svelte-ignore state_referenced_locally
 	let birthday = $state(author.birthday);
+	// svelte-ignore state_referenced_locally
+	let picture = $state(author.picture);
 
-	let canSave = $derived(bio !== author.bio || name !== author.name || birthday !== author.birthday);
+	let canSave = $derived(
+		bio !== author.bio || name !== author.name || birthday !== author.birthday || picture !== author.picture,
+	);
 
 	async function update() {
-		await updateAuthor(author, { bio, name, birthday });
-		goto(`/author/${author.key}`);
+		await updateAuthor(author, { bio, name, birthday, picture });
+		goto(`/author/${author.id}`);
 	}
 </script>
 
@@ -31,8 +37,8 @@
 			<span>
 				This page is available to wallflower.land moderators only. Note that changes you make to this author's
 				details here will update <b>globally for everyone</b>
-				. This is a moderator tool meant for fixing issues in the author details fetched from the Google or
-				OpenLibrary APIs.
+				. This is a moderator tool meant for fixing issues in the author details fetched from the Google or OpenLibrary
+				APIs.
 				<b>Use carefully</b>
 				.
 			</span>
@@ -43,6 +49,22 @@
 		<div class="section">
 			<span>Name</span>
 			<input type="text" bind:value={name} />
+		</div>
+
+		<hr />
+
+		<div class="picture section">
+			<span>Cover</span>
+			<label for="choose-book-cover">
+				{#if picture}
+					{#await getFile(picture) then file}
+						<img src={file ?? picture} alt={author.name} />
+					{/await}
+				{:else}
+					<span>No picture</span>
+				{/if}
+			</label>
+			<ImagePicker onupload={imageId => (picture = imageId)} id="choose-book-cover" aspectRatio={1 / 1.5} />
 		</div>
 
 		<hr />
@@ -167,6 +189,20 @@
 			font-size: 0.85rem;
 			padding: 0.5rem;
 			color: var(--subtext-1);
+		}
+
+		&.picture {
+			color: var(--overlay-1);
+			display: flex;
+			flex-direction: row;
+			justify-content: space-between;
+			align-items: center;
+			height: fit-content;
+
+			img {
+				height: 4rem;
+				border-radius: 0.25rem;
+			}
 		}
 	}
 

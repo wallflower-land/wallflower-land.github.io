@@ -1,13 +1,14 @@
 import { doc, updateDoc, getDoc } from "firebase/firestore";
 import firebase from "./firebase";
 import type { ISBN } from "./bookapi";
+import type { FileId } from "./storageapi";
 
 export type Author = {
 	name: string;
 	birthday: string;
 	key: string;
 	books: ISBN[];
-	picture: string;
+	picture: FileId;
 	bio: string;
 	id: string;
 };
@@ -26,6 +27,18 @@ export async function searchAuthors(
 }
 
 export async function getAuthor(key: string, fetch_: typeof fetch = fetch): Promise<Author> {
+	if (!key) {
+		return {
+			name: "",
+			books: [],
+			picture: "" as FileId,
+			bio: "",
+			id: "",
+			key,
+			birthday: "",
+		};
+	}
+
 	if (key.startsWith("OL")) {
 		const response = await fetch_(`https://getauthor-psqyhrtnra-uc.a.run.app?key=${key}`);
 		const data = await response.json();

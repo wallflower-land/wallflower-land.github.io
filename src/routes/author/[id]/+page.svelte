@@ -7,6 +7,7 @@
 	import ClickableImage from "../../../components/util/ClickableImage.svelte";
 	import Header from "../../../components/elements/Header.svelte";
 	import Page from "../../../components/layout/Page.svelte";
+	import { getFile } from "../../../api/storageapi";
 
 	let { data }: { data: { author: Author } } = $props();
 
@@ -19,7 +20,9 @@
 	<Header title={author.name} subtitle="Author" />
 
 	<div class="content">
-		<ClickableImage src={author.picture} class="picture" />
+		{#await getFile(author.picture) then picture}
+			<ClickableImage src={picture ?? author.picture} class="picture" />
+		{/await}
 
 		<p>{author.bio || "No description provided."}</p>
 

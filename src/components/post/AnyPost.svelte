@@ -422,40 +422,41 @@
 				<!-- Post Actions Button -->
 				<button style="position: relative;" onclick={() => actionsMenu?.open()}>
 					<DotMenuIcon stroke="var(--overlay-1)" style="width: 1.25rem;" />
-					<ContextMenu bind:this={actionsMenu} right="0px" top="100%">
-						{#if user()}
-							{#if saved}
-								<button onclick={unsave}>Unsave</button>
-							{:else}
-								<button onclick={save}>Save</button>
-							{/if}
-						{/if}
-						<button onclick={share}>Share</button>
-						{#if isCurrentUser}
-							<button
-								onclick={() => {
-									deletePostConfirmation.open();
-									actionsMenu?.close();
-								}}
-							>
-								Delete Post
-							</button>
-						{:else if user()?.tags.includes("mod")}
-							<button
-								class="action"
-								onclick={() => {
-									modDeletePostConfirmation.open();
-									actionsMenu?.close();
-								}}
-							>
-								<WrenchIcon stroke="var(--subtext-1)" style="width: 1rem; height: 1rem;" />
-								Delete Post
-							</button>
-						{:else}
-							<button>Report</button>
-						{/if}
-					</ContextMenu>
 				</button>
+
+				<ContextMenu bind:this={actionsMenu} right="1.75rem" top="calc(100% - 0.5rem)">
+					{#if user()}
+						{#if saved}
+							<button onclick={unsave}>Unsave</button>
+						{:else}
+							<button onclick={save}>Save</button>
+						{/if}
+					{/if}
+					<button onclick={share}>Share</button>
+					{#if isCurrentUser}
+						<button
+							onclick={() => {
+								deletePostConfirmation.open();
+								actionsMenu?.close();
+							}}
+						>
+							Delete Post
+						</button>
+					{:else if user()?.tags.includes("mod")}
+						<button
+							class="action"
+							onclick={() => {
+								modDeletePostConfirmation.open();
+								actionsMenu?.close();
+							}}
+						>
+							<WrenchIcon stroke="var(--subtext-1)" style="width: 1rem; height: 1rem;" />
+							Delete Post
+						</button>
+					{:else}
+						<button>Report</button>
+					{/if}
+				</ContextMenu>
 			</div>
 		</div>
 	</section>
