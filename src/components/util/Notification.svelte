@@ -14,7 +14,7 @@
 	let isHidden = $state(true);
 </script>
 
-<section style:bottom={isHidden ? "-4rem" : "5rem"} class="notification">
+<section style:bottom={isHidden ? "-4rem" : "4rem"} class="notification">
 	{message}
 </section>
 
@@ -29,13 +29,15 @@
 		height: fit-content;
 		padding-top: 1rem;
 		padding-bottom: 1rem;
+		font-size: 0.85rem;
 		border-radius: 0.75rem;
-		box-shadow: 0px 0px 10px black;
+		box-shadow: 0px 0px 0.5rem black;
 		left: 50%;
 		transform: translateX(-50%);
 		transition: bottom 0.2s;
 		z-index: 9999;
-		color: var(--crust);
-		background: linear-gradient(to bottom right, var(--lavender), var(--blue));
+		color: var(--subtext-1);
+		background: var(--crust);
+		border: 1px solid var(--surface-0);
 	}
 </style>

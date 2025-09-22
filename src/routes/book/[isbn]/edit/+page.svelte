@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
-	import { getAuthor } from "../../../../api/authorapi";
+	import { getAuthor, updateAuthor, type Author } from "../../../../api/authorapi";
 	import { updateBook } from "../../../../api/bookapi";
 	import ImagePicker from "../../../../components/util/ImagePicker.svelte";
 	import Page from "../../../../components/layout/Page.svelte";
+	import AuthorSearch from "../../../../components/book/AuthorSearch.svelte";
 
 	let { data } = $props();
 	let book = $derived(data.book);
@@ -15,12 +16,30 @@
 	// svelte-ignore state_referenced_locally
 	let publishDate = $state(book.publishDate);
 
-	let canSave = $derived(description !== book.description || title !== book.title || publishDate !== book.publishDate);
+	let authors: Author[] = $state([]);
+
+	let canSave = $derived(
+		authors.length === 1 &&
+			(description !== book.description ||
+				title !== book.title ||
+				publishDate !== book.publishDate ||
+				authors[0].key !== book.authorKey),
+	);
 
 	async function update() {
-		await updateBook(book, { description, title, publishDate });
+		const promises = [updateBook(book, { description, title, publishDate, authorKey: authors[0].key })];
+		if (authors[0].key !== book.authorKey) {
+			promises.push(updateAuthor(authors[0], { books: [...new Set([...authors[0].books, book.isbn])] }));
+		}
+		await Promise.all(promises);
 		goto(`/book/${book.isbn}`);
 	}
+
+	async function resetAuthor() {
+		authors = [await getAuthor(book.authorKey)];
+	}
+
+	resetAuthor();
 </script>
 
 <Page type="search" header="Edit Book">
@@ -67,6 +86,15 @@
 		<hr />
 
 		<div class="section">
+			<AuthorSearch title="Author" bind:authors />
+			<button class="reset" onclick={resetAuthor} disabled={authors.length === 1 && book.authorKey === authors[0].key}>
+				Reset
+			</button>
+		</div>
+
+		<hr />
+
+		<div class="section">
 			<span>Product Information</span>
 			<div>
 				<span>Title:</span>
@@ -106,6 +134,33 @@
 			justify-content: center;
 			margin-bottom: 2rem;
 			margin-top: 1.5rem;
+		}
+	}
+
+	.reset {
+		padding-top: 0.5rem;
+		padding-bottom: 0.25rem;
+		border-radius: 100vmax;
+		margin-top: 0.5rem;
+		font-size: 0.85rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: scale 0.2s;
+
+		&[disabled] {
+			color: var(--surface-2);
+			background: var(--crust);
+		}
+
+		&:not([disabled]) {
+			background-image: linear-gradient(to bottom right, var(--pink), var(--red));
+			color: var(--crust);
+			box-shadow: 0px 0px 0.5rem var(--box-shadow);
+
+			&:hover {
+				scale: 105%;
+			}
 		}
 	}
 
@@ -157,7 +212,7 @@
 	}
 
 	.description {
-		padding: 1rem;
+		padding: 0.75rem;
 		font-size: 0.85rem;
 		white-space: pre-wrap;
 		color: var(--subtext-1);
