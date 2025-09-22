@@ -19,11 +19,11 @@
 	let authors: Author[] = $state([]);
 
 	let canSave = $derived(
-		authors.length === 1 &&
+		(authors.length === 1 || !book.authorKey) &&
 			(description !== book.description ||
 				title !== book.title ||
 				publishDate !== book.publishDate ||
-				authors[0].key !== book.authorKey),
+				(authors.length === 1 && authors[0].key !== book.authorKey)),
 	);
 
 	async function update() {
@@ -36,7 +36,7 @@
 	}
 
 	async function resetAuthor() {
-		authors = [await getAuthor(book.authorKey)];
+		if (book.authorKey) authors = [await getAuthor(book.authorKey)];
 	}
 
 	resetAuthor();
