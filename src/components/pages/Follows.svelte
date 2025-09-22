@@ -9,7 +9,9 @@
 	let { username }: { username: string } = $props();
 
 	let profileUser = $derived(getUserFromUsername(username));
-	let following = $derived(profileUser.then(user => Promise.all(user.following.map(following => getUserFromId(following)))));
+	let following = $derived(
+		profileUser.then(user => Promise.all(user.following.map(following => getUserFromId(following)))),
+	);
 	let followers = $derived(profileUser.then(user => getFollowers(user)));
 
 	async function formatViewName(name: View): Promise<string> {
@@ -18,14 +20,7 @@
 	}
 </script>
 
-<PageWithViews
-	bind:view 
-	views={["following", "followers"]} 
-	{formatViewName} 
-	header="Follows"
-	fullpage
-	pagetype="profile"
->
+<PageWithViews bind:view views={["following", "followers"]} {formatViewName} header="Follows" fullpage pagetype="profile">
 	{#await profileUser then}
 		<div>
 			{#await following then following}

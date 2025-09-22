@@ -4,12 +4,12 @@
 	import { haptic } from "ios-haptics";
 
 	let {
-		options, 
-		value = $bindable(), 
-		...rest 
-	}: { 
-		options: string[], 
-		value?: string, 
+		options,
+		value = $bindable(),
+		...rest
+	}: {
+		options: string[];
+		value?: string;
 	} & HTMLAttributes<HTMLDivElement> = $props();
 
 	let expanded = $state(false);
@@ -21,18 +21,18 @@
 			expanded = false;
 		}
 	}
-	
+
 	function toggle() {
 		haptic();
 		expanded = !expanded;
 	}
 
 	function clickOption(option: string) {
-		return function() {
+		return function () {
 			haptic();
 			value = option;
 			expanded = !expanded;
-		}
+		};
 	}
 </script>
 
@@ -41,7 +41,10 @@
 <div {...rest} class="select" bind:this={optionsElement}>
 	<button class="value" onclick={toggle}>
 		{value}
-		<RightArrowIcon stroke="var(--subtext-1)" style="width: 1rem; height: 1rem; rotate: {expanded ? "90deg" : "0deg"}; transition: rotate 0.2s;" />
+		<RightArrowIcon
+			stroke="var(--subtext-1)"
+			style="width: 1rem; height: 1rem; rotate: {expanded ? '90deg' : '0deg'}; transition: rotate 0.2s;"
+		/>
 	</button>
 	<div class={{ options: true, expanded }}>
 		{#each options as option}
@@ -67,7 +70,7 @@
 		align-items: center;
 		gap: 0.5rem;
 
-		:global(>*:last-child) {
+		:global(> *:last-child) {
 			margin-left: auto;
 			margin-right: -0.5rem;
 		}

@@ -3,13 +3,10 @@
 	import type { HTMLButtonAttributes } from "svelte/elements";
 	import LeftCaretIcon from "../icons/LeftCaretIcon.svelte";
 
-	let { 
-		href = undefined, 
-		...props 
-	}: { href?: string } & HTMLButtonAttributes = $props();
+	let { href = undefined, ...props }: { href?: string } & HTMLButtonAttributes = $props();
 </script>
 
-<button {...props} onclick={() => href ? goto(href) : window.history.back()}>
+<button {...props} onclick={() => (href ? goto(href) : window.history.back())}>
 	<LeftCaretIcon style="width: 1.25rem; height: 1.25rem;" stroke="var(--crust)" />
 </button>
 
@@ -31,7 +28,8 @@
 			scale: 110%;
 		}
 
-		&, :global(*) {
+		&,
+		:global(*) {
 			cursor: pointer;
 		}
 	}

@@ -2,19 +2,19 @@
 	import type { HTMLButtonAttributes } from "svelte/elements";
 	import { haptic } from "ios-haptics";
 
-	let { 
-		value = $bindable(), 
-		size = 1, 
+	let {
+		value = $bindable(),
+		size = 1,
 		onenable = () => {},
 		ondisable = () => {},
 		onchange = (_value: boolean) => {},
-		...rest 
+		...rest
 	}: {
-		value: boolean,
-		size?: number,
-		onenable?: () => void,
-		ondisable?: () => void,
-		onchange?: (value: boolean) => void,
+		value: boolean;
+		size?: number;
+		onenable?: () => void;
+		ondisable?: () => void;
+		onchange?: (value: boolean) => void;
 	} & Omit<Omit<HTMLButtonAttributes, "onchange">, "value"> = $props();
 
 	function toggle() {

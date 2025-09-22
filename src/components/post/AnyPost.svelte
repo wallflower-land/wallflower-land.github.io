@@ -38,12 +38,12 @@
 		post,
 		postpage = false,
 		noborder = false,
-		element = $bindable()
-	}: { 
+		element = $bindable(),
+	}: {
 		post: Post;
 		postpage?: boolean;
 		noborder?: boolean;
-		element?: HTMLElement
+		element?: HTMLElement;
 	} = $props();
 
 	/**
@@ -230,7 +230,7 @@
 		actionsMenu?.close();
 		if (navigator.share) {
 			navigator.share({
-				url: `https://wallflower.land/post/${post.id}`
+				url: `https://wallflower.land/post/${post.id}`,
 			});
 		} else {
 			navigator.clipboard.writeText(`https://wallflower.land/post/${post.id}`);
@@ -273,7 +273,7 @@
 		tabindex="0"
 		role="link"
 		onclick={clickPost}
-		style:border-bottom={(postpage || noborder) ? "none" : `1px solid var(--surface-0)`}
+		style:border-bottom={postpage || noborder ? "none" : `1px solid var(--surface-0)`}
 		bind:this={element}
 	>
 		<!-- Poster's profile picture -->
@@ -285,17 +285,16 @@
 					<div class="no-picture"></div>
 				{:then pfp}
 					<a
-						style:outline="0.75rem solid {postpage ? "var(--crust)" : "var(--base)"}"
+						style:outline="0.75rem solid {postpage ? 'var(--crust)' : 'var(--base)'}"
 						aria-label="Go to poster's profile"
 						style:background-image={`url("${pfp}")`}
-						href={`/profile/${poster.username}`}>
-					</a>
+						href={`/profile/${poster.username}`}
+					></a>
 				{/await}
 			{/await}
 		</div>
 
 		<div class="content-outer">
-
 			<!-- User info: Display Name & Username -->
 			{#await poster}
 				<span class="user">
@@ -307,7 +306,12 @@
 			{:then poster}
 				<span class="user">
 					<div class="name">
-						<a href="/@{poster.username}" class="display-name {timeFormat === "absolute" ? "absolute-timestamp" : ""}">{poster.displayName}</a>
+						<a
+							href="/@{poster.username}"
+							class="display-name {timeFormat === 'absolute' ? 'absolute-timestamp' : ''}"
+						>
+							{poster.displayName}
+						</a>
 						<a href="/@{poster.username}" class="username">{`@${poster.username}`}</a>
 					</div>
 
@@ -382,7 +386,11 @@
 
 				<!-- Like Button -->
 				<button onclick={toggleLike} style:color={liked ? "var(--pink)" : "var(--surface-2)"}>
-					<HeartIcon fill={liked ? "var(--pink)" : "none"} stroke={liked ? "var(--pink)" : "var(--surface-2)"} style="width: 1rem;" />
+					<HeartIcon
+						fill={liked ? "var(--pink)" : "none"}
+						stroke={liked ? "var(--pink)" : "var(--surface-2)"}
+						style="width: 1rem;"
+					/>
 					{#await likes}
 						0
 					{:then likes}
@@ -424,11 +432,22 @@
 						{/if}
 						<button onclick={share}>Share</button>
 						{#if isCurrentUser}
-							<button onclick={() => { deletePostConfirmation.open(); actionsMenu?.close() }}>
+							<button
+								onclick={() => {
+									deletePostConfirmation.open();
+									actionsMenu?.close();
+								}}
+							>
 								Delete Post
 							</button>
 						{:else if user()?.tags.includes("mod")}
-							<button class="action" onclick={() => { modDeletePostConfirmation.open(); actionsMenu?.close() }}>
+							<button
+								class="action"
+								onclick={() => {
+									modDeletePostConfirmation.open();
+									actionsMenu?.close();
+								}}
+							>
 								<WrenchIcon stroke="var(--subtext-1)" style="width: 1rem; height: 1rem;" />
 								Delete Post
 							</button>
@@ -442,14 +461,14 @@
 	</section>
 {/if}
 
-<ConfirmationPopup 
+<ConfirmationPopup
 	title="Delete Post?"
 	body="Other users will not be able to view this post. You can un-delete this post at any time."
 	confirmText="Delete"
 	onconfirm={deleteAndUpdate}
 	bind:this={deletePostConfirmation}
 />
-<ConfirmationPopup 
+<ConfirmationPopup
 	title="Delete Post?"
 	body="You are about to exercise moderator powers to delete another user's post. Only continue if this post violates wallflower.land rules. Continue?"
 	confirmText="Delete"
@@ -492,7 +511,7 @@
 		color: var(--surface-2);
 
 		.loading-replying {
-			height: 0.70rem;
+			height: 0.7rem;
 			width: 4rem;
 			border-radius: 100vmax;
 			background-color: var(--surface-0);
@@ -525,7 +544,8 @@
 			background-color: var(--surface-2);
 		}
 
-		a, .no-picture {
+		a,
+		.no-picture {
 			z-index: 99;
 			width: 3rem;
 			height: 3rem;

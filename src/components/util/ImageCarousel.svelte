@@ -6,15 +6,15 @@
 	import TriangleRightIcon from "../icons/TriangleRightIcon.svelte";
 	import ClickableImage from "./ClickableImage.svelte";
 
-	let { 
-		images = $bindable(), 
-		clickable = true, 
+	let {
+		images = $bindable(),
+		clickable = true,
 		editable = false,
 		...rest
-	}: { 
-		images: FileId[], 
-		clickable?: boolean,
-		editable?: boolean,
+	}: {
+		images: FileId[];
+		clickable?: boolean;
+		editable?: boolean;
 	} & HTMLAttributes<HTMLDivElement> = $props();
 
 	let imageIndex = $state(0);

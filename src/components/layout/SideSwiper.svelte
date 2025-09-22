@@ -7,12 +7,12 @@
 		content = undefined,
 		swipeThreshold = 40,
 	}: {
-		gotoNext(): void,
-		gotoPrevious(): void,
-		left: string,
-		content?: HTMLElement,
-		swipeThreshold?: number,
-		viewCount: number
+		gotoNext(): void;
+		gotoPrevious(): void;
+		left: string;
+		content?: HTMLElement;
+		swipeThreshold?: number;
+		viewCount: number;
 	} = $props();
 
 	let startX = 0;

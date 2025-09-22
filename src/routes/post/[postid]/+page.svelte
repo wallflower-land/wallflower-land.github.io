@@ -58,7 +58,7 @@
 		let current = (await thePost)!;
 		let chain: Post[] = [];
 		while (true) {
-			if (current.type !== "reply") return chain.toReversed();	
+			if (current.type !== "reply") return chain.toReversed();
 			current = (await getPostFromId(current.parent))!;
 			chain.push(current);
 		}
@@ -70,10 +70,10 @@
 		}
 	}
 
-	let characterLimitStyle = $derived.by(() => replyState === "expanded" ? "flex" : "none");
+	let characterLimitStyle = $derived.by(() => (replyState === "expanded" ? "flex" : "none"));
 	let mainPost: HTMLElement = $state(null!);
 	let container: HTMLElement;
-	
+
 	let parents: HTMLElement[] = $state([]);
 	let parentContainer: HTMLElement | null = $state(null);
 	let height = $derived.by(() => `calc(100dvh + ${parentContainer?.getBoundingClientRect().height ?? 0}px)`);
@@ -82,8 +82,8 @@
 	let replyLine: HTMLElement | null = $state(null);
 	setInterval(() => {
 		if (!mainPost) return;
-		replyLineHeight = `${mainPost.getBoundingClientRect().top - (replyLine?.getBoundingClientRect().top ?? 0)}px`;;
-	}, 100)
+		replyLineHeight = `${mainPost.getBoundingClientRect().top - (replyLine?.getBoundingClientRect().top ?? 0)}px`;
+	}, 100);
 </script>
 
 <Page type="search" class="post">
@@ -92,11 +92,7 @@
 			{#await parentChain then parentChain}
 				<div class="parents" bind:this={parentContainer}>
 					{#each parentChain as parent, index}
-						<AnyPost
-							bind:element={parents[index]}
-							post={parent}
-							noborder={index === parents.length - 1}
-						/>
+						<AnyPost bind:element={parents[index]} post={parent} noborder={index === parents.length - 1} />
 					{/each}
 				</div>
 
@@ -117,7 +113,7 @@
 
 					<div class="reply-body">
 						<div
-							class="textarea {replyState === "expanded" ? "expanded" : ""}"
+							class="textarea {replyState === 'expanded' ? 'expanded' : ''}"
 							bind:this={reply}
 							style="border-radius: 100vmax;"
 						>
@@ -125,18 +121,26 @@
 								<label for="attach-image-reply">
 									<AddImageIcon stroke="var(--overlay-1)" style="width: 1.25rem;" />
 								</label>
-								<ImagePicker allowEdit={false} id="attach-image-reply" onupload={async imageId => images.push(imageId)} />
+								<ImagePicker
+									allowEdit={false}
+									id="attach-image-reply"
+									onupload={async imageId => images.push(imageId)}
+								/>
 
 								<button disabled={!canReply} onmousedown={sendReply}>
-									<SendIcon stroke={canReply ? "var(--overlay-1)" : "var(--surface-0)"} style="width: 1.25rem;" />
+									<SendIcon
+										stroke={canReply ? "var(--overlay-1)" : "var(--surface-0)"}
+										style="width: 1.25rem;"
+									/>
 								</button>
 							</div>
 							<!-- svelte-ignore a11y_no_static_element_interactions -->
-							<div 
+							<div
 								onblur={contract}
 								onfocus={expand}
 								bind:textContent={replyBody}
-								contenteditable class="content"
+								contenteditable
+								class="content"
 								onkeypress={checkLength}
 							></div>
 						</div>

@@ -4,12 +4,12 @@
 	import PostBody from "./PostBody.svelte";
 	import { getBook, type ISBN } from "../../api/bookapi";
 
-	let { 
-		body, 
-		isbns 
+	let {
+		body,
+		isbns,
 	}: {
-		body: string,
-		isbns: ISBN[],
+		body: string;
+		isbns: ISBN[];
 	} = $props();
 
 	let books = $derived(isbns.map(isbn => getBook(isbn)));
@@ -20,7 +20,6 @@
 
 	{#each books as book}
 		{#await book then book}
-
 			<!-- Book info -->
 			<div class="info">
 				<div class="content">

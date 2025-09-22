@@ -73,12 +73,16 @@
 	const EDGE_ZONE = 20;
 
 	onMount(() => {
-		document.addEventListener("touchstart", event => {
-			touchStartX = event.touches[0].clientX;
-			if (touchStartX < 30 || touchStartX > window.innerWidth - 30) {
-				event.preventDefault();
-			}
-		}, { passive: false });
+		document.addEventListener(
+			"touchstart",
+			event => {
+				touchStartX = event.touches[0].clientX;
+				if (touchStartX < 30 || touchStartX > window.innerWidth - 30) {
+					event.preventDefault();
+				}
+			},
+			{ passive: false },
+		);
 	});
 
 	function ontouchmove(event: TouchEvent) {
@@ -127,7 +131,10 @@
 
 		{#if !alwaysShowSidebar()}
 			<button onclick={hide}>
-				<CloseIcon stroke="var(--text)" style="width: 1.5rem; height: 1.5rem; position: absolute; top: 1.5rem; right: 1.5rem;" />
+				<CloseIcon
+					stroke="var(--text)"
+					style="width: 1.5rem; height: 1.5rem; position: absolute; top: 1.5rem; right: 1.5rem;"
+				/>
 			</button>
 		{/if}
 	</div>

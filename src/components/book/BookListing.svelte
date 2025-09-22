@@ -5,11 +5,17 @@
 	import BookCover from "./BookCover.svelte";
 	import StarRating from "./StarRating.svelte";
 
-	let { book, rating, user, onclick }: { book: Book, rating?: number, user: User, onclick?: () => void } = $props();
+	let { book, rating, user, onclick }: { book: Book; rating?: number; user: User; onclick?: () => void } = $props();
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<svelte:element data-rating="{rating}" id="outer" this={onclick ? "div" : "a"} href="/book/{book.isbn}" onclick={() => onclick?.()}>
+<svelte:element
+	this={onclick ? "div" : "a"}
+	data-rating={rating}
+	id="outer"
+	href="/book/{book.isbn}"
+	onclick={() => onclick?.()}
+>
 	<div class="book-info">
 		<h1>{book.title}</h1>
 		<h2>{#await getAuthor(book.authorKey) then author}{author.name}{/await}</h2>
@@ -18,7 +24,7 @@
 	{#if rating !== undefined}
 		<div class="rating">
 			<span class="name">{user.displayName}'s rating:</span>
-			<StarRating {rating} size={0.6}/>
+			<StarRating {rating} size={0.6} />
 			<span class="rating-number">{rating === 10 ? rating : rating.toFixed(1)} / 10</span>
 		</div>
 	{/if}

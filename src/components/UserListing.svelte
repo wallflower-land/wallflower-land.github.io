@@ -6,10 +6,7 @@
 	let { user }: { user: User } = $props();
 </script>
 
-<a
-	href={`/profile/${user.username}`}
-	class="book"
->
+<a href={`/profile/${user.username}`} class="book">
 	{#await getFile(user.picture) then pfp}
 		<img alt="{user.displayName} profile" class="user-listing-profile-picture" src={pfp!} />
 	{/await}

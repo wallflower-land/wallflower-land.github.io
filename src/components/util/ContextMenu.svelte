@@ -3,18 +3,18 @@
 
 	let menu: HTMLElement;
 
-	let { 
-		top = undefined, 
-		left = undefined, 
-		right = undefined, 
+	let {
+		top = undefined,
+		left = undefined,
+		right = undefined,
 		bottom = undefined,
-		children
+		children,
 	}: {
 		top?: string;
 		left?: string;
 		right?: string;
 		bottom?: string;
-		children: Snippet
+		children: Snippet;
 	} = $props();
 
 	export function open() {
@@ -48,9 +48,9 @@
 
 <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 <section
-	tabindex="0" 
-	bind:this={menu} 
-	class="contextmenu" 
+	tabindex="0"
+	bind:this={menu}
+	class="contextmenu"
 	style:scale={visible ? 1 : 0}
 	style:top
 	style:bottom

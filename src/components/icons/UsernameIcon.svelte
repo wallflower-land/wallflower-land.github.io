@@ -4,16 +4,10 @@
 	let { stroke, ...rest }: { stroke: string } & SVGAttributes<SVGElement> = $props();
 </script>
 
-<svg
-	{...rest}
-	viewBox="0 0 24 24"
-	fill="none"
-	xmlns="http://www.w3.org/2000/svg"
-	><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g
-		id="SVGRepo_tracerCarrier"
-		stroke-linecap="round"
-		stroke-linejoin="round"
-	></g><g id="SVGRepo_iconCarrier">
+<svg {...rest} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+	<g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+	<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+	<g id="SVGRepo_iconCarrier">
 		<circle cx="9" cy="9" r="2" {stroke} stroke-width="1.5"></circle>
 		<path
 			d="M13 15C13 16.1046 13 17 9 17C5 17 5 16.1046 5 15C5 13.8954 6.79086 13 9 13C11.2091 13 13 13.8954 13 15Z"
@@ -25,11 +19,8 @@
 			{stroke}
 			stroke-width="1.5"
 		></path>
-		<path d="M19 12H15" {stroke} stroke-width="1.5" stroke-linecap="round"
-		></path>
-		<path d="M19 9H14" {stroke} stroke-width="1.5" stroke-linecap="round"
-		></path>
-		<path d="M19 15H16" {stroke} stroke-width="1.5" stroke-linecap="round"
-		></path>
-	</g></svg
->
+		<path d="M19 12H15" {stroke} stroke-width="1.5" stroke-linecap="round"></path>
+		<path d="M19 9H14" {stroke} stroke-width="1.5" stroke-linecap="round"></path>
+		<path d="M19 15H16" {stroke} stroke-width="1.5" stroke-linecap="round"></path>
+	</g>
+</svg>

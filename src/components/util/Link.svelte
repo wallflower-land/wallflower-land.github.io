@@ -10,9 +10,9 @@
 		confirm = true,
 		...rest
 	}: {
-		href: string,
-		confirm?: boolean,
-		children: Snippet,
+		href: string;
+		confirm?: boolean;
+		children: Snippet;
 	} & HTMLAttributes<any> = $props();
 
 	let isExternal = $derived(!/^[\.\/]/.test(href));
@@ -37,7 +37,8 @@
 {/if}
 
 <style>
-	a, button {
+	a,
+	button {
 		color: var(--blue);
 		text-decoration: none;
 		font-size: 0.85rem;
@@ -49,7 +50,7 @@
 			align-items: center;
 
 			&:hover::after {
-				content: '';
+				content: "";
 				position: absolute;
 				top: 100%;
 				left: 0px;

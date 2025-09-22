@@ -12,12 +12,8 @@
 	let name = $state(author.name);
 	// svelte-ignore state_referenced_locally
 	let birthday = $state(author.birthday);
-	
-	let canSave = $derived(
-		bio !== author.bio || 
-		name !== author.name || 
-		birthday !== author.birthday
-	);
+
+	let canSave = $derived(bio !== author.bio || name !== author.name || birthday !== author.birthday);
 
 	async function update() {
 		await updateAuthor(author, { bio, name, birthday });
@@ -33,11 +29,12 @@
 
 		<div class="section">
 			<span>
-				This page is available to wallflower.land moderators only.
-				Note that changes you make to this author's details here 
-				will update <b>globally for everyone</b>. This is a moderator
-				tool meant for fixing issues in the author details fetched from
-				the Google or OpenLibrary APIs. <b>Use carefully</b>.
+				This page is available to wallflower.land moderators only. Note that changes you make to this author's
+				details here will update <b>globally for everyone</b>
+				. This is a moderator tool meant for fixing issues in the author details fetched from the Google or
+				OpenLibrary APIs.
+				<b>Use carefully</b>
+				.
 			</span>
 		</div>
 
@@ -52,8 +49,7 @@
 
 		<div class="section">
 			<span>Bio</span>
-			<textarea class="description" bind:value={bio}>
-			</textarea>
+			<textarea class="description" bind:value={bio}></textarea>
 		</div>
 
 		<hr />

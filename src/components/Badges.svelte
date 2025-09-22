@@ -12,7 +12,6 @@
 
 {#if forUser.tags.length > 0}
 	<span class="badges" style:gap="{size / 3.5}rem">
-
 		<!-- Special Badges -->
 		{#if forUser.tags.includes("vi")}
 			<div

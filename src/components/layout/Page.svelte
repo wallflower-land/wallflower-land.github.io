@@ -7,17 +7,17 @@
 	import Header from "../elements/Header.svelte";
 	import type { HTMLAttributes } from "svelte/elements";
 
-	let { 
-		sidebar = $bindable(), 
-		type = undefined, 
-		children, 
+	let {
+		sidebar = $bindable(),
+		type = undefined,
+		children,
 		header,
-		...rest 
+		...rest
 	}: {
-		children: Snippet,
-		sidebar?: Sidebar,
-		type?: "home" | "search" | "new" | "inbox" | "profile",
-		header?: string,
+		children: Snippet;
+		sidebar?: Sidebar;
+		type?: "home" | "search" | "new" | "inbox" | "profile";
+		header?: string;
 	} & HTMLAttributes<HTMLElement> = $props();
 
 	onMount(() => {

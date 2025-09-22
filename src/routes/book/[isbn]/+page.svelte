@@ -18,14 +18,14 @@
 	let page: PageWithViews<"info" | "discussion">;
 
 	let discussions = $derived(getBookDiscussions(book.isbn));
-	let isInReadingList = $derived(user()?.readingList.includes(book.isbn) ?? false)
+	let isInReadingList = $derived(user()?.readingList.includes(book.isbn) ?? false);
 
 	async function addToReadingList() {
 		haptic();
 		const readingList = user()!.readingList;
 		updateUser({ readingList: [...new Set([...readingList, book.isbn])] });
 		user()?.readingList.push(book.isbn);
-		post({ 
+		post({
 			type: "update",
 			updateType: "add to reading list",
 			books: [book.isbn],
@@ -38,7 +38,7 @@
 		const readingList = user()!.readingList.filter(isbn => isbn !== book.isbn);
 		updateUser({ readingList });
 		user()!.readingList = readingList;
-		post({ 
+		post({
 			type: "update",
 			updateType: "remove from reading list",
 			books: [book.isbn],
@@ -60,17 +60,17 @@
 			}
 
 			const mapped = sentenceArray.map((sentence, index) => {
-					if ((index + 1) % interval === 0 && index !== sentenceArray.length - 1) {
-						return sentence + "\n\n";
-					}
-					return sentence;
-				});
+				if ((index + 1) % interval === 0 && index !== sentenceArray.length - 1) {
+					return sentence + "\n\n";
+				}
+				return sentence;
+			});
 
 			let formattedText = mapped.join("");
 			formattedText = formattedText.replaceAll(/\.(\S)/g, (_match, letter) => `. ${letter}`);
 
 			return formattedText;
-		} catch(error) {
+		} catch (error) {
 			return description;
 		}
 	}
@@ -81,7 +81,7 @@
 	fullpage
 	bind:view
 	views={["info", "discussion"]}
-	header={book.title} 
+	header={book.title}
 	subheader={author.then(author => author.name)}
 	bind:this={page}
 >
@@ -96,9 +96,10 @@
 				{/await}
 			</div>
 			<BookCover {book} style="width: 10rem" />
-			{#await getBookRating(book.isbn) then { rating, count } }
+			{#await getBookRating(book.isbn) then { rating, count }}
 				<button class="rating" onclick={() => page.setView("discussion")}>
-					<StarRating {rating} /> {rating.toFixed(1)}
+					<StarRating {rating} />
+					{rating.toFixed(1)}
 					<span class="count">({count})</span>
 				</button>
 			{/await}
@@ -119,35 +120,53 @@
 					Remove from Reading List
 				</button>
 			{:else}
-				<button class="add-to-reading-list" onclick={addToReadingList}>
-					Add to Reading List
-				</button>
+				<button class="add-to-reading-list" onclick={addToReadingList}>Add to Reading List</button>
 			{/if}
 		{/if}
 
 		<div class="product-info">
 			<h2>Product Information</h2>
-			<span><span>Title: </span>{book.title}</span>
 			<span>
-				<span>Author: </span>
+				<span>Title:</span>
+				{book.title}
+			</span>
+			<span>
+				<span>Author:</span>
 				<span>
 					{#await author then author}
 						<a href="/author/{author.id}">{author.name}</a>
 					{/await}
 				</span>
 			</span>
-			<span><span>ISBN-13: </span>{book.isbn}</span>
+			<span>
+				<span>ISBN-13:</span>
+				{book.isbn}
+			</span>
 			{#if book.pageCount}
-				<span><span>Page Count: </span>{book.pageCount}</span>
+				<span>
+					<span>Page Count:</span>
+					{book.pageCount}
+				</span>
 			{/if}
-			<span><span>Publish Date: </span>{book.publishDate}</span>
-			<span><span>Publisher{book.publishers.length === 1 ? "" : "s"}: </span>{book.publishers.join(", ")}</span>
+			<span>
+				<span>Publish Date:</span>
+				{book.publishDate}
+			</span>
+			<span>
+				<span>Publisher{book.publishers.length === 1 ? "" : "s"}:</span>
+				{book.publishers.join(", ")}
+			</span>
 			{#if book.characters.length > 0}
-				<span><span>Characters: </span>{book.characters.join(", ")}</span>
+				<span>
+					<span>Characters:</span>
+					{book.characters.join(", ")}
+				</span>
 			{/if}
-			<span><span>Tags: </span>{book.genres.join(", ")}</span>
+			<span>
+				<span>Tags:</span>
+				{book.genres.join(", ")}
+			</span>
 		</div>
-
 	</div>
 	<div>
 		{#await discussions then discussions}

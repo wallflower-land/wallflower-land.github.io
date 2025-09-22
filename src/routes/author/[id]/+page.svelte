@@ -64,7 +64,7 @@
 			scale: 105%;
 		}
 	}
-	
+
 	.content {
 		margin-top: 7rem;
 		width: 100%;

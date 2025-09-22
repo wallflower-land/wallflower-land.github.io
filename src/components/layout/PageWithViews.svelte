@@ -3,15 +3,15 @@
 </script>
 
 <script lang="ts" generics="View extends string">
-	import type { Snippet } from 'svelte';
-	import Views from './Views.svelte';
+	import type { Snippet } from "svelte";
+	import Views from "./Views.svelte";
 	import Header from "../elements/Header.svelte";
-	import Page from './Page.svelte';
-	import { user } from '../../api/userapi.svelte';
-	import { getFile } from '../../api/storageapi';
-	import WallflowerIcon from '../icons/WallflowerIcon.svelte';
-	import BellIcon from '../icons/BellIcon.svelte';
-	import PersonIcon from '../icons/PersonIcon.svelte';
+	import Page from "./Page.svelte";
+	import { user } from "../../api/userapi.svelte";
+	import { getFile } from "../../api/storageapi";
+	import WallflowerIcon from "../icons/WallflowerIcon.svelte";
+	import BellIcon from "../icons/BellIcon.svelte";
+	import PersonIcon from "../icons/PersonIcon.svelte";
 	import Sidebar from "../Sidebar.svelte";
 
 	let {
@@ -26,24 +26,24 @@
 		afterHeader = undefined,
 		fullpage = false,
 		pagetype = undefined,
-		viewFilter = (_name) => true,
-		formatViewName = (name) => name,
-		onViewChange = (_name) => {},
+		viewFilter = _name => true,
+		formatViewName = name => name,
+		onViewChange = _name => {},
 	}: {
-		views: View[],
-		view: View,
-		children: Snippet,
-		viewFilter?: (name: string) => (boolean | Promise<boolean>)
-		header?: string | typeof wallflowerHeader,
-		afterHeader?: Snippet,
-		fullpage?: boolean,
-		contentElement?: HTMLElement,
-		top?: string,
-		pagetype?: "home" | "search" | "new" | "inbox" | "profile",
-		subheader?: string | Promise<string>,
-		formatViewName?: (name: View) => (string | Promise<string>)
-		onViewChange?: (name: View) => void,
-		marginTop?: string
+		views: View[];
+		view: View;
+		children: Snippet;
+		viewFilter?: (name: string) => boolean | Promise<boolean>;
+		header?: string | typeof wallflowerHeader;
+		afterHeader?: Snippet;
+		fullpage?: boolean;
+		contentElement?: HTMLElement;
+		top?: string;
+		pagetype?: "home" | "search" | "new" | "inbox" | "profile";
+		subheader?: string | Promise<string>;
+		formatViewName?: (name: View) => string | Promise<string>;
+		onViewChange?: (name: View) => void;
+		marginTop?: string;
 	} = $props();
 
 	let left = $state("0px");
@@ -54,7 +54,7 @@
 	function spin() {
 		if (!spinLogo) {
 			spinLogo = true;
-			setTimeout(() => spinLogo = false, 2000);
+			setTimeout(() => (spinLogo = false), 2000);
 		}
 	}
 
@@ -81,7 +81,11 @@
 					</button>
 
 					<button onclick={spin}>
-						<WallflowerIcon class={spinLogo ? "spin" : ""} style="width: 2rem; height: 2rem;" stroke="var(--overlay-1)" />
+						<WallflowerIcon
+							class={spinLogo ? "spin" : ""}
+							style="width: 2rem; height: 2rem;"
+							stroke="var(--overlay-1)"
+						/>
 					</button>
 
 					<a href="/inbox">
@@ -93,22 +97,22 @@
 			{/if}
 		{/if}
 		{@render afterHeader?.()}
-		<Views 
+		<Views
 			{onViewChange}
 			bind:this={viewComponent}
 			content={contentElement}
-			{viewFilter} 
-			{formatViewName} 
-			{marginTop} 
-			{views} 
-			bind:view 
-			bind:left 
+			{viewFilter}
+			{formatViewName}
+			{marginTop}
+			{views}
+			bind:view
+			bind:left
 			paddingTop={fullpage ? "0px" : "0.5rem"}
 		/>
 	</div>
 	<div
 		bind:this={contentElement}
-		class="content" 
+		class="content"
 		style:left
 		style:grid-template-columns="repeat({views.length}, 1fr)"
 		style:width="{views.length * 100}%"
@@ -124,7 +128,6 @@
 {:else}
 	{@render nav()}
 {/if}
-
 
 <style>
 	.header {

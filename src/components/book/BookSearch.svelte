@@ -4,16 +4,16 @@
 	import TrashIcon from "../icons/TrashIcon.svelte";
 	import { getCurrentlyReading, user } from "../../api/userapi.svelte";
 
-	let { 
+	let {
 		title = "Choose a book",
 		books = $bindable([]),
 		multiple = false,
-		types = ["search", "current", "list"]
+		types = ["search", "current", "list"],
 	}: {
-		title?: string,
-		multiple?: boolean,
-		types?: BookSearch[]
-		books?: Book[],
+		title?: string;
+		multiple?: boolean;
+		types?: BookSearch[];
+		books?: Book[];
 	} = $props();
 
 	type BookSearch = "search" | "current" | "list";
@@ -21,17 +21,18 @@
 	let bookSearchType: BookSearch = $state("search");
 
 	function chooseBook(book: Book) {
-		return function() {
+		return function () {
 			books.push(book);
 			searchText = "";
 			searchResults = [];
-		}
+		};
 	}
 
 	let results = $derived.by(async () => {
 		if (bookSearchType === "search") return Promise.resolve(searchResults);
 		if (bookSearchType === "list") return Promise.resolve(user()!.readingList.map(isbn => getBook(isbn)));
-		if (bookSearchType === "current") return getCurrentlyReading(user()!.id).then(isbns => isbns.map(isbn => getBook(isbn)));
+		if (bookSearchType === "current")
+			return getCurrentlyReading(user()!.id).then(isbns => isbns.map(isbn => getBook(isbn)));
 		return Promise.resolve([]);
 	});
 
@@ -49,18 +50,18 @@
 	}
 
 	function removeBook(book: Book) {
-		return function() {
+		return function () {
 			books = books.filter(other => other.isbn !== book.isbn);
-		}
+		};
 	}
 </script>
 
 <div class="outer">
 	<h2>{title}</h2>
-	
+
 	{#if books.length > 0}
 		<div class="books">
-			{#each books as book (book.isbn) }
+			{#each books as book (book.isbn)}
 				<div class="book">
 					<img alt="{book.title} cover" src={book.cover} />
 					<div class="info">
@@ -83,28 +84,17 @@
 		<div class="section">
 			<div class="add-book-buttons">
 				{#if types.includes("search")}
-					<button
-						disabled={bookSearchType === "search"}
-						onclick={() => bookSearchType = "search"}
-					>
+					<button disabled={bookSearchType === "search"} onclick={() => (bookSearchType = "search")}>
 						Search
 					</button>
 				{/if}
 				{#if types.includes("current")}
-					<button
-						disabled={bookSearchType === "current"}
-						onclick={() => bookSearchType = "current"}
-					>
+					<button disabled={bookSearchType === "current"} onclick={() => (bookSearchType = "current")}>
 						Current
 					</button>
 				{/if}
 				{#if types.includes("list")}
-					<button
-						disabled={bookSearchType === "list"}
-						onclick={() => bookSearchType = "list"}
-					>
-						List
-					</button>
+					<button disabled={bookSearchType === "list"} onclick={() => (bookSearchType = "list")}>List</button>
 				{/if}
 			</div>
 
@@ -131,21 +121,13 @@
 						<div class="no-results">
 							{#if bookSearchType === "current"}
 								<h2>No current books</h2>
-								<p>
-									If you add a book to your "currently reading" list,
-									it'll appear here.
-								</p>
+								<p>If you add a book to your "currently reading" list, it'll appear here.</p>
 							{:else if bookSearchType === "list"}
 								<h2>Reading list is empty</h2>
-								<p>
-									If you add a book to your reading list,
-									it'll appear here.
-								</p>
+								<p>If you add a book to your reading list, it'll appear here.</p>
 							{:else if bookSearchType === "search"}
 								<h2>No results</h2>
-								<p>
-									Try checking your spelling or searching for a different term.
-								</p>
+								<p>Try checking your spelling or searching for a different term.</p>
 							{/if}
 						</div>
 					{/if}
@@ -210,12 +192,11 @@
 	}
 
 	.book {
-		display: flex;	
+		display: flex;
 		align-items: center;
 		padding-top: 0.5rem;
 		padding-bottom: 0.5rem;
 		gap: 1rem;
-
 
 		.title {
 			color: var(--subtext-1);
@@ -237,7 +218,6 @@
 			color: var(--overlay-1);
 		}
 	}
-
 
 	.search-results {
 		max-height: 15rem;
@@ -332,7 +312,7 @@
 	}
 
 	.book {
-		display: flex;	
+		display: flex;
 		align-items: center;
 		padding-top: 0.5rem;
 		padding-bottom: 0.5rem;

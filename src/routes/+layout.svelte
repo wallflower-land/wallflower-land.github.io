@@ -1,17 +1,17 @@
 <script lang="ts">
-	import { onNavigate } from '$app/navigation';
+	import { onNavigate } from "$app/navigation";
 	import globalCss from "../global.css?url";
 	import favicon from "../assets/images/favicon.png";
-	import type { Snippet } from 'svelte';
+	import type { Snippet } from "svelte";
 
 	let { children }: { children: Snippet } = $props();
 
-	onNavigate((navigation) => {
+	onNavigate(navigation => {
 		if (!document.startViewTransition) return;
 		const newIndex = getTabIndex(new URL(navigation.to?.url ?? location.href));
 		if (
-			newIndex === -1 || 
-			currentIndex === -1 || 
+			newIndex === -1 ||
+			currentIndex === -1 ||
 			newIndex === currentIndex ||
 			navigation.to?.url.pathname === navigation.from?.url.pathname
 		) {
@@ -24,14 +24,14 @@
 		}
 
 		return new Promise(resolve => {
-			document.startViewTransition(async() => {
+			document.startViewTransition(async () => {
 				resolve();
 				await navigation.complete;
 			});
 		});
 	});
 
-	let currentIndex = 0; 
+	let currentIndex = 0;
 
 	function getTabIndex(url: URL) {
 		if (url.pathname.match(/\/settings\/account\/(become\-a\-moderator|become\-a\-developer)/)) {
@@ -44,11 +44,11 @@
 
 		if (url.pathname.startsWith("/settings")) {
 			return 100;
-		}		
+		}
 
 		if (url.pathname.startsWith("/about")) {
 			return 101;
-		}		
+		}
 
 		if (url.pathname.startsWith("/interactions")) {
 			return 100;
@@ -91,7 +91,7 @@
 </script>
 
 <svelte:head>
-	<link rel="icon" href={favicon}/>
+	<link rel="icon" href={favicon} />
 	<link rel="apple-touch-icon" href={favicon} />
 	<link rel="stylesheet" href={globalCss} />
 	<title>Wallflower</title>

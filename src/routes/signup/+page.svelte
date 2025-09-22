@@ -13,11 +13,7 @@
 	let passwordErrorList: string[] = $derived(passwordErrors(password));
 	let usernameErrorList: string[] = $derived(usernameErrors(username));
 	let emailErrorList: string[] = $state([]);
-	let passwordMatchError = $derived(
-		password.length > 0 && 
-		password2.length > 0 && 
-		password !== password2
-	);
+	let passwordMatchError = $derived(password.length > 0 && password2.length > 0 && password !== password2);
 
 	let usernameIsAvailable = $state(true);
 	let emailIsAvailable = $state(true);
@@ -32,29 +28,29 @@
 
 	let valid = $derived(
 		username.length > 0 &&
-		email.length > 0 &&
-		password.length > 0 &&
-		password2.length > 0 &&
-		usernameValid && 
-		passwordValid && 
-		password2Valid && 
-		waiver
+			email.length > 0 &&
+			password.length > 0 &&
+			password2.length > 0 &&
+			usernameValid &&
+			passwordValid &&
+			password2Valid &&
+			waiver,
 	);
 
 	async function checkEmailAvailability(): Promise<boolean> {
-		emailIsAvailable = email ? !await emailIsTaken(email) : true;
+		emailIsAvailable = email ? !(await emailIsTaken(email)) : true;
 		return emailIsAvailable;
 	}
 
 	async function checkUsernameAvailability(): Promise<boolean> {
-		usernameIsAvailable = username ? !await usernameIsTaken(username) : true;
+		usernameIsAvailable = username ? !(await usernameIsTaken(username)) : true;
 		return usernameIsAvailable;
 	}
 
 	async function createAccount() {
 		if (!valid) return;
-		if (!await checkUsernameAvailability()) return;
-		if (!await checkEmailAvailability()) return;
+		if (!(await checkUsernameAvailability())) return;
+		if (!(await checkEmailAvailability())) return;
 
 		let error = await signUp(email, password, username);
 		if (error) {
@@ -76,15 +72,17 @@
 	<Header title="Create Account" />
 	<section class="main">
 		<div class="header">
-			<Link href="/about">Wait, what <i>is</i> wallflower.land?</Link>
+			<Link href="/about">
+				Wait, what <i>is</i>
+				 wallflower.land?
+			</Link>
 		</div>
 		<p class="warning">
-			<strong>Hold up!</strong> wallflower.land is still in alpha, and bugs
-			may be present. Proceed with the knowledge that stuff might break.
+			<strong>Hold up!</strong>
+			wallflower.land is still in alpha, and bugs may be present. Proceed with the knowledge that stuff might break.
 			<br />
 			<br />
-			(wallflower.land is secure, and despite any bugs, your information is
-			guaranteed to be kept safe.)
+			(wallflower.land is secure, and despite any bugs, your information is guaranteed to be kept safe.)
 		</p>
 
 		<span class="login">
@@ -94,10 +92,7 @@
 		<div>
 			<div class="section">
 				{#if unknownError}
-					<span class="unknown error">
-						An unknown error occurred. Please refresh the
-						page and try again.
-					</span>
+					<span class="unknown error">An unknown error occurred. Please refresh the page and try again.</span>
 				{/if}
 				<p>Username</p>
 				<input
@@ -157,7 +152,7 @@
 					<span class="error">Passwords much match</span>
 				{/if}
 			</div>
-		
+
 			<!-- im fucking cackling that i called this div class waiver -->
 			<div class="waiver">
 				<input type="checkbox" bind:checked={waiver} />
@@ -165,9 +160,7 @@
 			</div>
 		</div>
 
-		<button disabled={!valid} onclick={createAccount}>
-			Create Account
-		</button>
+		<button disabled={!valid} onclick={createAccount}>Create Account</button>
 	</section>
 </Page>
 
@@ -192,10 +185,12 @@
 		margin-right: 3rem;
 		padding: 1rem;
 		font-size: 0.85rem;
-		border: 2px solid #FFFFCC;
+		border: 2px solid #ffffcc;
 		background: #202000;
 		border-radius: 0.5rem;
-		box-shadow: 0px 0px 0.5rem var(--yellow), inset 0px 0px 0.5rem var(--yellow);
+		box-shadow:
+			0px 0px 0.5rem var(--yellow),
+			inset 0px 0px 0.5rem var(--yellow);
 	}
 
 	.canchange {
@@ -228,7 +223,8 @@
 			gap: 1rem;
 			width: 50%;
 
-			input[type="text"], input[type="password"] {
+			input[type="text"],
+			input[type="password"] {
 				padding: 0.5rem;
 				border-radius: 0.5rem;
 				width: 15rem;
@@ -265,7 +261,7 @@
 		color: var(--overlay-1);
 		accent-color: var(--lavender);
 		font-size: 0.85rem;
-		
+
 		input {
 			margin-right: 0.5rem;
 			width: fit-content;

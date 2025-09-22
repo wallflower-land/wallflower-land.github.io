@@ -12,11 +12,12 @@
 	<h2>Becoming a Developer</h2>
 
 	<p>
-		If you're interested in becoming a developer for wallflower.land, reach out
-		to <Link href="/@vi">@vi</Link> at <Link href="mailto:vi@wallflower.land">vi@wallflower.land</Link>,
-		or the whole staff team at
-		<Link href="mailto:staff@wallflower.land">staff@wallflower.land</Link>.
-		I'll try get in touch with you soon after.
+		If you're interested in becoming a developer for wallflower.land, reach out to <Link href="/@vi">@vi</Link> at <Link
+			href="mailto:vi@wallflower.land"
+		>
+			vi@wallflower.land
+		</Link>, or the whole staff team at
+		<Link href="mailto:staff@wallflower.land">staff@wallflower.land</Link>. I'll try get in touch with you soon after.
 	</p>
 
 	<!-- Technical Details -->
@@ -27,8 +28,7 @@
 		and
 		<Link href="https://svelte.dev/docs/kit/introduction">Sveltekit</Link>
 		for the web (flavored with
-		<Link href="https://www.typescriptlang.org/">TypeScript</Link>), 
-		and ported to mobile with
+		<Link href="https://www.typescriptlang.org/">TypeScript</Link>), and ported to mobile with
 		<Link href="https://v2.tauri.app/">Tauri</Link>.
 	</p>
 	<p>
@@ -38,8 +38,7 @@
 	<p>
 		This stack was chosen by
 		<Link href="/profile/vi">@vi</Link>
-		in the very beginning. The goal was a simple but powerful stack that allowed seamless porting
-		between platforms.
+		in the very beginning. The goal was a simple but powerful stack that allowed seamless porting between platforms.
 	</p>
 </Page>
 

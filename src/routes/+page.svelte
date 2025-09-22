@@ -8,15 +8,16 @@
 	type View = "following" | "discover";
 
 	let view: View = $state(
-		user() ? 
-			new URLSearchParams(window.location.search).get("view") as View
-			?? "following"
-		: "discover"
+		user() ? ((new URLSearchParams(window.location.search).get("view") as View) ?? "following") : "discover",
 	);
 
 	let innerWidth: number = $state(window.innerWidth);
 
-	let followedPosts = $derived(user() ? getFollowedPosts(user()!, true).then(posts => posts.toSorted((a, b) => b.timestamp - a.timestamp)) : Promise.resolve([]));
+	let followedPosts = $derived(
+		user()
+			? getFollowedPosts(user()!, true).then(posts => posts.toSorted((a, b) => b.timestamp - a.timestamp))
+			: Promise.resolve([]),
+	);
 	let discoverPosts = getForYouPosts(user()!);
 </script>
 
@@ -28,7 +29,7 @@
 	header={wallflowerHeader}
 	bind:view
 	views={["following", "discover"]}
-	viewFilter={(name) => name === "discover" || !!user()}
+	viewFilter={name => name === "discover" || !!user()}
 >
 	<!-- Following -->
 	{#if user()}

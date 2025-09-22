@@ -15,35 +15,35 @@
 	<div class="content">
 		<label for="preference-dark-mode">
 			<div>
-			<span>
-				<MoonIcon stroke="var(--subtext-1)" style="width: 1.25rem; height: 1.25rem;" />
-				Dark Mode
-			</span>
-				<RadioInput 
+				<span>
+					<MoonIcon stroke="var(--subtext-1)" style="width: 1.25rem; height: 1.25rem;" />
+					Dark Mode
+				</span>
+				<RadioInput
 					bind:value={
-						() => getPreference("darkMode"), 
+						() => getPreference("darkMode"),
 						(value: any) => {
 							setPreference("darkMode", value);
 							if (value) setTheme("Catppuccin Mocha");
 							else setTheme("Catppuccin Latte");
 						}
-					} 
-					id="preference-dark-mode" 
-					size={0.8} 
+					}
+					id="preference-dark-mode"
+					size={0.8}
 				/>
 			</div>
 			<p>Toggle between using a dark theme and a light theme for wallflower.land.</p>
 		</label>
 		<label for="preference-ui-scale">
 			<div>
-			<span>
-				<ScaleIcon stroke="var(--subtext-1)" style="width: 1.25rem; height: 1.25rem;" />
-				UI Scale
-			</span>
-				<Select 
-					options={["50%", "66%", "75%", "100%", "125%", "133%", "150%", "166%", "175%", "200%"]} 
+				<span>
+					<ScaleIcon stroke="var(--subtext-1)" style="width: 1.25rem; height: 1.25rem;" />
+					UI Scale
+				</span>
+				<Select
+					options={["50%", "66%", "75%", "100%", "125%", "133%", "150%", "166%", "175%", "200%"]}
 					bind:value={
-						() => `${getPreference("uiScale") * 100}%`, 
+						() => `${getPreference("uiScale") * 100}%`,
 						(value: string) => {
 							const percent = parseInt(value) / 100;
 							setPreference("uiScale", percent);

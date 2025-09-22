@@ -4,7 +4,7 @@
 
 	type State = "pending" | "confirmed" | "canceled" | "closed";
 
-	let { 
+	let {
 		visible = $bindable(false),
 		confirmText = "Confirm",
 		cancelText = "Cancel",
@@ -13,18 +13,18 @@
 		oncancel = () => {},
 		title,
 		body,
-	}: { 
-		title: string,
-		body: string,
-		confirmText?: string,
-		onconfirm? (): void,
-		oncancel? (): void,
-		cancelText?: string,
-		visible?: boolean,
-		state?: State,
+	}: {
+		title: string;
+		body: string;
+		confirmText?: string;
+		onconfirm?(): void;
+		oncancel?(): void;
+		cancelText?: string;
+		visible?: boolean;
+		state?: State;
 	} = $props();
 
-	let confirmLeave: (value: boolean) => void = (_value => {});
+	let confirmLeave: (value: boolean) => void = _value => {};
 
 	export function open() {
 		visible = true;
@@ -47,7 +47,7 @@
 
 	export async function confirmed(): Promise<boolean> {
 		open();
-		return new Promise((resolve) => {
+		return new Promise(resolve => {
 			confirmLeave = resolve;
 		});
 	}
@@ -61,7 +61,7 @@
 			<button class="cancel" onclick={cancel}>{cancelText}</button>
 			<button class="submit" onclick={confirm}>{confirmText}</button>
 		</div>
-		<button class="close" onclick={() => visible = false}>
+		<button class="close" onclick={() => (visible = false)}>
 			<CloseIcon stroke="var(--red)" style="width: 1rem; height: 1rem;" />
 		</button>
 	</div>
@@ -116,7 +116,7 @@
 			font-size: 1.2rem;
 			text-align: center;
 		}
-		
+
 		.close {
 			position: absolute;
 			top: 1rem;

@@ -2,17 +2,17 @@
 	import type { Snippet } from "svelte";
 	import type { HTMLAttributes } from "svelte/elements";
 
-	let { 
-		children, 
-		element = $bindable(), 
+	let {
+		children,
+		element = $bindable(),
 		visible = $bindable(),
-		...rest 
+		...rest
 	}: {
-		children: Snippet,
-		element?: HTMLElement,
-		visible?: boolean
+		children: Snippet;
+		element?: HTMLElement;
+		visible?: boolean;
 	} & HTMLAttributes<HTMLDivElement> = $props();
-	
+
 	function onclick(event: MouseEvent) {
 		if (event.target === element) {
 			visible = false;
@@ -22,11 +22,11 @@
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<div 
+<div
 	{...rest}
-	class="popup" 
+	class="popup"
 	bind:this={element}
-	{onclick} 
+	{onclick}
 	style:background={visible ? "rgba(0, 0, 0, 60%)" : "rgba(0, 0, 0, 0%)"}
 	style:pointer-events={visible ? undefined : "none"}
 >

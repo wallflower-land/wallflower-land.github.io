@@ -8,9 +8,7 @@
 	<!-- General post -->
 	<a href="/new/general">
 		<h2>General</h2>
-		<p>
-			A general post with some text and optionally images or videos.
-		</p>
+		<p>A general post with some text and optionally images or videos.</p>
 	</a>
 
 	<!-- Rating post -->
@@ -22,13 +20,11 @@
 	<!-- Update post -->
 	<a href="/new/update">
 		<h2>Update</h2>
-		<p>
-			An update on starting, finishing, or abandoning a book.
-		</p>
+		<p>An update on starting, finishing, or abandoning a book.</p>
 	</a>
 	<p class="note">
-		If you rate a book, it'll automatically mark it as finished. Only post an update when you
-		finish a book if you don't want to rate it.
+		If you rate a book, it'll automatically mark it as finished. Only post an update when you finish a book if you don't
+		want to rate it.
 	</p>
 </Page>
 

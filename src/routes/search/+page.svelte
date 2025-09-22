@@ -13,12 +13,12 @@
 
 	type View = "posts" | "books" | "users" | "authors";
 
-	let view: View = $state(new URLSearchParams(window.location.search).get("view") as View ?? "posts");
+	let view: View = $state((new URLSearchParams(window.location.search).get("view") as View) ?? "posts");
 
 	let searchTerm: string = $state(new URLSearchParams(window.location.search).get("term") ?? "");
 
 	async function search() {
-		if (searchTimeout) clearTimeout(searchTimeout)
+		if (searchTimeout) clearTimeout(searchTimeout);
 		searchTimeout = null;
 
 		searchTerm = searchTerm.trim();
@@ -42,7 +42,7 @@
 		if (event.key === "Enter") {
 			search();
 		} else {
-			if (searchTimeout) clearTimeout(searchTimeout)
+			if (searchTimeout) clearTimeout(searchTimeout);
 			searchTimeout = setTimeout(search, 1000) as unknown as number;
 		}
 	}
@@ -69,13 +69,13 @@
 				books: "Enter a title or ISBN",
 				posts: "Enter some keywords",
 				authors: "Enter an author's name",
-				users: "Enter a username"
+				users: "Enter a username",
 			}[view]}
 		/>
 	</section>
 {/snippet}
 
-<PageWithViews 
+<PageWithViews
 	fullpage
 	bind:view
 	views={["posts", "books", "authors", "users"]}
@@ -96,16 +96,12 @@
 			{#if searchTerm == ""}
 				<div class="loading">
 					<h1>Search for a post</h1>
-					<p>
-						Enter your search term to find relevant posts.
-					</p>
+					<p>Enter your search term to find relevant posts.</p>
 				</div>
 			{:else if posts.length === 0}
 				<div class="loading">
 					<h1>No posts found</h1>
-					<p>
-						No posts were found relating to your search term. Make sure you spelled everything right!
-					</p>
+					<p>No posts were found relating to your search term. Make sure you spelled everything right!</p>
 				</div>
 			{/if}
 			{#each posts as post}
@@ -119,9 +115,7 @@
 		{#if searchTerm == ""}
 			<div class="loading">
 				<h1>Search for a book</h1>
-				<p>
-					Enter your search term to find relevant books.
-				</p>
+				<p>Enter your search term to find relevant books.</p>
 			</div>
 		{:else}
 			{#await books}
@@ -134,9 +128,7 @@
 				{#if books.length === 0}
 					<div class="loading">
 						<h1>No books found</h1>
-						<p>
-							No books were found relating to your search term. Make sure you spelled everything right!
-						</p>
+						<p>No books were found relating to your search term. Make sure you spelled everything right!</p>
 					</div>
 				{/if}
 				<div class="books">
@@ -173,7 +165,7 @@
 			{/await}
 		{/if}
 	</div>
-	
+
 	<!-- Authors -->
 	<div>
 		{#await authors}
@@ -185,16 +177,12 @@
 			{#if searchTerm == ""}
 				<div class="loading">
 					<h1>Search for an author</h1>
-					<p>
-						Enter your search term to find relevant authors.
-					</p>
+					<p>Enter your search term to find relevant authors.</p>
 				</div>
 			{:else if authors.length === 0}
 				<div class="loading">
 					<h1>No users found</h1>
-					<p>
-						No users were found relating to your search term. Make sure you spelled everything right!
-					</p>
+					<p>No users were found relating to your search term. Make sure you spelled everything right!</p>
 				</div>
 			{/if}
 			<div class="authors">
@@ -222,7 +210,7 @@
 			</div>
 		{/await}
 	</div>
-	
+
 	<!-- Users -->
 	<div>
 		{#await users}
@@ -234,16 +222,12 @@
 			{#if searchTerm == ""}
 				<div class="loading">
 					<h1>Search for a user</h1>
-					<p>
-						Enter your search term to find relevant users.
-					</p>
+					<p>Enter your search term to find relevant users.</p>
 				</div>
 			{:else if users.length === 0}
 				<div class="loading">
 					<h1>No users found</h1>
-					<p>
-						No users were found relating to your search term. Make sure you spelled everything right!
-					</p>
+					<p>No users were found relating to your search term. Make sure you spelled everything right!</p>
 				</div>
 			{/if}
 			<div class="users">

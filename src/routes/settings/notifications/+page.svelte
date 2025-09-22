@@ -3,8 +3,7 @@
 </script>
 
 <Page class="settings" header="Notification Settings">
-	<div class="content">
-	</div>
+	<div class="content"></div>
 </Page>
 
 <style>

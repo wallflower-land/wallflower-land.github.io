@@ -1,17 +1,21 @@
 <script lang="ts">
 	import StarIcon from "../icons/StarIcon.svelte";
 
-	let { rating = $bindable(), size = 0.6, interactive = false }: { rating: number; size?: number, interactive?: boolean } = $props();
+	let {
+		rating = $bindable(),
+		size = 0.6,
+		interactive = false,
+	}: { rating: number; size?: number; interactive?: boolean } = $props();
 
 	function clampPercent(value: number) {
 		return Math.max(Math.min(value, 1), 0);
 	}
 
 	function editRating(value: number) {
-		return function() {
+		return function () {
 			if (!interactive) return;
 			rating = rating === value ? value + 1 : value;
-		}
+		};
 	}
 </script>
 

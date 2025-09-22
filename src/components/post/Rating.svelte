@@ -10,12 +10,12 @@
 		isbn,
 		rating,
 		review,
-		user
+		user,
 	}: {
-		isbn: ISBN,
-		rating: number,
-		review: string,
-		user: User
+		isbn: ISBN;
+		rating: number;
+		review: string;
+		user: User;
 	} = $props();
 
 	let book = getBook(isbn);
@@ -26,7 +26,8 @@
 		<p class="rating-line">
 			{user.displayName} rated
 			<i>{book?.title}</i>
-			<span>{rating} / 10</span>:
+			<span>{rating} / 10</span>
+			:
 		</p>
 		<div class="info">
 			<div class="content">
@@ -99,7 +100,7 @@
 		padding-bottom: 1rem;
 		font-size: 0.85rem;
 		color: var(--overlay-1);
-		
+
 		i {
 			color: var(--subtext-1);
 		}

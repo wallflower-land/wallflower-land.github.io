@@ -24,9 +24,11 @@
 	import SlashedBellIcon from "./icons/SlashedBellIcon.svelte";
 	import { haptic } from "ios-haptics";
 
-	let { sidebar, user: profileUser }: { sidebar: Sidebar, user: User } = $props();
+	let { sidebar, user: profileUser }: { sidebar: Sidebar; user: User } = $props();
 
-	let view: "all" | "ratings" | "other" | "activity" | "list" = $state(new URLSearchParams(window.location.search).get("view") as any ?? "all");
+	let view: "all" | "ratings" | "other" | "activity" | "list" = $state(
+		(new URLSearchParams(window.location.search).get("view") as any) ?? "all",
+	);
 
 	/** This user's highest rated book */
 	let favoriteBook = getFavoriteBook(profileUser);
@@ -60,10 +62,12 @@
 		return posts.then(posts => {
 			return posts
 				.filter(post => post.type === "rating")
-				.toSorted({
-					best: (a: Post, b: Post) => b.rating - a.rating,
-					recent: (a: Post, b: Post) => b.timestamp - a.timestamp,
-				}[ratingSort]);
+				.toSorted(
+					{
+						best: (a: Post, b: Post) => b.rating - a.rating,
+						recent: (a: Post, b: Post) => b.timestamp - a.timestamp,
+					}[ratingSort],
+				);
 		});
 	});
 
@@ -91,10 +95,10 @@
 	}
 
 	function gotoView(viewName: string) {
-		return function() {
+		return function () {
 			goto(`${window.location.origin}${window.location.pathname}?${new URLSearchParams({ view: viewName })}`);
 			view = viewName as any;
-		}
+		};
 	}
 
 	let ratingOptions: HTMLElement | null = $state(null);
@@ -104,21 +108,20 @@
 		return {
 			r: parseInt(result[1], 16),
 			g: parseInt(result[2], 16),
-			b: parseInt(result[3], 16)
+			b: parseInt(result[3], 16),
 		};
 	}
 
-
 	function lerp(start: string, stop: string, percent: number) {
-		percent = Math.min(Math.max(percent, 0), 1)
+		percent = Math.min(Math.max(percent, 0), 1);
 		const rgbA = hexToRgb(start);
 		const rgbB = hexToRgb(stop);
 		const colorVal = (prop: "r" | "g" | "b") => Math.round(rgbA[prop] * (1 - percent) + rgbB[prop] * percent);
 		return {
-			r: colorVal('r'),
-			g: colorVal('g'),
-			b: colorVal('b'),
-		}
+			r: colorVal("r"),
+			g: colorVal("g"),
+			b: colorVal("b"),
+		};
 	}
 
 	let contentElement: HTMLElement | undefined = $state(undefined);
@@ -126,23 +129,27 @@
 	let nameLeft = $state("-1.8rem");
 
 	onMount(() => {
-		document.addEventListener("scroll", () => {
-			ratingSortMenu?.close();
+		document.addEventListener(
+			"scroll",
+			() => {
+				ratingSortMenu?.close();
 
-			if (ratingOptions) {
-				const top = ratingOptions.getBoundingClientRect().top - 150;
-				const percent = top / 100;
+				if (ratingOptions) {
+					const top = ratingOptions.getBoundingClientRect().top - 150;
+					const percent = top / 100;
 
-				const { r, g, b } = lerp(cssVar("crust"), cssVar("base"), percent);
-				ratingOptions.style.background = `rgb(${r}, ${g}, ${b})`
-			}
+					const { r, g, b } = lerp(cssVar("crust"), cssVar("base"), percent);
+					ratingOptions.style.background = `rgb(${r}, ${g}, ${b})`;
+				}
 
-			if ((nameElement?.getBoundingClientRect().top ?? 999) <= 24) {
-				nameLeft = `${window.innerWidth / 2 - nameElement!.getBoundingClientRect().width / 2}px`;
-			} else {
-				nameLeft = "-1.8rem";
-			}
-		}, true); // me when true
+				if ((nameElement?.getBoundingClientRect().top ?? 999) <= 24) {
+					nameLeft = `${window.innerWidth / 2 - nameElement!.getBoundingClientRect().width / 2}px`;
+				} else {
+					nameLeft = "-1.8rem";
+				}
+			},
+			true,
+		); // me when true
 	});
 
 	let picture = $derived(getFile(profileUser.picture));
@@ -152,7 +159,7 @@
 		if (notificationsOn) notifyingPosters = notifyingPosters.filter(poster => poster !== profileUser.id);
 		else notifyingPosters.push(profileUser.id);
 
-		await updateUser({ notifyingPosters: [...new Set(notifyingPosters)] })
+		await updateUser({ notifyingPosters: [...new Set(notifyingPosters)] });
 	}
 </script>
 
@@ -167,11 +174,7 @@
 	</button>
 	<div class="profile">
 		{#await picture then pfp}
-			<ClickableImage
-				class="profile-picture"
-				src={pfp!}
-				alt={`${profileUser.displayName} profile picture`}
-			/>
+			<ClickableImage class="profile-picture" src={pfp!} alt={`${profileUser.displayName} profile picture`} />
 		{/await}
 		<div class="profile-line-1">
 			<span class="name" bind:this={nameElement} style:margin-left={nameLeft}>
@@ -195,7 +198,6 @@
 					<h2 class="pronouns">{profileUser.pronouns}</h2>
 				{/if}
 			</span>
-
 		</div>
 
 		<div class="bio">
@@ -219,18 +221,12 @@
 			{/if}
 
 			{#if isCurrentUser}
-				<button class="edit button" onclick={() => goto("/profile/edit")}>
-					Edit Profile
-				</button>
+				<button class="edit button" onclick={() => goto("/profile/edit")}>Edit Profile</button>
 			{:else if user()}
 				{#if user()!.following.includes(profileUser.id)}
-					<button class="unfollow button" onclick={unfollow}>
-						Unfollow
-					</button>
+					<button class="unfollow button" onclick={unfollow}>Unfollow</button>
 				{:else}
-					<button class="follow button" onclick={follow}>
-						Follow
-					</button>
+					<button class="follow button" onclick={follow}>Follow</button>
 				{/if}
 			{/if}
 		</div>
@@ -243,7 +239,10 @@
 						<!-- Favorite Book -->
 						{#await favoriteBook then favorite}
 							{#if favorite}
-								<a href={`/book/${favorite.isbn}`} title={`${profileUser.displayName}'s highest rated book is ${favorite.title}`}>
+								<a
+									href={`/book/${favorite.isbn}`}
+									title={`${profileUser.displayName}'s highest rated book is ${favorite.title}`}
+								>
 									<StarIcon stroke="var(--overlay-1)" style="width: 1rem; height: 1rem; flex-shrink: 0;" />
 									<span class="truncate">{favorite.title}</span>
 								</a>
@@ -253,8 +252,14 @@
 						<!-- Current book -->
 						{#await currentlyReading then current}
 							{#if current}
-								<a href="/book/{current.isbn}" title={`${profileUser.displayName} is currently reading ${current.title}`}>
-									<ClockIcon stroke="var(--overlay-1)" style="width: 1rem; height: 1rem; flex-shrink: 0;" />
+								<a
+									href="/book/{current.isbn}"
+									title={`${profileUser.displayName} is currently reading ${current.title}`}
+								>
+									<ClockIcon
+										stroke="var(--overlay-1)"
+										style="width: 1rem; height: 1rem; flex-shrink: 0;"
+									/>
 									<span class="truncate">{current.title}</span>
 								</a>
 							{/if}
@@ -263,7 +268,11 @@
 				{/if}
 
 				<!-- Number of books read -->
-				<a onclick={gotoView("ratings")} href="/profile/{profileUser.username}?view=ratings" title="{profileUser.displayName} has read {booksRead} book{booksRead === 1 ? '' : 's'}">
+				<a
+					onclick={gotoView("ratings")}
+					href="/profile/{profileUser.username}?view=ratings"
+					title="{profileUser.displayName} has read {booksRead} book{booksRead === 1 ? '' : 's'}"
+				>
 					<BookIcon stroke="var(--overlay-1)" style="width: 1rem; height: 1rem;" />
 					<span>{booksRead}</span>
 				</a>
@@ -314,12 +323,8 @@
 								</button>
 							</span>
 							<ContextMenu bind:this={ratingSortMenu}>
-								<button onclick={sortRatingsBy("best")}>
-									Highest Rated
-								</button>
-								<button onclick={sortRatingsBy("recent")}>
-									Recently Finished
-								</button>
+								<button onclick={sortRatingsBy("best")}>Highest Rated</button>
+								<button onclick={sortRatingsBy("recent")}>Recently Finished</button>
 							</ContextMenu>
 						</div>
 						{#await ratings then ratings}
@@ -328,7 +333,12 @@
 									<AnyPost {post} />
 								{:else}
 									{#await getBook(post.books[0]) then book}
-										<BookListing {book} rating={post.rating} user={profileUser} onclick={() => goto(`/post/${post.id}`)} />
+										<BookListing
+											{book}
+											rating={post.rating}
+											user={profileUser}
+											onclick={() => goto(`/post/${post.id}`)}
+										/>
 									{/await}
 								{/if}
 							{/each}
@@ -378,7 +388,7 @@
 		padding: 0.5rem 1rem 0.5rem 1rem;
 		border-bottom: 1px solid var(--surface-0);
 		position: sticky;
-		top: 5.0rem;
+		top: 5rem;
 		z-index: 9999;
 
 		label {
@@ -496,7 +506,7 @@
 	.profile-line-2 {
 		display: flex;
 		align-items: center;
-		gap: 1.0rem;
+		gap: 1rem;
 		margin-left: 1rem;
 
 		> a {
@@ -547,7 +557,6 @@
 			font-weight: normal;
 			color: var(--surface-2);
 		}
-
 	}
 
 	.buttons {

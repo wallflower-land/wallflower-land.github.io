@@ -15,12 +15,14 @@
 	let { data }: { data: { type: PostType } } = $props();
 	let type = $derived(data.type);
 
-	let bodyName = $derived({
-		general: "Post Body",
-		rating: "Review (Optional)",
-		update: "Comments (Optional)",
-		reply: null!,
-	}[type]);
+	let bodyName = $derived(
+		{
+			general: "Post Body",
+			rating: "Review (Optional)",
+			update: "Comments (Optional)",
+			reply: null!,
+		}[type],
+	);
 
 	let body: string = $state("");
 	let rating: string | null = $state(null);
@@ -52,9 +54,9 @@
 
 	let canPost = $derived(
 		(type === "general" && /\S/.test(body)) ||
-		(type === "rating" && chosenBooks.length > 0) ||
-		(type === "update" && chosenBooks.length > 0) ||
-		(type === "rating" && chosenBooks.length > 0 && rating && /^\d(\.\d)?$/.test(rating))
+			(type === "rating" && chosenBooks.length > 0) ||
+			(type === "update" && chosenBooks.length > 0) ||
+			(type === "rating" && chosenBooks.length > 0 && rating && /^\d(\.\d)?$/.test(rating)),
 	);
 
 	let markAsFinished = $state(true);
@@ -76,12 +78,11 @@
 				<h2>Mark as finished?</h2>
 				<button
 					class={["mark-as-finished", markAsFinished && "finished"]}
-					onclick={() => markAsFinished = !markAsFinished}
+					onclick={() => (markAsFinished = !markAsFinished)}
 				>
 					{markAsFinished ? "Yes" : "No"}
 				</button>
 			</div>
-
 		{:else if type === "update"}
 			<h2 class="body-name">Update Type</h2>
 			<Select options={["start", "finish", "abandon"]} bind:value={updateType} style="margin-bottom: 1rem;" />
@@ -93,8 +94,11 @@
 			<div class="body-header">
 				<h2 class="body-name preview-body">{bodyName}</h2>
 				{#if body}
-					<button onclick={() => showPreview = !showPreview}>
-						<EyeIcon stroke={showPreview ? "var(--lavender)" : "var(--overlay-1)"} style="width: 1rem; height: 1rem;" />
+					<button onclick={() => (showPreview = !showPreview)}>
+						<EyeIcon
+							stroke={showPreview ? "var(--lavender)" : "var(--overlay-1)"}
+							style="width: 1rem; height: 1rem;"
+						/>
 					</button>
 				{/if}
 			</div>
@@ -118,27 +122,21 @@
 		<ImagePicker
 			id="add-post-images"
 			onupload={imageId => images.push(imageId)}
-			aspectRatio={1} 
+			aspectRatio={1}
 			disabled={images.length >= 10}
 		/>
 		<ImageCarousel bind:images editable style="box-shadow: 0px 0px 0.5rem black;" />
 
-		<label
-			class={["add-image", images.length >= 10 && "disabled"]}
-			for="add-post-images"
-		>
-			Add Images
-		</label>
+		<label class={["add-image", images.length >= 10 && "disabled"]} for="add-post-images">Add Images</label>
 
-		<button onclick={uploadPost} class="post-button" disabled={!canPost}>
-			Post
-		</button>
-
+		<button onclick={uploadPost} class="post-button" disabled={!canPost}>Post</button>
 	</div>
 </Page>
 
 <style>
-	input, textarea, .preview {
+	input,
+	textarea,
+	.preview {
 		background-color: var(--crust);
 		color: var(--subtext-1);
 		border: 1px solid var(--surface-0);
@@ -149,7 +147,7 @@
 	.section {
 		display: flex;
 		flex-direction: column;
-		gap: 0.5rem
+		gap: 0.5rem;
 	}
 
 	.add-image {
@@ -205,12 +203,11 @@
 		&:not(.finished) {
 			background-image: linear-gradient(to bottom right, var(--pink), var(--red));
 		}
-		
+
 		&.finished {
 			background-image: linear-gradient(to bottom right, var(--green), var(--teal));
 		}
 	}
-
 
 	.post-button {
 		width: fit-content;
@@ -254,7 +251,8 @@
 		gap: 1rem;
 	}
 
-	textarea, .preview {
+	textarea,
+	.preview {
 		border-radius: 0.75rem;
 		width: 100%;
 		height: 10rem;
@@ -273,5 +271,4 @@
 		font-size: 0.85rem;
 		color: var(--overlay-1);
 	}
-
 </style>

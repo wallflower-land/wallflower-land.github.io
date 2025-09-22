@@ -3,12 +3,9 @@
 	import Link from "../util/Link.svelte";
 	import { getBook, type ISBN } from "../../api/bookapi";
 
-	let { 
-		body,
-		...rest 
-	}: { body: string } & HTMLAttributes<HTMLDivElement> = $props();
+	let { body, ...rest }: { body: string } & HTMLAttributes<HTMLDivElement> = $props();
 
-	type Segment = { type: string, groups: string[] };
+	type Segment = { type: string; groups: string[] };
 	let segments: Segment[] = $derived.by(() => {
 		const tokens: Segment[] = [];
 		const tokenTypes = {
@@ -25,34 +22,36 @@
 		let text = body;
 		let textNode = "";
 		while (text) {
-			if (!Object.entries(tokenTypes).some(([type, pattern]) => {
-				const groups = text.match(pattern);
-				if (!groups) return false;
-				if (type === "text") {
-					textNode += groups[0];
-				} else {
-					if (textNode) {
-						tokens.push({ type: "text", groups: [textNode]});
-						textNode = "";
+			if (
+				!Object.entries(tokenTypes).some(([type, pattern]) => {
+					const groups = text.match(pattern);
+					if (!groups) return false;
+					if (type === "text") {
+						textNode += groups[0];
+					} else {
+						if (textNode) {
+							tokens.push({ type: "text", groups: [textNode] });
+							textNode = "";
+						}
+						tokens.push({ type, groups });
 					}
-					tokens.push({ type, groups });
-				}
-				text = text.substring(groups[0].length);
-				return true;
-			})) {
+					text = text.substring(groups[0].length);
+					return true;
+				})
+			) {
 				throw `Invalid token: ${text}`;
-			};
+			}
 		}
 
 		if (textNode) {
-			tokens.push({ type: "text", groups: [textNode]});
+			tokens.push({ type: "text", groups: [textNode] });
 		}
 
 		return tokens;
 	});
 </script>
 
-<div class="body" {...rest} >
+<div class="body" {...rest}>
 	{#each segments as segment}
 		{#if segment.type === "italic"}
 			<i>{segment.groups[1]}</i>

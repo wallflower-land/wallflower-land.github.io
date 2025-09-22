@@ -1,17 +1,17 @@
 <script lang="ts">
-	let { 
-		limit, 
-		threshold = 0.2, 
-		text = $bindable(), 
+	let {
+		limit,
+		threshold = 0.2,
+		text = $bindable(),
 		size = 1,
 		display = "flex",
-		...rest 
+		...rest
 	}: {
-		limit: number,
-		text: string,
-		threshold?: number,
-		size?: number,
-		display?: string
+		limit: number;
+		text: string;
+		threshold?: number;
+		size?: number;
+		display?: string;
 	} = $props();
 
 	let thresholdValue = $derived(threshold * limit);
@@ -19,20 +19,21 @@
 	let color = $derived.by(() => {
 		const remaining = limit - text.length;
 		if (remaining > thresholdValue) return "var(--surface-0)";
-		if (remaining > 2/3 * thresholdValue) return "var(--yellow)";
-		if (remaining > 1/3 * thresholdValue) return "var(--peach)";
+		if (remaining > (2 / 3) * thresholdValue) return "var(--yellow)";
+		if (remaining > (1 / 3) * thresholdValue) return "var(--peach)";
 		return "var(--red)";
 	});
 </script>
 
-<div 
-	style:--color={color} 
-	style:--percent={100 * (1 - (limit - text.length) / limit)} 
+<div
+	style:--color={color}
+	style:--percent={100 * (1 - (limit - text.length) / limit)}
 	style:right="{size * 0.5}rem"
 	style:bottom="{size * 0.5}rem"
 	style:font-size="max({size * 0.75}rem, 0.7rem)"
 	style:display
-	{...rest}>
+	{...rest}
+>
 	{limit - text.length}
 </div>
 
@@ -56,11 +57,14 @@
 			border-radius: 50%;
 			padding: 2px;
 			background: conic-gradient(var(--color) calc(var(--percent) * 1%), transparent 0);
-			-webkit-mask: linear-gradient(#000000 0 0) content-box, linear-gradient(#000000 0 0);
-			mask: linear-gradient(#000000 0 0) content-box, linear-gradient(#000000 0 0);
+			-webkit-mask:
+				linear-gradient(#000000 0 0) content-box,
+				linear-gradient(#000000 0 0);
+			mask:
+				linear-gradient(#000000 0 0) content-box,
+				linear-gradient(#000000 0 0);
 			-webkit-mask-composite: xor;
 			mask-composite: exclude;
 		}
-
 	}
 </style>

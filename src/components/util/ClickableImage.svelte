@@ -2,17 +2,17 @@
 	import type { Snippet } from "svelte";
 	import type { HTMLAttributes, HTMLImgAttributes } from "svelte/elements";
 
-	let { 
-		src, 
-		children, 
-		clickable = true, 
-		element = $bindable(), 
-		...rest 
-	}: { 
-		src: string,
-		children?: Snippet,
-		clickable?: boolean,
-		element?: HTMLElement
+	let {
+		src,
+		children,
+		clickable = true,
+		element = $bindable(),
+		...rest
+	}: {
+		src: string;
+		children?: Snippet;
+		clickable?: boolean;
+		element?: HTMLElement;
 	} & (HTMLAttributes<HTMLDivElement> | HTMLImgAttributes) = $props();
 
 	let expanded = $state(false);
@@ -26,7 +26,7 @@
 {#if children}
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<div {...(rest as any)} class="wrapper" onclick={click} style:cursor="pointer">
+	<div {...rest as any} class="wrapper" onclick={click} style:cursor="pointer">
 		{@render children()}
 	</div>
 {:else}
@@ -35,11 +35,11 @@
 {/if}
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<div 
-	style:pointer-events={expanded ? undefined : "none"} 
+<div
+	style:pointer-events={expanded ? undefined : "none"}
 	style:background-color={expanded ? "rgba(0, 0, 0, 0.6)" : "rgba(0, 0, 0, 0)"}
-	class="preview-wrapper" 
-	onclick={() => expanded = false}
+	class="preview-wrapper"
+	onclick={() => (expanded = false)}
 >
 	<!-- svelte-ignore a11y_missing_attribute -->
 	<img class="preview" {src} style:scale={expanded ? "100%" : "0%"} />
@@ -67,7 +67,9 @@
 		width: 100%;
 		border-radius: 0.75rem;
 		max-width: 50rem;
-		transition: scale 0.25s, background-color 1s;
+		transition:
+			scale 0.25s,
+			background-color 1s;
 		box-shadow: 0px 0px 1rem black;
 	}
 </style>

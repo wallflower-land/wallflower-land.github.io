@@ -3,30 +3,32 @@
 	import { onMount } from "svelte";
 	import SideSwiper from "./SideSwiper.svelte";
 
-	let { 
-		views, 
-		view = $bindable(), 
+	let {
+		views,
+		view = $bindable(),
 		left = $bindable(),
 		content = undefined,
-		viewFilter = (_name) => true,
-		formatViewName = (name) => name,
+		viewFilter = _name => true,
+		formatViewName = name => name,
 		marginTop = "0px",
-		onViewChange = (_name) => {},
-		paddingTop = "0px"
-	}: { 
-		views: View[], 
-		view: View,
-		left: string,
-		content?: HTMLElement,
-		paddingTop?: string,
-		formatViewName?: (name: View) => string | Promise<string>
-		viewFilter?: (name: View) => (boolean | Promise<boolean>)
-		onViewChange?: (name: View) => void,
-		marginTop?: string
+		onViewChange = _name => {},
+		paddingTop = "0px",
+	}: {
+		views: View[];
+		view: View;
+		left: string;
+		content?: HTMLElement;
+		paddingTop?: string;
+		formatViewName?: (name: View) => string | Promise<string>;
+		viewFilter?: (name: View) => boolean | Promise<boolean>;
+		onViewChange?: (name: View) => void;
+		marginTop?: string;
 	} = $props();
 
 	let availableViews = $derived(views.filter(viewFilter));
-	let viewbarLeft = $derived(`${availableViews.indexOf(view) * (100 / availableViews.length) + (50 / availableViews.length)}%`);
+	let viewbarLeft = $derived(
+		`${availableViews.indexOf(view) * (100 / availableViews.length) + 50 / availableViews.length}%`,
+	);
 
 	let width = 0;
 
@@ -57,14 +59,10 @@
 
 <SideSwiper {content} {gotoNext} {gotoPrevious} bind:left viewCount={availableViews.length} />
 
-<div 
-	class="views" 
-	style:grid-template-columns="repeat({availableViews.length}, 1fr)"
-	style:margin-top={marginTop}
->
+<div class="views" style:grid-template-columns="repeat({availableViews.length}, 1fr)" style:margin-top={marginTop}>
 	{#each availableViews as viewtab}
-		<button 
-			class={view === viewtab ? "selected" : ""} 
+		<button
+			class={view === viewtab ? "selected" : ""}
 			onclick={() => setView(viewtab)}
 			style:font-size={availableViews.length > 2 ? "0.85rem" : "1rem"}
 			style:padding-top={paddingTop}

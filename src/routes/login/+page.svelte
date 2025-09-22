@@ -11,10 +11,11 @@
 	async function signIn() {
 		let error = await logIn(email, password);
 		if (error) {
-			errorMessage = {
-				"auth/invalid-email": "No account exists with this email.",
-				"auth/wrong-password": "Email or password is incorrect."
-			}[error.code] ?? "An unknown error has occurred.";
+			errorMessage =
+				{
+					"auth/invalid-email": "No account exists with this email.",
+					"auth/wrong-password": "Email or password is incorrect.",
+				}[error.code] ?? "An unknown error has occurred.";
 		} else {
 			goto("/");
 		}
@@ -36,19 +37,11 @@
 		<div>
 			<div class="section">
 				<p>Email</p>
-				<input
-					type="text"
-					placeholder="example@website.com"
-					bind:value={email}
-				/>
+				<input type="text" placeholder="example@website.com" bind:value={email} />
 			</div>
 			<div class="section">
 				<p>Password</p>
-				<input
-					type="password"
-					placeholder="s3cr3tp4zzc0d3"
-					bind:value={password}
-				/>
+				<input type="password" placeholder="s3cr3tp4zzc0d3" bind:value={password} />
 				<Link href="/forgot-password">Forgot your password?</Link>
 			</div>
 		</div>
@@ -134,6 +127,5 @@
 				}
 			}
 		}
-
 	}
 </style>

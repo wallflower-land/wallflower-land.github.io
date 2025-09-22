@@ -34,7 +34,7 @@
 	let username = $state("");
 	let bio = $state("");
 	let pronouns = $state("");
-	let picture: FileId = $state("" as FileId)
+	let picture: FileId = $state("" as FileId);
 	let showNewbieBadge = $state(true);
 	let showAuthorBadge = $state(true);
 	let showDeveloperBadge = $state(true);
@@ -44,7 +44,7 @@
 
 	let chosenCurrentBooks: Book[] = $state([]);
 
-	(async() => {
+	(async () => {
 		chosenCurrentBooks = user()!.currentBook ? [await getBook(user()!.currentBook!)] : [];
 	})();
 
@@ -78,14 +78,9 @@
 		return false;
 	});
 
-	let displayNameErrorList = $derived([
-		...(displayName ? [] : ["Display name can't be empty"])
-	]);
+	let displayNameErrorList = $derived([...(displayName ? [] : ["Display name can't be empty"])]);
 
-	let usernameErrorList = $derived([
-		...usernameErrors(username),
-		...(username ? [] : ["Username can't be empty"])
-	]);
+	let usernameErrorList = $derived([...usernameErrors(username), ...(username ? [] : ["Username can't be empty"])]);
 
 	let usernameTaken = $state(false);
 
@@ -94,10 +89,7 @@
 	}
 
 	let canSave = $derived(
-		unsavedChanges && 
-		displayNameErrorList.length === 0 && 
-		usernameErrorList.length === 0 && 
-		!usernameTaken
+		unsavedChanges && displayNameErrorList.length === 0 && usernameErrorList.length === 0 && !usernameTaken,
 	);
 
 	async function update() {
@@ -110,7 +102,7 @@
 			return;
 		}
 
-		await updateUser({ 
+		await updateUser({
 			displayName: displayName.trim(),
 			bio,
 			username,
@@ -121,7 +113,7 @@
 			showAuthorBadge,
 			showNewbieBadge,
 			showDeveloperBadge,
-			showModeratorBadge
+			showModeratorBadge,
 		});
 		saved = true;
 		await goto("/profile");
@@ -145,7 +137,7 @@
 </script>
 
 <Page type="profile" {onkeydown}>
-	<BackButton style="position: absolute; top: 0.5rem; left: 0.5rem;"/>
+	<BackButton style="position: absolute; top: 0.5rem; left: 0.5rem;" />
 	{#await awaitUser then currentUser}
 		<!-- Banner -->
 		{#await getFile(banner) then bnr}
@@ -181,12 +173,12 @@
 
 			<label for="display-name">Display Name</label>
 			<div class="text-container">
-				<input 
-					maxlength="20" 
-					enterkeyhint="done" 
-					type="text" 
-					id="display-name" 
-					bind:value={displayName} 
+				<input
+					maxlength="20"
+					enterkeyhint="done"
+					type="text"
+					id="display-name"
+					bind:value={displayName}
 					style:outline={displayNameErrorList.length > 0 ? "2px solid var(--red)" : "none"}
 				/>
 				<CharacterLimitMeter size={0.7} limit={20} bind:text={displayName} />
@@ -198,7 +190,7 @@
 			<label for="username">Username</label>
 			<div
 				style:outline={usernameTaken || usernameErrorList.length > 0 ? "2px solid var(--red)" : "none"}
-				class="username" 
+				class="username"
 			>
 				<span class="at">@</span>
 				<input
@@ -230,25 +222,21 @@
 
 			<span class="radio-input">
 				<label for="display-pronouns">Display pronouns on your profile</label>
-				<RadioInput 
-					id="display-pronouns" 
-					size={0.6} 
+				<RadioInput
+					id="display-pronouns"
+					size={0.6}
 					bind:value={
-						() => currentUser.showPronounsOnProfile,
-						(value) => updateUser({ showPronounsOnProfile: value })
+						() => currentUser.showPronounsOnProfile, value => updateUser({ showPronounsOnProfile: value })
 					}
 				/>
 			</span>
 
 			<span class="radio-input">
 				<label for="display-post-pronouns">Display pronouns on your posts</label>
-				<RadioInput 
-					id="display-post-pronouns" 
-					size={0.6} 
-					bind:value={
-						() => currentUser.showPronounsOnPosts,
-						(value) => updateUser({ showPronounsOnPosts: value })
-					}
+				<RadioInput
+					id="display-post-pronouns"
+					size={0.6}
+					bind:value={() => currentUser.showPronounsOnPosts, value => updateUser({ showPronounsOnPosts: value })}
 				/>
 			</span>
 
@@ -268,13 +256,7 @@
 
 			<div class="book-search">
 				<BookSearch title="Currently Reading" bind:books={chosenCurrentBooks} />
-				<button
-					class="reset-current-book" 
-					disabled={!changedCurrentBook}
-					onclick={resetCurrentBook}
-				>
-					Reset
-				</button>
+				<button class="reset-current-book" disabled={!changedCurrentBook} onclick={resetCurrentBook}>Reset</button>
 			</div>
 
 			<hr />
@@ -325,11 +307,11 @@
 	</div>
 </Page>
 
-<ConfirmationPopup 
+<ConfirmationPopup
 	bind:this={popup}
 	title="Leave without saving?"
 	body="If you leave now, your changes will be lost."
-	onconfirm={() => window.location.href = "/profile"}
+	onconfirm={() => (window.location.href = "/profile")}
 	confirmText="Leave"
 />
 
@@ -355,7 +337,7 @@
 			background-image: linear-gradient(to bottom right, var(--pink), var(--red));
 			color: var(--crust);
 			box-shadow: 0px 0px 0.5rem var(--box-shadow);
-			
+
 			&:hover {
 				scale: 105%;
 			}
@@ -382,7 +364,7 @@
 	}
 
 	.badge-line {
-		display :flex;
+		display: flex;
 		margin-left: 2rem;
 		align-items: center;
 		margin-right: 2rem;
@@ -428,7 +410,8 @@
 		width: 100%;
 	}
 
-	div:has(> textarea), .text-container {
+	div:has(> textarea),
+	.text-container {
 		width: calc(100% - 4rem);
 		display: flex;
 		flex-direction: column;
@@ -477,7 +460,8 @@
 		margin-right: 2rem;
 	}
 
-	input, textarea {
+	input,
+	textarea {
 		background: var(--crust);
 		color: var(--subtext-1);
 	}
@@ -536,7 +520,6 @@
 			cursor: default;
 		}
 	}
-
 
 	label:not(.banner),
 	.profile-picture {

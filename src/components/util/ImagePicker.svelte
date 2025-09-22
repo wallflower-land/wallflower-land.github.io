@@ -8,13 +8,13 @@
 	let previewDiv: HTMLElement;
 	let input: HTMLInputElement;
 
-	let { 
-		aspectRatio = undefined, 
-		onupload = (_imageId: FileId) => {}, 
+	let {
+		aspectRatio = undefined,
+		onupload = (_imageId: FileId) => {},
 		imageId = $bindable(null),
 		circular = false,
 		allowEdit = true,
-		...rest 
+		...rest
 	}: {
 		aspectRatio?: number;
 		onupload?: (imageId: FileId) => void;
@@ -48,7 +48,7 @@
 	}
 
 	let file: File | null = $state(null);
-	
+
 	async function openImage() {
 		if (!allowEdit) {
 			const chosen = files?.[0] ?? null;
@@ -63,7 +63,7 @@
 
 		const reader = new FileReader();
 
-		reader.onloadend = function() {
+		reader.onloadend = function () {
 			previewDiv.style.display = "flex";
 			preview.src = reader.result as string;
 
@@ -83,19 +83,25 @@
 
 			if (aspectRatio) {
 				if (aspectRatio < 1) {
-					cropperLeft = (imageContainer!.getBoundingClientRect().width - (imageContainer!.getBoundingClientRect().height * aspectRatio)) / 2;
+					cropperLeft =
+						(imageContainer!.getBoundingClientRect().width -
+							imageContainer!.getBoundingClientRect().height * aspectRatio) /
+						2;
 					cropperRight = cropperLeft;
 				} else {
-					cropperTop = (imageContainer!.getBoundingClientRect().height - (imageContainer!.getBoundingClientRect().width / aspectRatio)) / 2;
+					cropperTop =
+						(imageContainer!.getBoundingClientRect().height -
+							imageContainer!.getBoundingClientRect().width / aspectRatio) /
+						2;
 					cropperBottom = cropperTop;
 				}
 			}
-		}
+		};
 
 		if (file) {
-			reader.readAsDataURL(file)
+			reader.readAsDataURL(file);
 		} else {
-			preview.src =  "";
+			preview.src = "";
 		}
 	}
 
@@ -113,10 +119,10 @@
 		return new Promise<File>((resolve, reject) => {
 			const image = new Image();
 			image.onload = () => {
-				const canvas = document.createElement("canvas")
+				const canvas = document.createElement("canvas");
 				canvas.width = preview.getBoundingClientRect().width;
 				canvas.height = canvas.width * (1 / cropAspectRatio());
-				const ctx = canvas.getContext('2d')!;
+				const ctx = canvas.getContext("2d")!;
 				const factor = preview.naturalWidth / canvas.width;
 				ctx.drawImage(
 					image,
@@ -140,7 +146,7 @@
 			image.onerror = reject;
 
 			const reader = new FileReader();
-			reader.onload = function() {
+			reader.onload = function () {
 				image.src = reader.result as string;
 			};
 			reader.onerror = reject;
@@ -195,67 +201,71 @@
 	type Handle = "top left" | "top right" | "bottom left" | "bottom right";
 
 	function setDraggingHandle(handle: Handle) {
-		return function() {
+		return function () {
 			draggingHandle = handle;
-		}
+		};
 	}
 
 	onMount(() => {
-		cropper.addEventListener("wheel", event => {
-			scale = Math.min(Math.max(minimumScale, scale - event.deltaY / 5), 10);
-		}, true);
+		cropper.addEventListener(
+			"wheel",
+			event => {
+				scale = Math.min(Math.max(minimumScale, scale - event.deltaY / 5), 10);
+			},
+			true,
+		);
 
-		document.addEventListener("mousemove", event => {
-			if (draggingHandle == "top left") {
-				const amount = Math.min(event.movementX, event.movementY);
-				cropperLeft = Math.max(0, cropperLeft + amount);
+		document.addEventListener(
+			"mousemove",
+			event => {
+				if (draggingHandle == "top left") {
+					const amount = Math.min(event.movementX, event.movementY);
+					cropperLeft = Math.max(0, cropperLeft + amount);
 
-				if (aspectRatio) {
-					const desiredHeight = cropperWidth * (1 / aspectRatio);
-					const delta = Math.abs(imageContainer!.getBoundingClientRect().height - desiredHeight - cropperBottom);
-					cropperTop = delta;
+					if (aspectRatio) {
+						const desiredHeight = cropperWidth * (1 / aspectRatio);
+						const delta = Math.abs(
+							imageContainer!.getBoundingClientRect().height - desiredHeight - cropperBottom,
+						);
+						cropperTop = delta;
+					}
+				} else if (draggingHandle == "top right") {
+					const amount = Math.min(Math.abs(event.movementX), Math.abs(event.movementY));
+					cropperRight = Math.max(0, cropperRight - amount * Math.sign(event.movementX));
+
+					if (aspectRatio) {
+						const desiredHeight = cropperWidth * (1 / aspectRatio);
+						const delta = Math.abs(
+							imageContainer!.getBoundingClientRect().height - desiredHeight - cropperBottom,
+						);
+						cropperTop = delta;
+					}
+				} else if (draggingHandle == "bottom left") {
+					const amount = Math.min(Math.abs(event.movementX), Math.abs(event.movementY));
+					cropperLeft = Math.max(0, cropperLeft + amount * Math.sign(event.movementX));
+					if (aspectRatio) {
+						const desiredHeight = cropperWidth * (1 / aspectRatio);
+						const delta = Math.abs(imageContainer!.getBoundingClientRect().height - desiredHeight - cropperTop);
+						cropperBottom = delta;
+					}
+				} else if (draggingHandle == "bottom right") {
+					const amount = Math.min(Math.abs(event.movementX), Math.abs(event.movementY));
+					cropperRight = Math.max(0, cropperRight - amount * Math.sign(event.movementX));
+					if (aspectRatio) {
+						const desiredHeight = cropperWidth * (1 / aspectRatio);
+						const delta = Math.abs(imageContainer!.getBoundingClientRect().height - desiredHeight - cropperTop);
+						cropperBottom = delta;
+					}
+				} else if (panning) {
+					let rawLeft = imageLeft + event.movementX;
+					let rawTop = imageTop + event.movementY;
+					imageLeft = Math.max(Math.min(cropperLeft, rawLeft), cropperLeft + cropperWidth - imageWidth * scale);
+					imageTop = Math.max(Math.min(cropperTop, rawTop), cropperTop + cropperHeight - imageHeight * scale);
 				}
-			} 
-
-			else if (draggingHandle == "top right") {
-				const amount = Math.min(Math.abs(event.movementX), Math.abs(event.movementY));
-				cropperRight = Math.max(0, cropperRight - amount * Math.sign(event.movementX));
-
-				if (aspectRatio) {
-					const desiredHeight = cropperWidth * (1 / aspectRatio);
-					const delta = Math.abs(imageContainer!.getBoundingClientRect().height - desiredHeight - cropperBottom);
-					cropperTop = delta;
-				}
-			} 
-
-			else if (draggingHandle == "bottom left") {
-				const amount = Math.min(Math.abs(event.movementX), Math.abs(event.movementY));
-				cropperLeft = Math.max(0, cropperLeft + amount * Math.sign(event.movementX));
-				if (aspectRatio) {
-					const desiredHeight = cropperWidth * (1 / aspectRatio);
-					const delta = Math.abs(imageContainer!.getBoundingClientRect().height - desiredHeight - cropperTop);
-					cropperBottom = delta;
-				}
-			}
-
-			else if (draggingHandle == "bottom right") {
-				const amount = Math.min(Math.abs(event.movementX), Math.abs(event.movementY));
-				cropperRight = Math.max(0, cropperRight - amount * Math.sign(event.movementX));
-				if (aspectRatio) {
-					const desiredHeight = cropperWidth * (1 / aspectRatio);
-					const delta = Math.abs(imageContainer!.getBoundingClientRect().height - desiredHeight - cropperTop);
-					cropperBottom = delta;
-				}
-			}
-
-			else if (panning) {
-				let rawLeft = imageLeft + event.movementX;
-				let rawTop = imageTop + event.movementY;
-				imageLeft = Math.max(Math.min(cropperLeft, rawLeft), cropperLeft + cropperWidth - imageWidth * scale);
-				imageTop = Math.max(Math.min(cropperTop, rawTop), cropperTop + cropperHeight - imageHeight * scale);
-			}
-		}, true); // me when true
-	})
+			},
+			true,
+		); // me when true
+	});
 
 	function onmouseup() {
 		panning = false;
@@ -286,7 +296,7 @@
 <input {...rest} bind:this={input} bind:files onchange={openImage} type="file" />
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<div class="preview" bind:this={previewDiv} onmousedown={() => panning = true}>
+<div class="preview" bind:this={previewDiv} onmousedown={() => (panning = true)}>
 	<div class="image" bind:this={imageContainer}>
 		<img
 			style:cursor={panning ? "grabbing" : "grab"}
@@ -298,45 +308,41 @@
 			style:height="{imageHeight * scale}px"
 			draggable="false"
 		/>
-		<div class="overlay left" 
+		<div
+			class="overlay left"
 			style:width="{(imageContainer?.getBoundingClientRect().width ?? 0) - cropperWidth - cropperRight}px"
 			style:height="{overlayLeftHeight}px"
 		></div>
-		<div class="overlay right" 
+		<div
+			class="overlay right"
 			style:width="{(imageContainer?.getBoundingClientRect().width ?? 0) - cropperWidth - cropperLeft}px"
 			style:height="{overlayLeftHeight}px"
 		></div>
-		<div class="overlay top" 
+		<div
+			class="overlay top"
 			style:left="{cropperLeft}px"
 			style:width="{cropperWidth}px"
 			style:height="{(imageContainer?.getBoundingClientRect().height ?? 0) - cropperHeight - cropperBottom}px"
 		></div>
-		<div class="overlay bottom" 
+		<div
+			class="overlay bottom"
 			style:right="{cropperRight}px"
 			style:width="{cropperWidth}px"
 			style:height="{(imageContainer?.getBoundingClientRect().height ?? 0) - cropperHeight - cropperTop}px"
 			style:top="{overlayBottomTop}px"
 		></div>
-		<div 
+		<div
 			style:width="{cropperWidth}px"
 			style:height="{cropperHeight}px"
 			style:top="{cropperTop}px"
 			style:left="{cropperLeft}px"
 			style:cursor={panning ? "grabbing" : "grab"}
-			bind:this={cropper} 
-			onmousedown={() => panning = true}
-			class="cropper {circular ? "circular" : ""}"
+			bind:this={cropper}
+			onmousedown={() => (panning = true)}
+			class="cropper {circular ? 'circular' : ''}"
 		>
-			<div
-				bind:this={topLeftHandle} 
-				onmousedown={setDraggingHandle("top left")} 
-				class="top left handle"
-			></div>
-			<div
-				bind:this={topRightHandle}
-				onmousedown={setDraggingHandle("top right")}
-				class="top right handle"
-			></div>
+			<div bind:this={topLeftHandle} onmousedown={setDraggingHandle("top left")} class="top left handle"></div>
+			<div bind:this={topRightHandle} onmousedown={setDraggingHandle("top right")} class="top right handle"></div>
 			<div
 				bind:this={bottomLeftHandle}
 				onmousedown={setDraggingHandle("bottom left")}

@@ -4,17 +4,10 @@
 	let { stroke, ...rest }: { stroke: string } & SVGAttributes<SVGElement> = $props();
 </script>
 
-<svg
-	viewBox="0 0 24 24"
-	fill="none"
-	{...rest}
-	xmlns="http://www.w3.org/2000/svg"
-	transform="matrix(-1, 0, 0, 1, 0, 0)"
-	><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g
-		id="SVGRepo_tracerCarrier"
-		stroke-linecap="round"
-		stroke-linejoin="round"
-	></g><g id="SVGRepo_iconCarrier">
+<svg viewBox="0 0 24 24" fill="none" {...rest} xmlns="http://www.w3.org/2000/svg" transform="matrix(-1, 0, 0, 1, 0, 0)">
+	<g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+	<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+	<g id="SVGRepo_iconCarrier">
 		<path
 			d="M14 7.63636L14 4.5C14 4.22386 13.7761 4 13.5 4L4.5 4C4.22386 4 4 4.22386 4 4.5L4 19.5C4 19.7761 4.22386 20 4.5 20L13.5 20C13.7761 20 14 19.7761 14 19.5L14 16.3636"
 			{stroke}
@@ -29,5 +22,5 @@
 			stroke-linecap="round"
 			stroke-linejoin="round"
 		></path>
-	</g></svg
->
+	</g>
+</svg>

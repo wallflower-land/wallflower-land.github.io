@@ -6,20 +6,14 @@
 
 	type View = "mentions" | "replies" | "following";
 
-	let view: View = $state(new URLSearchParams(window.location.search).get("view") as View ?? "mentions");
+	let view: View = $state((new URLSearchParams(window.location.search).get("view") as View) ?? "mentions");
 
 	const mentions = $derived(user() ? getMentions() : []);
 	const replies = $derived(user() ? getRepliesToUser(user()!) : []);
 	const following = $derived(user() ? getNotifyingPosts() : []);
 </script>
 
-<PageWithViews 
-	bind:view 
-	views={["mentions", "replies", "following"]} 
-	header="Inbox"
-	fullpage
-	pagetype="inbox"
->
+<PageWithViews bind:view views={["mentions", "replies", "following"]} header="Inbox" fullpage pagetype="inbox">
 	<div>
 		{#await mentions}
 			<div class="loading">

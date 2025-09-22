@@ -1,14 +1,14 @@
 <script lang="ts">
 	import BackButton from "../util/BackButton.svelte";
 
-	let { 
-		title, 
-		nonfixed = false, 
-		subtitle = undefined 
+	let {
+		title,
+		nonfixed = false,
+		subtitle = undefined,
 	}: {
-		title: string,
-		nonfixed?: boolean,
-		subtitle?: string | Promise<string>
+		title: string;
+		nonfixed?: boolean;
+		subtitle?: string | Promise<string>;
 	} = $props();
 </script>
 

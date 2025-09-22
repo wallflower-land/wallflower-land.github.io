@@ -14,12 +14,8 @@
 	let title = $state(book.title);
 	// svelte-ignore state_referenced_locally
 	let publishDate = $state(book.publishDate);
-	
-	let canSave = $derived(
-		description !== book.description || 
-		title !== book.title ||
-		publishDate !== book.publishDate
-	);
+
+	let canSave = $derived(description !== book.description || title !== book.title || publishDate !== book.publishDate);
 
 	async function update() {
 		await updateBook(book, { description, title, publishDate });
@@ -29,7 +25,6 @@
 
 <Page type="search" header="Edit Book">
 	<div class="info">
-
 		<h2>{book.title}</h2>
 		<h3>
 			{#await getAuthor(book.authorKey) then author}
@@ -41,11 +36,12 @@
 
 		<div class="section">
 			<span>
-				This page is available to wallflower.land moderators only.
-				Note that changes you make to this book's details here 
-				will update <b>globally for everyone</b>. This is a moderator
-				tool meant for fixing issues in the book details fetched from
-				the Google or OpenLibrary APIs. <b>Use carefully</b>.
+				This page is available to wallflower.land moderators only. Note that changes you make to this book's details
+				here will update <b>globally for everyone</b>
+				. This is a moderator tool meant for fixing issues in the book details fetched from the Google or OpenLibrary
+				APIs.
+				<b>Use carefully</b>
+				.
 			</span>
 		</div>
 
@@ -65,8 +61,7 @@
 
 		<div class="section">
 			<span>Description</span>
-			<textarea class="description" bind:value={description}>
-			</textarea>
+			<textarea class="description" bind:value={description}></textarea>
 		</div>
 
 		<hr />

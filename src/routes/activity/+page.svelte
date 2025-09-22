@@ -6,7 +6,7 @@
 
 	type View = "liked" | "replied" | "saved" | "shared" | "viewed";
 
-	let view: View = $state(new URLSearchParams(window.location.search).get("view") as View ?? "liked");
+	let view: View = $state((new URLSearchParams(window.location.search).get("view") as View) ?? "liked");
 
 	let viewed: Post[] = $state([]);
 	let liked: Post[] = $state([]);
@@ -16,41 +16,37 @@
 
 	$effect(() => {
 		if (user()) load();
-	})
+	});
 
 	async function load() {
 		if (view === "liked") {
 			liked = (await Promise.all(user()!.likes.map(post => getPostFromId(post))))
 				.map(post => post!)
 				.filter(post => post)
-				.toReversed()
-		}
-		else if (view === "viewed") {
+				.toReversed();
+		} else if (view === "viewed") {
 			viewed = (await Promise.all(user()!.views.map(post => getPostFromId(post))))
 				.filter(post => post)
 				.map(post => post!)
-				.toReversed()
-		}
-		else if (view === "replied") {
+				.toReversed();
+		} else if (view === "replied") {
 			replied = await getUserReplies(user()!);
-		}
-		else if (view === "shared") {
+		} else if (view === "shared") {
 			shared = (await Promise.all(user()!.shares.map(post => getPostFromId(post))))
 				.filter(post => post)
 				.map(post => post!)
-				.toReversed()
-		}
-		else if (view === "saved") {
+				.toReversed();
+		} else if (view === "saved") {
 			saved = (await Promise.all(user()!.saved.map(post => getPostFromId(post))))
 				.filter(post => post)
 				.map(post => post!)
-				.toReversed()
+				.toReversed();
 		}
 	}
 </script>
 
-<PageWithViews 
-	views={["viewed", "liked", "replied", "saved", "shared"]} 
+<PageWithViews
+	views={["viewed", "liked", "replied", "saved", "shared"]}
 	bind:view
 	fullpage
 	pagetype="profile"

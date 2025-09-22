@@ -9,7 +9,14 @@
 	import PasswordIcon from "../../../components/icons/PasswordIcon.svelte";
 	import TrashIcon from "../../../components/icons/TrashIcon.svelte";
 	import WrenchIcon from "../../../components/icons/WrenchIcon.svelte";
-	import { changeEmail, changePassword, deleteAccount, passwordErrors, updateUser, user } from "../../../api/userapi.svelte";
+	import {
+		changeEmail,
+		changePassword,
+		deleteAccount,
+		passwordErrors,
+		updateUser,
+		user,
+	} from "../../../api/userapi.svelte";
 	import Page from "../../../components/layout/Page.svelte";
 	import Popup from "../../../components/Popup.svelte";
 
@@ -29,25 +36,30 @@
 	let showNewPassword = $state(false);
 	let showNewPassword2 = $state(false);
 	let newPasswordErrors = $derived(
-		newPassword ? 
-		[...passwordErrors(newPassword), ...(newPassword === oldPassword ? ["New password cannot be the same as old password."] : [])] : 
-		[]
+		newPassword
+			? [
+					...passwordErrors(newPassword),
+					...(newPassword === oldPassword ? ["New password cannot be the same as old password."] : []),
+				]
+			: [],
 	);
-	let passwordMatchError = $derived(newPassword && newPassword2 && newPassword !== newPassword2 ? "Passwords must match" : null);
+	let passwordMatchError = $derived(
+		newPassword && newPassword2 && newPassword !== newPassword2 ? "Passwords must match" : null,
+	);
 	let canChangePassword = $derived(
-		newPassword && 
-		oldPassword && 
-		newPassword2 && 
-		!passwordMatchError && 
-		newPasswordErrors.length === 0 &&
-		newPassword !== oldPassword
+		newPassword &&
+			oldPassword &&
+			newPassword2 &&
+			!passwordMatchError &&
+			newPasswordErrors.length === 0 &&
+			newPassword !== oldPassword,
 	);
 
 	let changeEmailVisible = $state(false);
 	let changeAuthorVisible = $state(false);
 	let changePasswordVisible = $state(false);
 	let deleteAccountVisible = $state(false);
-	let usernameError = $derived((!deleteUsername || deleteUsername === user()?.username) ? null : "Incorrect username");
+	let usernameError = $derived(!deleteUsername || deleteUsername === user()?.username ? null : "Incorrect username");
 	let deletePassword = $state("");
 	let confirmDeleteAccount = $state(false);
 	let canDeleteAccount = $derived(!usernameError && deleteUsername && confirmDeleteAccount);
@@ -75,24 +87,28 @@
 	async function unrequestAuthorVerification() {
 		await updateUser({ requestedAuthorVerification: false });
 	}
-	
 </script>
 
 <Page class="settings" header="Account">
-
 	<!-- Change email -->
-	<button class="first listing" onclick={() => changeEmailVisible = true}>
+	<button class="first listing" onclick={() => (changeEmailVisible = true)}>
 		<div>
 			<EditMailIcon style="width: 1.25rem; height: 1.25rem;" stroke="var(--text)" />
 			<span>Change email</span>
 		</div>
-		<p>Your email can be changed any number of times. Your current email is <span>{user()?.email}</span>.</p>
+		<p>
+			Your email can be changed any number of times. Your current email is <span>{user()?.email}</span>
+			.
+		</p>
 	</button>
 
 	<Popup bind:visible={changeEmailVisible}>
 		<div class="popup">
 			<span class="title">Change Email</span>
-			<p>Your current email is <span>{user()?.email}</span>.</p>
+			<p>
+				Your current email is <span>{user()?.email}</span>
+				.
+			</p>
 			<div class="section">
 				<span>New Email</span>
 				<input placeholder="new@example.com" type="text" bind:value={email} enterkeyhint="done" />
@@ -102,24 +118,22 @@
 				<input placeholder="password" type="password" bind:value={emailPassword} enterkeyhint="done" />
 			</div>
 			<div class="buttons">
-				<button class="cancel" onclick={() => changeEmailVisible = false}>Cancel</button>
+				<button class="cancel" onclick={() => (changeEmailVisible = false)}>Cancel</button>
 				<button disabled={!email || !emailPassword} class="submit" onclick={submitChangeEmail}>Change</button>
 			</div>
-			<button class="close" onclick={() => changeEmailVisible = false}>
+			<button class="close" onclick={() => (changeEmailVisible = false)}>
 				<CloseIcon stroke="var(--red)" style="width: 1rem; height: 1rem;" />
 			</button>
 		</div>
 	</Popup>
 
 	<!-- Change Password -->
-	<button class="listing" onclick={() => changePasswordVisible = true}>
+	<button class="listing" onclick={() => (changePasswordVisible = true)}>
 		<div>
 			<PasswordIcon style="width: 1.25rem; height: 1.25rem;" stroke="var(--text)" />
 			<span>Change Password</span>
 		</div>
-		<p>
-			You can change your password any number of times. You will be asked to enter your current password first.
-		</p>
+		<p>You can change your password any number of times. You will be asked to enter your current password first.</p>
 	</button>
 
 	<Popup bind:visible={changePasswordVisible}>
@@ -127,26 +141,36 @@
 			<span class="title">Change Password</span>
 			<div class="section">
 				<span>Old Password</span>
-				<input placeholder="Old Password" type={showOldPassword ? "text" : "password"} bind:value={oldPassword} enterkeyhint="done" />
+				<input
+					placeholder="Old Password"
+					type={showOldPassword ? "text" : "password"}
+					bind:value={oldPassword}
+					enterkeyhint="done"
+				/>
 				{#if showOldPassword}
-					<button class="show-password" onclick={() => showOldPassword = false}>
+					<button class="show-password" onclick={() => (showOldPassword = false)}>
 						<ClosedEyeIcon stroke="var(--overlay-1)" style="width: 1rem; height: 1rem;" />
 					</button>
 				{:else}
-					<button class="show-password" onclick={() => showOldPassword = true}>
+					<button class="show-password" onclick={() => (showOldPassword = true)}>
 						<EyeIcon stroke="var(--overlay-1)" style="width: 1rem; height: 1rem;" />
 					</button>
 				{/if}
 			</div>
 			<div class="section">
 				<span>New Password</span>
-				<input placeholder="New Password" type={showNewPassword ? "text" : "password"} bind:value={newPassword} enterkeyhint="done" />
+				<input
+					placeholder="New Password"
+					type={showNewPassword ? "text" : "password"}
+					bind:value={newPassword}
+					enterkeyhint="done"
+				/>
 				{#if showNewPassword}
-					<button class="show-password" onclick={() => showNewPassword = false}>
+					<button class="show-password" onclick={() => (showNewPassword = false)}>
 						<ClosedEyeIcon stroke="var(--overlay-1)" style="width: 1rem; height: 1rem;" />
 					</button>
 				{:else}
-					<button class="show-password" onclick={() => showNewPassword = true}>
+					<button class="show-password" onclick={() => (showNewPassword = true)}>
 						<EyeIcon stroke="var(--overlay-1)" style="width: 1rem; height: 1rem;" />
 					</button>
 				{/if}
@@ -160,13 +184,18 @@
 			{/if}
 			<div class="section">
 				<span>Retype New Password</span>
-				<input placeholder="Retype New Password" type={showNewPassword2 ? "text" : "password"} bind:value={newPassword2} enterkeyhint="done" />
+				<input
+					placeholder="Retype New Password"
+					type={showNewPassword2 ? "text" : "password"}
+					bind:value={newPassword2}
+					enterkeyhint="done"
+				/>
 				{#if showNewPassword2}
-					<button class="show-password" onclick={() => showNewPassword2 = false}>
+					<button class="show-password" onclick={() => (showNewPassword2 = false)}>
 						<ClosedEyeIcon stroke="var(--overlay-1)" style="width: 1rem; height: 1rem;" />
 					</button>
 				{:else}
-					<button class="show-password" onclick={() => showNewPassword2 = true}>
+					<button class="show-password" onclick={() => (showNewPassword2 = true)}>
 						<EyeIcon stroke="var(--overlay-1)" style="width: 1rem; height: 1rem;" />
 					</button>
 				{/if}
@@ -177,17 +206,17 @@
 				</div>
 			{/if}
 			<div class="buttons">
-				<button class="cancel" onclick={() => changePasswordVisible = false}>Cancel</button>
+				<button class="cancel" onclick={() => (changePasswordVisible = false)}>Cancel</button>
 				<button disabled={!canChangePassword} class="submit" onclick={submitChangePassword}>Change</button>
 			</div>
-			<button class="close" onclick={() => changePasswordVisible = false}>
+			<button class="close" onclick={() => (changePasswordVisible = false)}>
 				<CloseIcon stroke="var(--red)" style="width: 1rem; height: 1rem;" />
 			</button>
 		</div>
 	</Popup>
 
 	<!-- Request author verification -->
-	<button class="listing" onclick={() => changeAuthorVisible = true}>
+	<button class="listing" onclick={() => (changeAuthorVisible = true)}>
 		<div>
 			<AuthorIcon style="width: 1.25rem; height: 1.25rem;" stroke="var(--text)" />
 			<span>Request author verification</span>
@@ -200,19 +229,16 @@
 			{#if user()?.tags.includes("author")}
 				<span class="title">You are a verified author.</span>
 				<p>
-					Being a verified author gives you access to special author features in wallflower.land,
-					and will display an author icon on your profile.
+					Being a verified author gives you access to special author features in wallflower.land, and will display
+					an author icon on your profile.
 				</p>
 			{:else}
 				<span class="title">Request Author Verification</span>
 				<p>
-					Being a verified author gives you access to special author features in wallflower.land,
-					and will display an author icon on your profile.
+					Being a verified author gives you access to special author features in wallflower.land, and will display
+					an author icon on your profile.
 				</p>
-				<p>
-					Only published authors can receive 
-					author verification. Independent publishing is included.
-				</p>
+				<p>Only published authors can receive author verification. Independent publishing is included.</p>
 				{#if user()?.requestedAuthorVerification}
 					<button class="unrequest become-author" onclick={unrequestAuthorVerification}>
 						Unrequest Author Verification
@@ -223,7 +249,7 @@
 					</button>
 				{/if}
 			{/if}
-			<button class="close" onclick={() => changeAuthorVisible = false}>
+			<button class="close" onclick={() => (changeAuthorVisible = false)}>
 				<CloseIcon stroke="var(--red)" style="width: 1rem; height: 1rem;" />
 			</button>
 		</div>
@@ -244,13 +270,11 @@
 			<DeveloperIcon style="width: 1.25rem; height: 1.25rem;" stroke="var(--text)" />
 			<span>Become a developer</span>
 		</div>
-		<p>
-			Wallflower is a non-profit organization powered by volunteers. Paying positions are currently not available.
-		</p>
+		<p>Wallflower is a non-profit organization powered by volunteers. Paying positions are currently not available.</p>
 	</a>
 
 	<!-- Delete account -->
-	<button class="listing" onclick={() => deleteAccountVisible = true}>
+	<button class="listing" onclick={() => (deleteAccountVisible = true)}>
 		<div>
 			<TrashIcon style="width: 1.25rem; height: 1.25rem;" stroke="var(--red)" />
 			<span style:color="var(--red)">Delete your account</span>
@@ -283,10 +307,10 @@
 				I confirm that I want to delete my wallflower.land account permanently.
 			</p>
 			<div class="buttons">
-				<button class="cancel" onclick={() => deleteAccountVisible = false}>Cancel</button>
+				<button class="cancel" onclick={() => (deleteAccountVisible = false)}>Cancel</button>
 				<button disabled={!canDeleteAccount} class="delete" onclick={submitDeleteAccount}>Delete</button>
 			</div>
-			<button class="close" onclick={() => deleteAccountVisible = false}>
+			<button class="close" onclick={() => (deleteAccountVisible = false)}>
 				<CloseIcon stroke="var(--red)" style="width: 1rem; height: 1rem;" />
 			</button>
 		</div>
@@ -429,8 +453,8 @@
 			text-align: center;
 		}
 
-
-		input[type="text"], input[type="password"] {
+		input[type="text"],
+		input[type="password"] {
 			background: var(--crust);
 			color: var(--subtext-1);
 			padding: 0.5rem;

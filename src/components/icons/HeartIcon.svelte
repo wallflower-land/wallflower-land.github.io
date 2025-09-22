@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { SVGAttributes } from "svelte/elements";
 
-	let { stroke, fill = "none", ...rest }: { stroke: string, fill?: string } & SVGAttributes<SVGElement> = $props();
+	let { stroke, fill = "none", ...rest }: { stroke: string; fill?: string } & SVGAttributes<SVGElement> = $props();
 </script>
 
 <svg {...rest} viewBox="0 0 24 24" {fill} xmlns="http://www.w3.org/2000/svg">

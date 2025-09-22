@@ -6,16 +6,16 @@
 	import BookCover from "../book/BookCover.svelte";
 	import PostBody from "./PostBody.svelte";
 
-	let { 
+	let {
 		isbn,
 		body,
 		user,
-		updateType
+		updateType,
 	}: {
-		isbn: ISBN,
-		body: string,
-		user: User,
-		updateType: UpdateType
+		isbn: ISBN;
+		body: string;
+		user: User;
+		updateType: UpdateType;
 	} = $props();
 
 	let book = getBook(isbn);
@@ -23,25 +23,28 @@
 
 <section>
 	{#await book then book}
-
 		<!-- Update information -->
 		<p class="rating-line">
-		{#if updateType === "add to reading list"}
-			{user.displayName} added <i>{book?.title}</i> to their reading list:
-		{:else if updateType === "remove from reading list"}
-			{user.displayName} removed <i>{book?.title}</i> from their reading list:
-		{:else}
-			{user.displayName}
-			{#if updateType === "start"}
-				started reading
-			{:else if updateType === "finish"}
-				finished reading
-			{:else if updateType === "abandon"}
-				abandoned
+			{#if updateType === "add to reading list"}
+				{user.displayName} added
+				<i>{book?.title}</i>
+				 to their reading list:
+			{:else if updateType === "remove from reading list"}
+				{user.displayName} removed
+				<i>{book?.title}</i>
+				 from their reading list:
+			{:else}
+				{user.displayName}
+				{#if updateType === "start"}
+					started reading
+				{:else if updateType === "finish"}
+					finished reading
+				{:else if updateType === "abandon"}
+					abandoned
+				{/if}
+				<i>{book?.title}</i>
+				:
 			{/if}
-			<i>{book?.title}</i>
-			:
-		{/if}
 		</p>
 
 		<!-- Book info -->

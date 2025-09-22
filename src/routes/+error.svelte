@@ -10,7 +10,10 @@
 		<p>We couldn't find that page :c</p>
 		<p>wallflower.land is still in development, and some pages are missing. They'll be here soon!</p>
 		<p>Thanks for your patience :)</p>
-		<CatIcon stroke="var(--mantle)" style="width: 50; height: 50%; margin-left: auto; margin-right: auto; margin-top: 2rem;"/>
+		<CatIcon
+			stroke="var(--mantle)"
+			style="width: 50; height: 50%; margin-left: auto; margin-right: auto; margin-top: 2rem;"
+		/>
 		<a href="/">Go to Wallflower Home</a>
 	</section>
 </Page>
@@ -18,7 +21,7 @@
 <style>
 	section {
 		padding: 2rem;
-		display:  flex;
+		display: flex;
 		flex-direction: column;
 		gap: 1rem;
 		margin-top: 3rem;

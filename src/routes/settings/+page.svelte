@@ -8,7 +8,6 @@
 </script>
 
 <Page class="settings" header="Settings">
-
 	<!-- Request author verification -->
 	<a href="/settings/appearance">
 		<div>
@@ -52,7 +51,6 @@
 </Page>
 
 <style>
-
 	a {
 		text-decoration: none;
 		font-size: 1.25rem;
