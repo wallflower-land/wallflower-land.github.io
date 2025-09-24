@@ -8,7 +8,8 @@
 	import AnyPost from "../../../components/post/AnyPost.svelte";
 	import StarRating from "../../../components/book/StarRating.svelte";
 	import { haptic } from "ios-haptics";
-	import { post } from "../../../api/postapi";
+	import { deletePost, post, type Post } from "../../../api/postapi";
+	import Notification from "../../../components/util/Notification.svelte";
 
 	let { data } = $props();
 	let book = $derived(data.book);
@@ -20,30 +21,48 @@
 	let discussions = $derived(getBookDiscussions(book.isbn));
 	let isInReadingList = $derived(user()?.readingList.includes(book.isbn) ?? false);
 
+	let readingListPost: Post | null = $state(null);
+	let addToReadingListNotification: Notification;
+	let removeFromReadingListNotification: Notification;
+
 	async function addToReadingList() {
 		haptic();
 		const readingList = user()!.readingList;
 		updateUser({ readingList: [...new Set([...readingList, book.isbn])] });
-		user()?.readingList.push(book.isbn);
-		post({
+		readingListPost = await post({
 			type: "update",
 			updateType: "add to reading list",
 			books: [book.isbn],
 			body: "",
 		});
+		addToReadingListNotification.show();
+	}
+
+	async function undoAddToReadingList() {
+		const readingList = user()!.readingList.filter(isbn => isbn !== book.isbn);
+		updateUser({ readingList });
+		await deletePost(readingListPost!);
+		readingListPost = null;
+	}
+
+	async function undoRemoveFromReadingList() {
+		const readingList = user()!.readingList;
+		updateUser({ readingList: [...new Set([...readingList, book.isbn])] });
+		await deletePost(readingListPost!);
+		readingListPost = null;
 	}
 
 	async function removeFromReadingList() {
 		haptic();
 		const readingList = user()!.readingList.filter(isbn => isbn !== book.isbn);
 		updateUser({ readingList });
-		user()!.readingList = readingList;
-		post({
+		readingListPost = await post({
 			type: "update",
 			updateType: "remove from reading list",
 			books: [book.isbn],
 			body: "",
 		});
+		removeFromReadingListNotification.show();
 	}
 
 	function makeReadable(description: string, interval = 3) {
@@ -182,6 +201,19 @@
 		{/await}
 	</div>
 </PageWithViews>
+
+<Notification
+	message="Added to reading list"
+	undoMessage="Removed from reading list"
+	undo={undoAddToReadingList}
+	bind:this={addToReadingListNotification}
+/>
+<Notification
+	message="Removed from reading list"
+	undoMessage="Added back to reading list"
+	undo={undoRemoveFromReadingList}
+	bind:this={removeFromReadingListNotification}
+/>
 
 <style>
 	.info {
