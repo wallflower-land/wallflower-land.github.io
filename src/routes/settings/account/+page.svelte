@@ -19,12 +19,15 @@
 	} from "../../../api/userapi.svelte";
 	import Page from "../../../components/layout/Page.svelte";
 	import Popup from "../../../components/Popup.svelte";
+	import Notification from "../../../components/util/Notification.svelte";
 
 	$effect(() => {
 		if (!user()) {
 			goto("/login");
 		}
 	});
+
+	let waiting = $state(false);
 
 	let email: string = $state("");
 	let oldPassword = $state("");
@@ -54,6 +57,8 @@
 			newPasswordErrors.length === 0 &&
 			newPassword !== oldPassword,
 	);
+	let changePasswordError = $state("");
+	let changePasswordNotification: Notification;
 
 	let changeEmailVisible = $state(false);
 	let changeAuthorVisible = $state(false);
@@ -71,8 +76,24 @@
 
 	async function submitChangePassword() {
 		if (!canChangePassword) return;
-		changePasswordVisible = false;
-		await changePassword(oldPassword, newPassword);
+		waiting = true;
+		let error = await changePassword(oldPassword, newPassword);
+		if (error) {
+			changePasswordError =
+				{ "auth/wrong-password": "Old passord is Incorrect." }[error.code] ??
+				"An unknown error has occurred. Please try again later.";
+		} else {
+			changePasswordVisible = false;
+			changePasswordNotification.show();
+			resetChangePasswordInputs();
+		}
+		waiting = false;
+	}
+
+	function resetChangePasswordInputs() {
+		oldPassword = "";
+		newPassword = "";
+		newPassword2 = "";
 	}
 
 	async function submitChangeEmail() {
@@ -136,7 +157,7 @@
 		<p>You can change your password any number of times. You will be asked to enter your current password first.</p>
 	</button>
 
-	<Popup bind:visible={changePasswordVisible}>
+	<Popup bind:visible={changePasswordVisible} onclose={resetChangePasswordInputs}>
 		<div class="popup">
 			<span class="title">Change Password</span>
 			<div class="section">
@@ -148,13 +169,16 @@
 					enterkeyhint="done"
 				/>
 				{#if showOldPassword}
-					<button class="show-password" onclick={() => (showOldPassword = false)}>
+					<button tabindex="-1" class="show-password" onclick={() => (showOldPassword = false)}>
 						<ClosedEyeIcon stroke="var(--overlay-1)" style="width: 1rem; height: 1rem;" />
 					</button>
 				{:else}
-					<button class="show-password" onclick={() => (showOldPassword = true)}>
+					<button tabindex="-1" class="show-password" onclick={() => (showOldPassword = true)}>
 						<EyeIcon stroke="var(--overlay-1)" style="width: 1rem; height: 1rem;" />
 					</button>
+				{/if}
+				{#if changePasswordError}
+					<span class="error">{changePasswordError}</span>
 				{/if}
 			</div>
 			<div class="section">
@@ -166,22 +190,22 @@
 					enterkeyhint="done"
 				/>
 				{#if showNewPassword}
-					<button class="show-password" onclick={() => (showNewPassword = false)}>
+					<button tabindex="-1" class="show-password" onclick={() => (showNewPassword = false)}>
 						<ClosedEyeIcon stroke="var(--overlay-1)" style="width: 1rem; height: 1rem;" />
 					</button>
 				{:else}
-					<button class="show-password" onclick={() => (showNewPassword = true)}>
+					<button tabindex="-1" class="show-password" onclick={() => (showNewPassword = true)}>
 						<EyeIcon stroke="var(--overlay-1)" style="width: 1rem; height: 1rem;" />
 					</button>
 				{/if}
+				{#if newPasswordErrors.length > 0}
+					<div class="errors">
+						{#each newPasswordErrors as error}
+							<span class="error">{error}</span>
+						{/each}
+					</div>
+				{/if}
 			</div>
-			{#if newPasswordErrors.length > 0}
-				<div class="errors">
-					{#each newPasswordErrors as error}
-						<span class="error">{error}</span>
-					{/each}
-				</div>
-			{/if}
 			<div class="section">
 				<span>Retype New Password</span>
 				<input
@@ -191,25 +215,39 @@
 					enterkeyhint="done"
 				/>
 				{#if showNewPassword2}
-					<button class="show-password" onclick={() => (showNewPassword2 = false)}>
+					<button tabindex="-1" class="show-password" onclick={() => (showNewPassword2 = false)}>
 						<ClosedEyeIcon stroke="var(--overlay-1)" style="width: 1rem; height: 1rem;" />
 					</button>
 				{:else}
-					<button class="show-password" onclick={() => (showNewPassword2 = true)}>
+					<button tabindex="-1" class="show-password" onclick={() => (showNewPassword2 = true)}>
 						<EyeIcon stroke="var(--overlay-1)" style="width: 1rem; height: 1rem;" />
 					</button>
 				{/if}
-			</div>
-			{#if passwordMatchError}
-				<div class="errors">
+				{#if passwordMatchError}
 					<span class="error">{passwordMatchError}</span>
-				</div>
-			{/if}
-			<div class="buttons">
-				<button class="cancel" onclick={() => (changePasswordVisible = false)}>Cancel</button>
-				<button disabled={!canChangePassword} class="submit" onclick={submitChangePassword}>Change</button>
+				{/if}
 			</div>
-			<button class="close" onclick={() => (changePasswordVisible = false)}>
+			<div class="buttons">
+				<button
+					class="cancel"
+					onclick={() => {
+						changePasswordVisible = false;
+						resetChangePasswordInputs();
+					}}
+				>
+					Cancel
+				</button>
+				<button disabled={!canChangePassword || waiting} class="submit" onclick={submitChangePassword}>
+					Change
+				</button>
+			</div>
+			<button
+				class="close"
+				onclick={() => {
+					changePasswordVisible = false;
+					resetChangePasswordInputs();
+				}}
+			>
 				<CloseIcon stroke="var(--red)" style="width: 1rem; height: 1rem;" />
 			</button>
 		</div>
@@ -244,9 +282,7 @@
 						Unrequest Author Verification
 					</button>
 				{:else}
-					<button class="request become-author" onclick={requestAuthorVerification}>
-						Request Author Verification
-					</button>
+					<button class="request become-author" onclick={requestAuthorVerification}>Request Verification</button>
 				{/if}
 			{/if}
 			<button class="close" onclick={() => (changeAuthorVisible = false)}>
@@ -294,9 +330,7 @@
 				<input placeholder="username" type="text" bind:value={deleteUsername} enterkeyhint="done" />
 			</div>
 			{#if usernameError}
-				<div class="errors">
-					<span class="error">{usernameError}</span>
-				</div>
+				<span class="error">{usernameError}</span>
 			{/if}
 			<div class="section">
 				<span>Password</span>
@@ -317,6 +351,8 @@
 	</Popup>
 </Page>
 
+<Notification message="Password updated" bind:this={changePasswordNotification} />
+
 <style>
 	input[type="checkbox"] {
 		margin-right: 0.5rem;
@@ -325,7 +361,7 @@
 
 	.show-password {
 		position: absolute;
-		bottom: 0.35rem;
+		top: 2.3rem;
 		right: 0.5rem;
 	}
 
@@ -356,7 +392,7 @@
 		gap: 0.5rem;
 		position: relative;
 
-		span {
+		span:not(.error) {
 			color: var(--overlay-1);
 			font-size: 0.85rem;
 		}
@@ -365,6 +401,7 @@
 	.error {
 		color: var(--red);
 		font-size: 0.85rem;
+		width: 100%;
 	}
 
 	.errors {
@@ -461,6 +498,10 @@
 			border-radius: 0.5rem;
 			width: 15rem;
 			border: 1px solid var(--surface-0);
+
+			&::placeholder {
+				color: var(--surface-2);
+			}
 		}
 	}
 

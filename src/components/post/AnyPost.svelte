@@ -16,7 +16,7 @@
 		type Post,
 	} from "../../api/postapi";
 	import { getFile } from "../../api/storageapi";
-	import { getUserFromId, updateUser, user } from "../../api/userapi.svelte";
+	import { didReport, getUserFromId, reportPost, unreportPost, updateUser, user } from "../../api/userapi.svelte";
 	import CommentIcon from "../icons/CommentIcon.svelte";
 	import DotMenuIcon from "../icons/DotMenuIcon.svelte";
 	import EyeIcon from "../icons/EyeIcon.svelte";
@@ -164,6 +164,9 @@
 	let commented = $state(didComment(post));
 	let saved = $derived(user() ? user()!.saved.includes(post.id) : false);
 
+	let reportNotification: Notification;
+	let unreportNotification: Notification;
+
 	/**
 	 * Toggles whether the user has liked this post. This is called when the user
 	 * presses the like button on a post. The UI will be updated to reflect whether
@@ -208,6 +211,28 @@
 		if (postpage) {
 			goto("/profile");
 		}
+	}
+
+	async function report() {
+		actionsMenu?.close();
+		await reportPost(post.id);
+		reportNotification.show();
+	}
+
+	async function undoReport() {
+		actionsMenu?.close();
+		await unreportPost(post.id);
+	}
+
+	async function unreport() {
+		actionsMenu?.close();
+		await unreportPost(post.id);
+		unreportNotification.show();
+	}
+
+	async function undoUnreport() {
+		actionsMenu?.close();
+		await reportPost(post.id);
 	}
 
 	let shareNotification: Notification = $state(null!);
@@ -453,14 +478,24 @@
 							<WrenchIcon stroke="var(--subtext-1)" style="width: 1rem; height: 1rem;" />
 							Delete Post
 						</button>
+					{:else if didReport(post)}
+						<button onclick={unreport}>Unreport</button>
 					{:else}
-						<button>Report</button>
+						<button onclick={report}>Report</button>
 					{/if}
 				</ContextMenu>
 			</div>
 		</div>
 	</section>
 {/if}
+
+<Notification message="Reported Post" undo={undoReport} undoMessage="Unreported Post" bind:this={reportNotification} />
+<Notification
+	message="Unreported Post"
+	undo={undoUnreport}
+	undoMessage="Re-Reported Post"
+	bind:this={unreportNotification}
+/>
 
 <ConfirmationPopup
 	title="Delete Post?"

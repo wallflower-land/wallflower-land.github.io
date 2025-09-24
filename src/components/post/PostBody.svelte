@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { HTMLAttributes } from "svelte/elements";
 	import Link from "../util/Link.svelte";
-	import { getBook, type ISBN } from "../../api/bookapi";
+	import { getBook, isbn } from "../../api/bookapi";
 
 	let { body, ...rest }: { body: string } & HTMLAttributes<HTMLDivElement> = $props();
 
@@ -58,7 +58,7 @@
 		{:else if segment.type === "bold"}
 			<b>{segment.groups[1]}</b>
 		{:else if segment.type === "book"}
-			{#await getBook(segment.groups[1] as ISBN) then book}
+			{#await getBook(isbn(segment.groups[1])) then book}
 				<Link href="/book/{book.isbn}"><i>{book.title}</i></Link>
 			{/await}
 		{:else if segment.type === "code"}

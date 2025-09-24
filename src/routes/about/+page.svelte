@@ -8,7 +8,7 @@
 	<div class="definition">
 		<span>
 			<h2 class="wallflower"><i>Wall&middot;flow&middot;er</i></h2>
-			<span class="ipa" aria-label="US IPA">&#x2F;&#x2C8;w&#x0251;l;&#x02D0;fla&#x028A;.&#x0259;r&#x2F;</span>
+			<span class="ipa" aria-label="US IPA">&#x2F;&#x2C8;w&#x0254;l&#x02CC;fla&#x028A;&#x025A;&#x2F;</span>
 			<WallflowerIcon
 				stroke="var(--overlay-1)"
 				style="width: 1rem; height: 1rem; margin-left: auto; margin-right: 0.25rem;"
@@ -20,6 +20,7 @@
 		</p>
 	</div>
 
+	<!-- About -->
 	<h2>About</h2>
 	<p>Like that other site, but for books.</p>
 
@@ -74,6 +75,45 @@
 		If your account was suspended or banned and you feel it was wrongful, you can submit an appeal. Your content will be
 		reviewed and a secondary, more thorough judgement will be passed to you.
 	</p>
+
+	<!-- Rules -->
+	<h2>Rules</h2>
+	<p>
+		The following rules apply to all users of wallflower.land. Failure to comply with <i>all</i>
+		of these rules may get your posts deleted, your account flagged, or your account banned.
+	</p>
+
+	<ul>
+		<li>
+			<b>Rule 1: Anti-Discrimination -</b>
+			No content posted to wallflower.land can discriminate, insult or exclude
+			<i>anyone</i>
+			based on race, ethnicity, gender, sex, sexual orientation, or religion.
+		</li>
+		<li>
+			<b>Rule 2: Relevant Content -</b>
+			All content posted to wallflower.land
+			<i>must</i>
+			relate to books, novels, literature, reading, writing, authors, poets, or wallflower.land itself.
+		</li>
+		<li>
+			<b>Rule 3: Honorable Reporting -</b>
+			All posts and accounts reported as rule-breaking must be done so in good faith, under genuine belief that the given
+			post or account violates one or more wallflower.land rules.
+		</li>
+		<li>
+			<b>Rule 4: Constructive Criticism -</b>
+			All criticism, particularly to individuals or groups posted to wallflower.land, must be constructive instead of blatantly
+			insulting or hateful.
+		</li>
+		<li>
+			<b>Rule 5: Innocent Intent -</b>
+			All wallflower.land users are required to use the site with innocent and honorable intent. Attempts to break wallflower.land,
+			hack other user's accounts, or in any way use the platform beyond its intended use, will result in a ban.
+		</li>
+	</ul>
+
+	<!-- Legal -->
 	<h2>Legal</h2>
 	<p>
 		Wallflower is open source, meaning anyone can view and contribute to its code (<Link
@@ -84,8 +124,7 @@
 	</p>
 	<p>
 		Wallflower is licensed as <i>all rights reserved</i>
-		, meaning you are legally not allowed to use, copy, or distribute its code without explicit authorization from its
-		creator,
+		, meaning you are legally not allowed to use, copy, or distribute its code without explicit authorization from its creator,
 		<Link href="/profile/vi">@vi</Link>.
 	</p>
 
@@ -150,5 +189,19 @@
 		color: var(--subtext-1);
 		margin-bottom: -0.5rem;
 		margin-top: 0.5rem;
+	}
+
+	ul {
+		margin-left: 1rem;
+
+		li {
+			color: var(--overlay-1);
+			margin-bottom: 0.5rem;
+
+			b {
+				font-weight: normal;
+				color: var(--subtext-1);
+			}
+		}
 	}
 </style>

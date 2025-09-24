@@ -1,16 +1,5 @@
-import {
-	collection,
-	doc,
-	getDoc,
-	getDocs,
-	or,
-	orderBy,
-	query,
-	setDoc,
-	updateDoc,
-	where,
-} from "firebase/firestore";
-import { getBook, type ISBN } from "./bookapi";
+import { collection, doc, getDoc, getDocs, or, orderBy, query, setDoc, updateDoc, where } from "firebase/firestore";
+import { getBook, isbn, type ISBN } from "./bookapi";
 import { updateUser, user, type User, type UserId } from "./userapi.svelte";
 import firebase from "./firebase";
 import type { Nominal } from "./util";
@@ -18,13 +7,7 @@ import type { FileId } from "./storageapi";
 
 export type PostType = "general" | "rating" | "update" | "reply";
 
-export type UpdateType =
-	| "start"
-	| "finish"
-	| "abandon"
-	| "update"
-	| "add to reading list"
-	| "remove from reading list";
+export type UpdateType = "start" | "finish" | "abandon" | "update" | "add to reading list" | "remove from reading list";
 
 /**
  * A `PostId` is just an alias for `string`; The type exists to convey the semantic meaning
@@ -133,6 +116,20 @@ export async function removePost(post: Post): Promise<void> {
 	await updateDoc(doc(db, "posts", post.id), { deletionStatus: "removed" });
 }
 
+export async function getReportCount(id: PostId): Promise<number> {
+	return (await getDocs(query(collection(db, "users"), where("reportedPosts", "array-contains", id)))).size;
+}
+
+export async function getMostReportedPosts(): Promise<Post[]> {
+	const posts = (await getDocs(collection(db, "posts"))).docs.map(doc => doc.data() as Post);
+	const reports = await Promise.all(posts.map(post => getReportCount(post.id)));
+	return posts
+		.map((post, index) => ({ post, reports: reports[index] }))
+		.filter(({ reports }) => reports > 0)
+		.toSorted((a, b) => a.reports - b.reports)
+		.map(obj => obj.post);
+}
+
 /**
  * Returns a `Post` object from it's unique `id`. If no such post exists with the given `id`,
  * `null` is returned.
@@ -152,9 +149,7 @@ export async function getPostFromId(postid: PostId): Promise<Post | null> {
 
 export async function searchPosts(searchTerm: string): Promise<Post[]> {
 	if (searchTerm === "") return Promise.resolve([]);
-	let internalPosts = (await getDocs(query(collection(db, "posts")))).docs.map(doc =>
-		doc.data(),
-	) as Post[];
+	let internalPosts = (await getDocs(query(collection(db, "posts")))).docs.map(doc => doc.data()) as Post[];
 
 	return internalPosts.filter(post => post.body.toLowerCase().includes(searchTerm.toLowerCase()));
 }
@@ -165,47 +160,43 @@ export async function getFollowedPosts(user: User, includeSelf: boolean): Promis
 	let postQuery: any = where("poster", "in", user.following);
 	if (includeSelf) postQuery = or(postQuery, where("poster", "==", user.id));
 
-	let internalPosts = (await getDocs(query(collection(db, "posts"), postQuery))).docs.map(doc =>
+	let internalPosts = (await getDocs(query(collection(db, "posts"), postQuery))).docs.map(doc => doc.data()) as Post[];
+	return internalPosts;
+}
+
+export async function getForYouPosts(_user: User): Promise<Post[]> {
+	let internalPosts = (await getDocs(query(collection(db, "posts"), orderBy("timestamp", "desc")))).docs.map(doc =>
 		doc.data(),
 	) as Post[];
 	return internalPosts;
 }
 
-export async function getForYouPosts(_user: User): Promise<Post[]> {
-	let internalPosts = (
-		await getDocs(query(collection(db, "posts"), orderBy("timestamp", "desc")))
-	).docs.map(doc => doc.data()) as Post[];
-	return internalPosts;
-}
-
 export async function getReplies(post: Post): Promise<Post[]> {
-	const replies = (
-		await getDocs(query(collection(db, "posts"), where("parent", "==", post.id)))
-	).docs.map(doc => doc.data() as Post);
+	const replies = (await getDocs(query(collection(db, "posts"), where("parent", "==", post.id)))).docs.map(
+		doc => doc.data() as Post,
+	);
 
 	const childRepliesArrays = await Promise.all(replies.map(reply => getReplies(reply)));
 	const childReplies = childRepliesArrays.flat();
-	return [...replies, ...childReplies].toSorted(
-		(post1, post2) => post1.timestamp - post2.timestamp,
-	);
+	return [...replies, ...childReplies].toSorted((post1, post2) => post1.timestamp - post2.timestamp);
 }
 
 export async function getLikes(post: Post): Promise<User[]> {
-	return (
-		await getDocs(query(collection(db, "users"), where("likes", "array-contains", post.id)))
-	).docs.map(doc => doc.data() as User);
+	return (await getDocs(query(collection(db, "users"), where("likes", "array-contains", post.id)))).docs.map(
+		doc => doc.data() as User,
+	);
 }
 
 export async function getShares(post: Post): Promise<User[]> {
-	return (
-		await getDocs(query(collection(db, "users"), where("shares", "array-contains", post.id)))
-	).docs.map(doc => doc.data() as User);
+	return (await getDocs(query(collection(db, "users"), where("shares", "array-contains", post.id)))).docs.map(
+		doc => doc.data() as User,
+	);
 }
 
 export async function getSaves(post: Post): Promise<User[]> {
-	return (
-		await getDocs(query(collection(db, "users"), where("saved", "array-contains", post.id)))
-	).docs.map(doc => doc.data() as User);
+	return (await getDocs(query(collection(db, "users"), where("saved", "array-contains", post.id)))).docs.map(
+		doc => doc.data() as User,
+	);
 }
 
 /**
@@ -216,14 +207,9 @@ export async function getSaves(post: Post): Promise<User[]> {
  *
  * This is used in `format()` to detect links.
  */
-let linkRegex =
-	/(https?:\/\/)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g;
+let linkRegex = /(https?:\/\/)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g;
 
-async function replaceAllAsync(
-	str: string,
-	regex: RegExp,
-	asyncFn: (...strings: string[]) => Promise<string>,
-) {
+async function replaceAllAsync(str: string, regex: RegExp, asyncFn: (...strings: string[]) => Promise<string>) {
 	const promises: Promise<string>[] = [];
 	str.replaceAll(regex, (full, ...args) => {
 		promises.push(asyncFn(full, ...args));
@@ -244,11 +230,7 @@ function escapeHTML(text: string): string {
 
 function isSafeUrl(url: string): boolean {
 	const lower = url.trim().toLowerCase();
-	return !(
-		lower.startsWith("javascript:") ||
-		lower.startsWith("data:") ||
-		lower.startsWith("vbscript:")
-	);
+	return !(lower.startsWith("javascript:") || lower.startsWith("data:") || lower.startsWith("vbscript:"));
 }
 
 /**
@@ -264,9 +246,9 @@ function isSafeUrl(url: string): boolean {
 export async function format(text: string): Promise<string> {
 	text = escapeHTML(text);
 
-	text = await replaceAllAsync(text, /@(\d{13})/g, async (_match, isbn) => {
-		const book = await getBook(isbn as ISBN);
-		return `<a style="text-decoration: none;" href="/book/${isbn}">${escapeHTML(book.title)}</a>`;
+	text = await replaceAllAsync(text, /@(\d{13})/g, async (_match, bookISBN) => {
+		const book = await getBook(isbn(bookISBN));
+		return `<a style="text-decoration: none;" href="/book/${bookISBN}">${escapeHTML(book.title)}</a>`;
 	});
 
 	return text
@@ -294,9 +276,7 @@ export async function format(text: string): Promise<string> {
  * the database and calculated, returning the total number of views.
  */
 export async function getPostViews(post: Post): Promise<number> {
-	let storedViews = (
-		await getDocs(query(collection(db, "users"), where("views", "array-contains", post.id)))
-	).docs;
+	let storedViews = (await getDocs(query(collection(db, "users"), where("views", "array-contains", post.id)))).docs;
 	let stored = storedViews.length;
 	if (!user() || !storedViews.map(user => user.id).includes(user()!.id)) {
 		stored += 1;
@@ -401,14 +381,7 @@ export function didShare(post: Post): boolean {
  */
 export async function didComment(post: Post): Promise<boolean> {
 	return user()
-		? (
-				await getDocs(
-					query(
-						collection(db, "posts"),
-						where("parent", "==", post.id),
-						where("poster", "==", user()!.id),
-					),
-				)
-			).docs.length > 0
+		? (await getDocs(query(collection(db, "posts"), where("parent", "==", post.id), where("poster", "==", user()!.id))))
+				.docs.length > 0
 		: false;
 }

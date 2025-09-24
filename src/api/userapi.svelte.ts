@@ -1,13 +1,4 @@
-import {
-	collection,
-	doc,
-	getDocs,
-	orderBy,
-	query,
-	setDoc,
-	updateDoc,
-	where,
-} from "firebase/firestore";
+import { collection, doc, getDocs, orderBy, query, setDoc, updateDoc, where } from "firebase/firestore";
 import { getBook, type Book, type ISBN } from "./bookapi";
 import { getPostFromId, type Post, type PostId } from "./postapi";
 import { fuzzyQuery, type Nominal } from "./util";
@@ -27,6 +18,7 @@ import {
 } from "firebase/auth";
 import firebase from "./firebase";
 import type { FileId } from "./storageapi";
+import type { FirebaseError } from "firebase/app";
 
 export type UserId = Nominal<string, "user">;
 
@@ -60,6 +52,7 @@ export type User = {
 	likes: PostId[];
 	shares: PostId[];
 	saved: PostId[];
+	reportedPosts: PostId[];
 
 	readingList: ISBN[];
 	currentlyReading: ISBN[];
@@ -90,8 +83,7 @@ export function usernameErrors(username: string): string[] {
 	if (username.length > 20) errors.push("Username can't be more than 30 characters");
 	if (username.startsWith("-")) errors.push("Username can't start with a hyphen.");
 	if (username.endsWith("-")) errors.push("Username can'end with a hyphen.");
-	if (!/^[\w\-]*$/.test(username))
-		errors.push("Username can only contain letters, numbers, underscores, and hyphens");
+	if (!/^[\w\-]*$/.test(username)) errors.push("Username can only contain letters, numbers, underscores, and hyphens");
 	if (/^\d+$/.test(username)) errors.push("Username cannot be only numbers");
 	if (/^\-+$/.test(username)) errors.push("Username cannot be only hyphens");
 	if (/^\_+$/.test(username)) errors.push("Username cannot be only underscores");
@@ -125,23 +117,17 @@ export let awaitUser: Promise<User> = new Promise(resolve => {
  */
 export async function getFavoriteBook(user: User): Promise<Book | null> {
 	let posts = (
-		await getDocs(
-			query(
-				collection(db, "posts"),
-				where("poster", "==", user.id),
-				where("type", "==", "rating"),
-			),
-		)
+		await getDocs(query(collection(db, "posts"), where("poster", "==", user.id), where("type", "==", "rating")))
 	).docs.map(doc => doc.data()) as Post[];
 	let books = posts.toSorted((a, b) => b.rating! - a.rating!).map(post => post.books[0]);
-	return books.length > 0 ? await getBook(books[0] as ISBN) : null;
+	return books.length > 0 ? await getBook(books[0]) : null;
 }
 
 export async function getFollowers(user: User): Promise<User[]> {
 	const followers: User[] = [];
-	(
-		await getDocs(query(collection(db, "users"), where("following", "array-contains", user.id)))
-	).forEach(doc => followers.push(doc.data() as User));
+	(await getDocs(query(collection(db, "users"), where("following", "array-contains", user.id)))).forEach(doc =>
+		followers.push(doc.data() as User),
+	);
 
 	return followers;
 }
@@ -156,9 +142,7 @@ export async function getFollowers(user: User): Promise<User[]> {
  * @returns The user with the given id
  */
 export async function getUserFromId(id: UserId): Promise<User> {
-	let internalUser = (
-		await getDocs(query(collection(db, "users"), where("id", "==", id)))
-	).docs[0].data() as User;
+	let internalUser = (await getDocs(query(collection(db, "users"), where("id", "==", id)))).docs[0].data() as User;
 	return internalUser;
 }
 
@@ -167,33 +151,55 @@ export async function internalUserToUser(user: User): Promise<User> {
 }
 
 export async function getUserFromUsername(username: string): Promise<User> {
-	let user = (
-		await getDocs(query(collection(db, "users"), where("username", "==", username)))
-	).docs[0].data() as User;
+	let user = (await getDocs(query(collection(db, "users"), where("username", "==", username)))).docs[0].data() as User;
 	return user;
 }
 
+export async function reportPost(id: PostId): Promise<void> {
+	await updateUser({ reportedPosts: [...new Set([...user()!.reportedPosts, id])] });
+}
+
+export async function unreportPost(id: PostId): Promise<void> {
+	await updateUser({ reportedPosts: user()!.reportedPosts.filter(postId => postId !== id) });
+}
+
+export function didReport(post: Post): boolean {
+	return user()?.reportedPosts.includes(post.id) ?? false;
+}
+
+let authState: "ready" | "pending" = $state("pending");
+
+export function loggedIn(): boolean {
+	return !!user();
+}
+
+export function loggedOut(): boolean {
+	return authStateIsReady() && !user();
+}
+
+/**
+ * Returns whether the user's authentication has loaded. When a page first loads, even
+ * if the user is logged in, the Firebase authentication takes a bit to authenticate them
+ * and recognize that. So, checking things like `if (user())` can be an unreliable test
+ * whether the user is logged in if it runs before the auth state is ready. This function
+ * is designed to combat that by providing information on whether the authentication state
+ * is ready. This will return `true` regardless of whether the user is logged in or not, if
+ * and only if Firebase *knows* whether the user is logged in. So, instead of `if (user())`,
+ * consider `if (authStateIsReady() && user())`, especially in places where code runs early
+ * like `onMount` or `$effect`.
+ */
+export function authStateIsReady(): boolean {
+	return authState === "ready";
+}
+
 export async function getNumberOfBooksRead(user: User): Promise<number> {
-	return (
-		await getDocs(
-			query(
-				collection(db, "posts"),
-				where("poster", "==", user.id),
-				where("type", "==", "rating"),
-			),
-		)
-	).docs.length;
+	return (await getDocs(query(collection(db, "posts"), where("poster", "==", user.id), where("type", "==", "rating"))))
+		.docs.length;
 }
 
 export async function getUserPosts(user: User): Promise<Post[]> {
 	let internalPosts = (
-		await getDocs(
-			query(
-				collection(db, "posts"),
-				where("poster", "==", user.id),
-				orderBy("timestamp", "desc"),
-			),
-		)
+		await getDocs(query(collection(db, "posts"), where("poster", "==", user.id), orderBy("timestamp", "desc")))
 	).docs.map(doc => doc.data()) as Post[];
 	return internalPosts;
 }
@@ -201,11 +207,7 @@ export async function getUserPosts(user: User): Promise<Post[]> {
 export async function searchUsers(searchTerm: string): Promise<User[]> {
 	if (searchTerm === "") return Promise.resolve([]);
 	if (searchTerm.startsWith("@")) {
-		const docs = (
-			await getDocs(
-				query(collection(db, "users"), where("username", "==", searchTerm.substring(1))),
-			)
-		).docs;
+		const docs = (await getDocs(query(collection(db, "users"), where("username", "==", searchTerm.substring(1))))).docs;
 		return docs.length > 0 ? [docs[0].data() as User] : [];
 	}
 	return fuzzyQuery(searchTerm, "displayName", "users");
@@ -236,32 +238,23 @@ export function getPreference<Name extends Preference>(name: Name): PreferenceVa
 	return preference;
 }
 
-export async function setPreference<Name extends Preference>(
-	name: Name,
-	value: PreferenceValue<Name>,
-): Promise<void> {
+export async function setPreference<Name extends Preference>(name: Name, value: PreferenceValue<Name>): Promise<void> {
 	localStorage.setItem(`preference-${name}`, JSON.stringify(value));
 	if (user()) await updateUser({ [name]: value });
 }
 
 export async function getMentions(): Promise<Post[]> {
 	const username = user()!.username;
-	const allPosts = (
-		await getDocs(query(collection(db, "posts"), orderBy("timestamp", "desc")))
-	).docs.map(doc => doc.data() as Post);
+	const allPosts = (await getDocs(query(collection(db, "posts"), orderBy("timestamp", "desc")))).docs.map(
+		doc => doc.data() as Post,
+	);
 	const mentions = allPosts.filter(post => new RegExp(`@${username}\\b`).test(post.body));
 	return mentions;
 }
 
 export async function getRepliesToUser(user: User): Promise<Post[]> {
 	const allPosts = (
-		await getDocs(
-			query(
-				collection(db, "posts"),
-				where("type", "==", "reply"),
-				orderBy("timestamp", "desc"),
-			),
-		)
+		await getDocs(query(collection(db, "posts"), where("type", "==", "reply"), orderBy("timestamp", "desc")))
 	).docs.map(doc => doc.data() as Post);
 
 	const repliesToUser = allPosts.filter(async post => {
@@ -274,13 +267,7 @@ export async function getRepliesToUser(user: User): Promise<Post[]> {
 
 export async function getFollowingPosts(): Promise<Post[]> {
 	const allPosts = (
-		await getDocs(
-			query(
-				collection(db, "posts"),
-				where("poster", "in", user()!.following),
-				orderBy("timestamp", "desc"),
-			),
-		)
+		await getDocs(query(collection(db, "posts"), where("poster", "in", user()!.following), orderBy("timestamp", "desc")))
 	).docs.map(doc => doc.data() as Post);
 
 	return allPosts;
@@ -289,11 +276,7 @@ export async function getFollowingPosts(): Promise<Post[]> {
 export async function getNotifyingPosts(): Promise<Post[]> {
 	const allPosts = (
 		await getDocs(
-			query(
-				collection(db, "posts"),
-				where("poster", "in", user()!.notifyingPosters),
-				orderBy("timestamp", "desc"),
-			),
+			query(collection(db, "posts"), where("poster", "in", user()!.notifyingPosters), orderBy("timestamp", "desc")),
 		)
 	).docs.map(doc => doc.data() as Post);
 
@@ -311,32 +294,24 @@ export function passwordErrors(password: string): string[] {
 	if (!/\d/.test(password)) errors.push("Must contain at least 1 number");
 	if (!/[a-z]/.test(password)) errors.push("Must contain at least 1 lowercase letter");
 	if (!/[A-Z]/.test(password)) errors.push("Must contain at least 1 uppercase letter");
-	if (!/[\$_=\+\*!@#%\^&\|\\\/\(\)\[\]\{\}<>\?:;'"`~\-]/.test(password))
-		errors.push("Must contain at least 1 symbol");
+	if (!/[\$_=\+\*!@#%\^&\|\\\/\(\)\[\]\{\}<>\?:;'"`~\-]/.test(password)) errors.push("Must contain at least 1 symbol");
 	if (password.length < 8) errors.push("Must be at least 8 characters");
 	return errors;
 }
 
 export async function usernameIsTaken(username: string): Promise<boolean> {
-	return (
-		(await getDocs(query(collection(db, "users"), where("username", "==", username)))).docs
-			.length > 0
-	);
+	return (await getDocs(query(collection(db, "users"), where("username", "==", username)))).docs.length > 0;
 }
 
 export async function emailIsTaken(email: string): Promise<boolean> {
-	return (
-		(await getDocs(query(collection(db, "users"), where("email", "==", email)))).docs.length > 0
-	);
+	return (await getDocs(query(collection(db, "users"), where("email", "==", email)))).docs.length > 0;
 }
 
 onAuthStateChanged(auth, async user => {
 	// Logged in
 	if (user) {
 		currentUser = await internalUserToUser(
-			(
-				await getDocs(query(collection(db, "users"), where("id", "==", user.uid)))
-			).docs[0].data() as User,
+			(await getDocs(query(collection(db, "users"), where("id", "==", user.uid)))).docs[0].data() as User,
 		);
 		resolveUser(currentUser);
 	}
@@ -344,6 +319,8 @@ onAuthStateChanged(auth, async user => {
 	// logged out
 	else {
 	}
+
+	authState = "ready";
 });
 
 export async function logOut(): Promise<unknown | null> {
@@ -361,11 +338,7 @@ export async function updateUser(userInfo: Partial<User>) {
 	await updateDoc(doc(db, "users", user()!.id), userInfo);
 }
 
-export async function signUp(
-	email: string,
-	password: string,
-	username: string,
-): Promise<unknown | null> {
+export async function signUp(email: string, password: string, username: string): Promise<unknown | null> {
 	try {
 		const darkMode = getPreference("darkMode");
 		const uiScale = getPreference("uiScale");
@@ -392,6 +365,7 @@ export async function signUp(
 			currentBook: null,
 			readingList: [],
 			following: [],
+			reportedPosts: [],
 			darkMode,
 			uiScale,
 			views: [],
@@ -433,10 +407,15 @@ export async function getUserReplies(user: User): Promise<Post[]> {
 	).docs.map(doc => doc.data() as Post);
 }
 
-export async function changePassword(oldPassword: string, newPassword: string) {
-	const credential = EmailAuthProvider.credential(auth.currentUser!.email!, oldPassword);
-	await reauthenticateWithCredential(auth.currentUser!, credential);
-	await updatePassword(auth.currentUser!, newPassword);
+export async function changePassword(oldPassword: string, newPassword: string): Promise<null | FirebaseError> {
+	try {
+		const credential = EmailAuthProvider.credential(auth.currentUser!.email!, oldPassword);
+		await reauthenticateWithCredential(auth.currentUser!, credential);
+		await updatePassword(auth.currentUser!, newPassword);
+		return null;
+	} catch (error) {
+		return error as FirebaseError;
+	}
 }
 
 export async function changeEmail(email: string, password: string) {
@@ -466,11 +445,7 @@ export async function getCurrentlyReading(userId: UserId): Promise<ISBN[]> {
 
 	let books = updates.filter(post => post.updateType === "start").map(post => post.books[0]);
 	books = books.filter(
-		book =>
-			!updates.some(
-				post =>
-					["finish", "abandon"].includes(post.updateType) && post.books.includes(book),
-			),
+		book => !updates.some(post => ["finish", "abandon"].includes(post.updateType) && post.books.includes(book)),
 	);
 	return books;
 }

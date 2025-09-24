@@ -26,9 +26,9 @@
 
 	let { sidebar, user: profileUser }: { sidebar: Sidebar; user: User } = $props();
 
-	let view: "all" | "ratings" | "other" | "activity" | "list" = $state(
-		(new URLSearchParams(window.location.search).get("view") as any) ?? "all",
-	);
+	type View = "all" | "ratings" | "other" | "activity" | "list";
+
+	let view: View = $state((new URLSearchParams(window.location.search).get("view") as any) ?? "all");
 
 	/** This user's highest rated book */
 	let favoriteBook = getFavoriteBook(profileUser);
@@ -94,13 +94,6 @@
 		});
 	}
 
-	function gotoView(viewName: string) {
-		return function () {
-			goto(`${window.location.origin}${window.location.pathname}?${new URLSearchParams({ view: viewName })}`);
-			view = viewName as any;
-		};
-	}
-
 	let ratingOptions: HTMLElement | null = $state(null);
 
 	function hexToRgb(hex: string) {
@@ -161,6 +154,8 @@
 
 		await updateUser({ notifyingPosters: [...new Set(notifyingPosters)] });
 	}
+
+	let page: PageWithViews<View>;
 </script>
 
 <section>
@@ -269,7 +264,7 @@
 
 				<!-- Number of books read -->
 				<a
-					onclick={gotoView("ratings")}
+					onclick={() => page.setView("ratings")}
 					href="/profile/{profileUser.username}?view=ratings"
 					title="{profileUser.displayName} has read {booksRead} book{booksRead === 1 ? '' : 's'}"
 				>
@@ -295,6 +290,7 @@
 				views={["all", "ratings", "activity", "list", "other"]}
 				top="2.7rem"
 				bind:contentElement
+				bind:this={page}
 			>
 				{#await posts}
 					<div class="loading">
@@ -318,7 +314,7 @@
 							</span>
 							<span style:color="var(--overlay-1)">
 								<label for="change-rating-sort">{ratingSortName}</label>
-								<button onclick={event => ratingSortMenu.toggle(event)} id="change-rating-sort">
+								<button onclick={() => ratingSortMenu.toggle()} id="change-rating-sort">
 									<SortIcon stroke="var(--overlay-1)" style="width: 1.5rem; height: 1.5rem;" />
 								</button>
 							</span>

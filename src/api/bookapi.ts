@@ -35,13 +35,7 @@ let { db } = firebase();
 
 export async function getBookDiscussions(isbn: ISBN): Promise<Post[]> {
 	let posts = (
-		await getDocs(
-			query(
-				collection(db, "posts"),
-				where("books", "array-contains", isbn),
-				orderBy("timestamp", "desc"),
-			),
-		)
+		await getDocs(query(collection(db, "posts"), where("books", "array-contains", isbn), orderBy("timestamp", "desc")))
 	).docs.map(doc => doc.data()) as Post[];
 
 	return posts;
@@ -58,11 +52,7 @@ export async function updateBook(book: Book, bookInfo: Partial<Book>) {
 export async function getBookRating(isbn: ISBN): Promise<{ rating: number; count: number }> {
 	const data = (
 		await getAggregateFromServer(
-			query(
-				collection(db, "posts"),
-				where("books", "array-contains", isbn),
-				where("type", "==", "rating"),
-			),
+			query(collection(db, "posts"), where("books", "array-contains", isbn), where("type", "==", "rating")),
 			{
 				averageRating: average("rating"),
 				ratingCount: count(),
@@ -96,20 +86,29 @@ export async function getBook(isbn: ISBN, fetch_: typeof fetch = fetch): Promise
 }
 
 export async function searchBooks(searchTerm: string, max = 10): Promise<Promise<Book>[]> {
-	if (/^\d{3}\-?\d{10}$/.test(searchTerm)) getBook(searchTerm as ISBN).then(book => [book]);
+	if (/^\d{3}\-?\d{10}$/.test(searchTerm)) getBook(isbn(searchTerm)).then(book => [book]);
 
 	const query = new URLSearchParams({ q: searchTerm });
 	let response = await fetch(`https://openlibrary.org/search.json?${query}&fields=isbn,editions`);
 	const data = await response.json();
 	let books: { isbn: string[] }[] = data.docs.filter((book: Book) => book.isbn).slice(0, max);
-	return books.map(book => getBook(book.isbn.find(isbn => /^\d{13}$/.test(isbn))! as ISBN));
+	return books.map(book => getBook(book.isbn.find(isbn => isISBN(isbn))!));
 }
 
 export async function searchBookISBNs(searchTerm: string, max = 10): Promise<string[]> {
-	if (/^\d{3}\-?\d{10}$/.test(searchTerm)) getBook(searchTerm as ISBN).then(book => [book]);
+	if (/^\d{3}\-?\d{10}$/.test(searchTerm)) getBook(isbn(searchTerm)).then(book => [book]);
 	const query = new URLSearchParams({ q: searchTerm });
 	let response = await fetch(`https://openlibrary.org/search.json?${query}&fields=isbn,editions`);
 	const data = await response.json();
 	let books: { isbn: string[] }[] = data.docs.filter((book: any) => book.isbn).slice(0, max);
 	return books.map(book => book.isbn.find(isbn => /^\d{13}$/.test(isbn))!);
+}
+
+export function isISBN(text: string): text is ISBN {
+	return /^\d{13}$/.test(text);
+}
+
+export function isbn(text: string): ISBN {
+	if (!isISBN(text)) throw `Attempted to coerce a non-ISBN string to an ISBN: ${text}`;
+	return text as ISBN;
 }

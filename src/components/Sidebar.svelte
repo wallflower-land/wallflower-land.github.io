@@ -23,6 +23,7 @@
 	import SearchIcon from "./icons/SearchIcon.svelte";
 	import BellIcon from "./icons/BellIcon.svelte";
 	import PlusIcon from "./icons/PlusIcon.svelte";
+	import EmptyWrenchIcon from "./icons/EmptyWrenchIcon.svelte";
 
 	let innerHeight = $state(window.innerHeight);
 
@@ -140,50 +141,56 @@
 	</div>
 
 	<!-- Navigation buttons -->
-	<button class="listing" style:color="var(--subtext-1)" onclick={nav("/")}>
+	<button class="listing" onclick={nav("/")}>
 		<EmptyHomeIcon stroke="var(--subtext-1)" style="width: 1.5rem;" />
 		Home
 	</button>
 	{#if user()}
-		<button class="listing" style:color="var(--subtext-1)" onclick={nav("/profile")}>
+		<button class="listing" onclick={nav("/profile")}>
 			<ProfileIcon stroke="var(--subtext-1)" style="width: 1.5rem;" />
 			Profile
 		</button>
+		{#if user()!.tags.includes("mod")}
+			<button class="listing" onclick={nav("/moderator-tools")}>
+				<EmptyWrenchIcon stroke="var(--subtext-1)" style="width: 1.75rem;" />
+				Mod Tools
+			</button>
+		{/if}
 	{/if}
-	<button class="listing" style:color="var(--subtext-1)" onclick={nav("/search")}>
+	<button class="listing" onclick={nav("/search")}>
 		<SearchIcon stroke="var(--subtext-1)" style="width: 1.5rem;" />
 		Search
 	</button>
 	{#if user()}
-		<button class="listing" style:color="var(--subtext-1)" onclick={nav("/inbox")}>
+		<button class="listing" onclick={nav("/inbox")}>
 			<BellIcon stroke="var(--subtext-1)" style="width: 1.5rem;" />
 			Inbox
 		</button>
-		<button class="listing" style:color="var(--subtext-1)" onclick={nav("/new")}>
+		<button class="listing" onclick={nav("/new")}>
 			<PlusIcon stroke="var(--subtext-1)" style="width: 1.5rem;" />
 			New Post
 		</button>
-		<button class="listing" style:color="var(--subtext-1)" onclick={nav("/activity")}>
+		<button class="listing" onclick={nav("/activity")}>
 			<BarChartIcon stroke="var(--subtext-1)" style="width: 1.5rem;" />
 			Activity
 		</button>
 	{/if}
-	<button class="listing" style:color="var(--subtext-1)" onclick={nav("/settings")}>
+	<button class="listing" onclick={nav("/settings")}>
 		<GearIcon stroke="var(--subtext-1)" style="width: 1.5rem;" />
 		Settings
 	</button>
-	<button class="listing" style:color="var(--subtext-1)" onclick={nav("/about")}>
+	<button class="listing" onclick={nav("/about")}>
 		<InfoIcon2 stroke="var(--subtext-1)" style="width: 1.5rem;" />
 		About
 	</button>
 
 	{#if user()}
-		<button class="listing" style:color="var(--subtext-1)" onclick={signOut}>
+		<button class="listing" onclick={signOut}>
 			<ExitIcon stroke="var(--subtext-1)" style="width: 1.5rem;" />
 			Log Out
 		</button>
 	{:else}
-		<a class="listing" style:color="var(--subtext-1)" href="/login">
+		<a class="listing" href="/login">
 			<EnterIcon stroke="var(--subtext-1)" style="width: 1.5rem;" />
 			Log In
 		</a>
@@ -213,6 +220,7 @@
 			padding-top: 1rem;
 			padding-bottom: 1rem;
 			width: 100%;
+			color: var(--subtext-1);
 
 			&:hover {
 				background: rgba(150, 150, 255, 10%);

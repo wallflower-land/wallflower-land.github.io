@@ -6,16 +6,19 @@
 		children,
 		element = $bindable(),
 		visible = $bindable(),
+		onclose = () => {},
 		...rest
 	}: {
 		children: Snippet;
 		element?: HTMLElement;
 		visible?: boolean;
+		onclose?: () => void;
 	} & HTMLAttributes<HTMLDivElement> = $props();
 
 	function onclick(event: MouseEvent) {
 		if (event.target === element) {
 			visible = false;
+			onclose();
 		}
 	}
 </script>
