@@ -141,56 +141,58 @@
 	</div>
 
 	<!-- Navigation buttons -->
-	<button class="listing" onclick={nav("/")}>
-		<EmptyHomeIcon stroke="var(--subtext-1)" style="width: 1.5rem;" />
-		Home
-	</button>
-	{#if user()}
-		<button class="listing" onclick={nav("/profile")}>
-			<ProfileIcon stroke="var(--subtext-1)" style="width: 1.5rem;" />
-			Profile
+	<div class="buttons">
+		<button class="listing" onclick={nav("/")}>
+			<EmptyHomeIcon stroke="var(--subtext-1)" style="width: 1.5rem;" />
+			Home
 		</button>
-		{#if user()!.tags.includes("mod")}
-			<button class="listing" onclick={nav("/moderator-tools")}>
-				<EmptyWrenchIcon stroke="var(--subtext-1)" style="width: 1.75rem;" />
-				Mod Tools
+		{#if user()}
+			<button class="listing" onclick={nav("/profile")}>
+				<ProfileIcon stroke="var(--subtext-1)" style="width: 1.5rem;" />
+				Profile
+			</button>
+			{#if user()!.tags.includes("mod")}
+				<button class="listing" onclick={nav("/moderator-tools")}>
+					<EmptyWrenchIcon stroke="var(--subtext-1)" style="width: 1.75rem;" />
+					Mod Tools
+				</button>
+			{/if}
+		{/if}
+		<button class="listing" onclick={nav("/search")}>
+			<SearchIcon stroke="var(--subtext-1)" style="width: 1.5rem;" />
+			Search
+		</button>
+		{#if user()}
+			<button class="listing" onclick={nav("/inbox")}>
+				<BellIcon stroke="var(--subtext-1)" style="width: 1.5rem;" />
+				Inbox
+			</button>
+			<button class="listing" onclick={nav("/new")}>
+				<PlusIcon stroke="var(--subtext-1)" style="width: 1.5rem;" />
+				New Post
+			</button>
+			<button class="listing" onclick={nav("/activity")}>
+				<BarChartIcon stroke="var(--subtext-1)" style="width: 1.5rem;" />
+				Activity
 			</button>
 		{/if}
-	{/if}
-	<button class="listing" onclick={nav("/search")}>
-		<SearchIcon stroke="var(--subtext-1)" style="width: 1.5rem;" />
-		Search
-	</button>
-	{#if user()}
-		<button class="listing" onclick={nav("/inbox")}>
-			<BellIcon stroke="var(--subtext-1)" style="width: 1.5rem;" />
-			Inbox
+		<button class="listing" onclick={nav("/settings")}>
+			<GearIcon stroke="var(--subtext-1)" style="width: 1.5rem;" />
+			Settings
 		</button>
-		<button class="listing" onclick={nav("/new")}>
-			<PlusIcon stroke="var(--subtext-1)" style="width: 1.5rem;" />
-			New Post
+		<button class="listing" onclick={nav("/about")}>
+			<InfoIcon2 stroke="var(--subtext-1)" style="width: 1.5rem;" />
+			About
 		</button>
-		<button class="listing" onclick={nav("/activity")}>
-			<BarChartIcon stroke="var(--subtext-1)" style="width: 1.5rem;" />
-			Activity
-		</button>
-	{/if}
-	<button class="listing" onclick={nav("/settings")}>
-		<GearIcon stroke="var(--subtext-1)" style="width: 1.5rem;" />
-		Settings
-	</button>
-	<button class="listing" onclick={nav("/about")}>
-		<InfoIcon2 stroke="var(--subtext-1)" style="width: 1.5rem;" />
-		About
-	</button>
+	</div>
 
 	{#if user()}
-		<button class="listing" onclick={signOut}>
+		<button class="login listing" onclick={signOut}>
 			<ExitIcon stroke="var(--subtext-1)" style="width: 1.5rem;" />
 			Log Out
 		</button>
 	{:else}
-		<a class="listing" href="/login">
+		<a class="login listing" href="/login">
 			<EnterIcon stroke="var(--subtext-1)" style="width: 1.5rem;" />
 			Log In
 		</a>
@@ -226,13 +228,17 @@
 				background: rgba(150, 150, 255, 10%);
 			}
 
-			&:last-child {
+			&.login {
 				margin-top: auto;
 				background: var(--crust);
 				padding-top: 0.75rem;
 				padding-bottom: 0.75rem;
 			}
 		}
+	}
+
+	.buttons {
+		overflow-y: auto;
 	}
 
 	.profile-picture {

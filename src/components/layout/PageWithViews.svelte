@@ -1,4 +1,8 @@
 <script module>
+	/**
+	 * A `Symbol` that can be passed to the `header` property of `<PageWithViews />`.
+	 * If passed, the header will render a custom wallflower header.
+	 */
 	export const wallflowerHeader = Symbol();
 </script>
 
@@ -13,38 +17,46 @@
 	import BellIcon from "../icons/BellIcon.svelte";
 	import PersonIcon from "../icons/PersonIcon.svelte";
 	import Sidebar from "../Sidebar.svelte";
+	import type { Undefined } from "../../api/util";
+
+	type BaseProps = {
+		views: View[];
+		view: View;
+		children: Snippet;
+		viewFilter?: (name: string) => boolean | Promise<boolean>;
+		contentElement?: HTMLElement;
+		top?: string;
+		formatViewName?: (name: View) => string | Promise<string>;
+		onViewChange?: (name: View) => void;
+	};
+
+	type FullPageProps = {
+		fullpage: true;
+		header: string | typeof wallflowerHeader;
+		subheader?: string | Promise<string>;
+		afterHeader?: Snippet;
+		pagetype: "home" | "search" | "new" | "inbox" | "profile";
+	};
+
+	type PartialPageProps = {
+		fullpage: false;
+	} & Undefined<Omit<FullPageProps, "fullpage">>;
 
 	let {
 		views,
 		view = $bindable(),
 		children,
 		contentElement = $bindable(),
-		marginTop = "0px",
 		top = "0px",
 		header = undefined,
 		subheader = undefined,
 		afterHeader = undefined,
-		fullpage = false,
+		fullpage = true,
 		pagetype = undefined,
 		viewFilter = _name => true,
 		formatViewName = name => name,
 		onViewChange = _name => {},
-	}: {
-		views: View[];
-		view: View;
-		children: Snippet;
-		viewFilter?: (name: string) => boolean | Promise<boolean>;
-		header?: string | typeof wallflowerHeader;
-		afterHeader?: Snippet;
-		fullpage?: boolean;
-		contentElement?: HTMLElement;
-		top?: string;
-		pagetype?: "home" | "search" | "new" | "inbox" | "profile";
-		subheader?: string | Promise<string>;
-		formatViewName?: (name: View) => string | Promise<string>;
-		onViewChange?: (name: View) => void;
-		marginTop?: string;
-	} = $props();
+	}: BaseProps & (FullPageProps | PartialPageProps) = $props();
 
 	let left = $state("0px");
 
@@ -103,7 +115,6 @@
 			content={contentElement}
 			{viewFilter}
 			{formatViewName}
-			{marginTop}
 			{views}
 			bind:view
 			bind:left

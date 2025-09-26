@@ -1,5 +1,5 @@
 import type { PageLoad } from "./$types";
 
-export const load: PageLoad = async ({ parent }: { parent: () => Promise<{ route: string }> }) => {
+export const load: PageLoad = async ({ parent }) => {
 	return await parent();
 };

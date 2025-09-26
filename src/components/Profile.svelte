@@ -291,6 +291,7 @@
 				top="2.7rem"
 				bind:contentElement
 				bind:this={page}
+				fullpage={false}
 			>
 				{#await posts}
 					<div class="loading">

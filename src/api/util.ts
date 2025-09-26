@@ -63,13 +63,9 @@ export async function fuzzyQuery<FieldName extends string, T extends { [F in Fie
 	options: typeof defaultFuzzyQueryOptions = defaultFuzzyQueryOptions,
 ): Promise<T[]> {
 	options = { ...defaultFuzzyQueryOptions, ...options };
-	let values = (await getDocs(query(collection(db, collectionName)))).docs.map(doc =>
-		doc.data(),
-	) as T[];
+	let values = (await getDocs(query(collection(db, collectionName)))).docs.map(doc => doc.data()) as T[];
 	values.sort(
-		(a, b) =>
-			options.sortingFunction(a[fieldName], searchTerm) -
-			options.sortingFunction(b[fieldName], searchTerm),
+		(a, b) => options.sortingFunction(a[fieldName], searchTerm) - options.sortingFunction(b[fieldName], searchTerm),
 	);
 
 	if (values.length > options.limit) {
@@ -78,3 +74,7 @@ export async function fuzzyQuery<FieldName extends string, T extends { [F in Fie
 
 	return values;
 }
+
+export type Undefined<T> = {
+	[Key in keyof T]?: never;
+};

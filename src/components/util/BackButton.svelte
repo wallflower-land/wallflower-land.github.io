@@ -3,10 +3,19 @@
 	import type { HTMLButtonAttributes } from "svelte/elements";
 	import LeftCaretIcon from "../icons/LeftCaretIcon.svelte";
 
-	let { href = undefined, ...props }: { href?: string } & HTMLButtonAttributes = $props();
+	let {
+		href = undefined,
+		...buttonAttributes
+	}: {
+		/**
+		 * THe location to direct to when clicking the button. If left `undefined`,
+		 * `window.history.back()` will be used.
+		 */
+		href?: string;
+	} & HTMLButtonAttributes = $props();
 </script>
 
-<button {...props} onclick={() => (href ? goto(href) : window.history.back())}>
+<button {...buttonAttributes} onclick={() => (href ? goto(href) : window.history.back())}>
 	<LeftCaretIcon style="width: 1.25rem; height: 1.25rem;" stroke="var(--crust)" />
 </button>
 

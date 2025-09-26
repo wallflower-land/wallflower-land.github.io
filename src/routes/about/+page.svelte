@@ -8,7 +8,9 @@
 	<div class="definition">
 		<span>
 			<h2 class="wallflower"><i>Wall&middot;flow&middot;er</i></h2>
-			<span class="ipa" aria-label="US IPA">&#x2F;&#x2C8;w&#x0254;l&#x02CC;fla&#x028A;&#x025A;&#x2F;</span>
+			<span class="ipa" aria-label="US IPA">
+				&#x2F;&#x2C8;w&#x0254;l&#x02CC;fla&#x028A;&#x025A;&#x2F;
+			</span>
 			<WallflowerIcon
 				stroke="var(--overlay-1)"
 				style="width: 1rem; height: 1rem; margin-left: auto; margin-right: 0.25rem;"
@@ -16,7 +18,8 @@
 		</span>
 		<p class="body">
 			<i>(noun)</i>
-			A shy person who is frightened to involve themselves in social activities and does not attract much interest or attention.
+			A shy person who is frightened to involve themselves in social activities and does not attract much
+			interest or attention.
 		</p>
 	</div>
 
@@ -25,12 +28,14 @@
 	<p>Like that other site, but for books.</p>
 
 	<p>
-		wallflower.land (or just Wallflower) is a social media website (and app soon!) for readers and writers. It's a space
-		where us bookworms can make posts discussing, rating, reviewing, and updating our followers on books.
+		wallflower.land (or just Wallflower) is a social media website (and app soon!) for readers and
+		writers. It's a space where us bookworms can make posts discussing, rating, reviewing, and updating
+		our followers on books.
 	</p>
 
 	<p>
-		The Wallflower team, the legal owner of wallflower.land, is a non-profit organization originally created by
+		The Wallflower team, the legal owner of wallflower.land, is a non-profit organization originally
+		created by
 		<Link href="/@vi">@vi</Link>
 		as a passion project in college. The name
 		<i>Wallflower</i>
@@ -40,40 +45,43 @@
 		by Stephen Chbosky.
 	</p>
 	<p>
-		Powered by volunteers, no one on the Wallflower team makes a cent off of the project. wallflower.land is completely
-		ad-free with zero in-app purchases.
+		Powered by volunteers, no one on the Wallflower team makes a cent off of the project. wallflower.land
+		is completely ad-free with zero in-app purchases.
 	</p>
 
 	<!-- Team & Values -->
 	<h2>Team &amp; Values</h2>
 	<p>
 		Wallflower is still led by its original creator,
-		<Link href="/@vi">@vi</Link>, a nonbinary reader, writer, and college student. Wallflower will always support
-		kindness, acceptance, diversity, equity, and inclusion.
+		<Link href="/@vi">@vi</Link>, a nonbinary reader, writer, and college student. Wallflower will always
+		support kindness, acceptance, diversity, equity, and inclusion.
 	</p>
 	<p>Currently, Wallflower has no other team members.</p>
-	<p>Wallflower does not support the use of AI, and will not be integrating AI features into the website or app.</p>
+	<p>
+		Wallflower does not support the use of AI, and will not be integrating AI features into the website or
+		app.
+	</p>
 
 	<!-- Moderation -->
 	<h2>Moderation</h2>
 	<p>
-		The Wallflower team moderates content posted to Wallflower. Harmful and hateful content will be removed. Wallflower
-		also may remove content that's off-topic&mdash;Posting repeatedly with no relation to books or writing may get your
-		account flagged. wallflower.land was designed to be a safe and cozy space for people to talk about and discover
-		books. Nothing more, nothing less.
+		The Wallflower team moderates content posted to Wallflower. Harmful and hateful content will be
+		removed. Wallflower also may remove content that's off-topic&mdash;Posting repeatedly with no relation
+		to books or writing may get your account flagged. wallflower.land was designed to be a safe and cozy
+		space for people to talk about and discover books. Nothing more, nothing less.
 	</p>
 	<p>
-		Wallflower will never remove relevant constructive content based on opinion. Users are free to share as much dislike
-		and distaste for books, writing styles, and author's specific works or styles. Do not attack authors themselves.
-		Criticize the works, not the people.
+		Wallflower will never remove relevant constructive content based on opinion. Users are free to share
+		as much dislike and distaste for books, writing styles, and author's specific works or styles. Do not
+		attack authors themselves. Criticize the works, not the people.
 	</p>
 	<p>
-		These moderation rules are loosely defined. Each situation will be handled by a case-by-case basis and judged by
-		Wallflower's moderators, who are trusted to make educated judgements.
+		These moderation rules are loosely defined. Each situation will be handled by a case-by-case basis and
+		judged by Wallflower's moderators, who are trusted to make educated judgements.
 	</p>
 	<p>
-		If your account was suspended or banned and you feel it was wrongful, you can submit an appeal. Your content will be
-		reviewed and a secondary, more thorough judgement will be passed to you.
+		If your account was suspended or banned and you feel it was wrongful, you can submit an appeal. Your
+		content will be reviewed and a secondary, more thorough judgement will be passed to you.
 	</p>
 
 	<!-- Rules -->
@@ -85,31 +93,32 @@
 
 	<ul>
 		<li>
-			<b>Rule 1: Anti-Discrimination -</b>
+			<b>I: Anti-Discrimination -</b>
 			No content posted to wallflower.land can discriminate, insult or exclude
 			<i>anyone</i>
 			based on race, ethnicity, gender, sex, sexual orientation, or religion.
 		</li>
 		<li>
-			<b>Rule 2: Relevant Content -</b>
+			<b>II: Relevant Content -</b>
 			All content posted to wallflower.land
 			<i>must</i>
 			relate to books, novels, literature, reading, writing, authors, poets, or wallflower.land itself.
 		</li>
 		<li>
-			<b>Rule 3: Honorable Reporting -</b>
-			All posts and accounts reported as rule-breaking must be done so in good faith, under genuine belief that the given
-			post or account violates one or more wallflower.land rules.
+			<b>III: Honorable Reporting -</b>
+			All posts and accounts reported as rule-breaking must be done so in good faith, under genuine belief
+			that the given post or account violates one or more wallflower.land rules.
 		</li>
 		<li>
-			<b>Rule 4: Constructive Criticism -</b>
-			All criticism, particularly to individuals or groups posted to wallflower.land, must be constructive instead of blatantly
-			insulting or hateful.
+			<b>IV: Constructive Criticism -</b>
+			All criticism, particularly to individuals or groups posted to wallflower.land, must be constructive
+			instead of blatantly insulting or hateful.
 		</li>
 		<li>
-			<b>Rule 5: Innocent Intent -</b>
-			All wallflower.land users are required to use the site with innocent and honorable intent. Attempts to break wallflower.land,
-			hack other user's accounts, or in any way use the platform beyond its intended use, will result in a ban.
+			<b>V: Innocent Intent -</b>
+			All wallflower.land users are required to use the site with innocent and honorable intent. Attempts
+			to break wallflower.land, hack other user's accounts, or in any way use the platform beyond its intended
+			use, will result in a ban.
 		</li>
 	</ul>
 
@@ -124,7 +133,8 @@
 	</p>
 	<p>
 		Wallflower is licensed as <i>all rights reserved</i>
-		, meaning you are legally not allowed to use, copy, or distribute its code without explicit authorization from its creator,
+		, meaning you are legally not allowed to use, copy, or distribute its code without explicit authorization
+		from its creator,
 		<Link href="/profile/vi">@vi</Link>.
 	</p>
 
@@ -133,8 +143,8 @@
 		to ask for permission to use Wallflower's code for some specific circumstance. You can email me
 		<i>personally</i>
 		at
-		<Link href="mailto:vi@wallflower.land">vi@wallflower.land</Link>. I don't bite, I promise. Alternatively, you can
-		reach out to
+		<Link href="mailto:vi@wallflower.land">vi@wallflower.land</Link>. I don't bite, I promise.
+		Alternatively, you can reach out to
 		<Link href="mailto:staff@wallflower.land">staff@wallflower.land</Link>
 		and it'll make its way to me.
 	</p>

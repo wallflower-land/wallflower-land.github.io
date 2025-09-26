@@ -16,6 +16,9 @@
 
 	let thresholdValue = $derived(threshold * limit);
 
+	/**
+	 * The color of the text and meter ring.
+	 */
 	let color = $derived.by(() => {
 		const remaining = limit - text.length;
 		if (remaining > thresholdValue) return "var(--surface-0)";

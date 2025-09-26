@@ -38,13 +38,17 @@
 		post,
 		postpage = false,
 		noborder = false,
-		element = $bindable(),
 	}: {
 		post: Post;
 		postpage?: boolean;
 		noborder?: boolean;
-		element?: HTMLElement;
 	} = $props();
+
+	let content: HTMLElement | null = $state(null);
+
+	export function element(): HTMLElement | null {
+		return content;
+	}
 
 	/**
 	 * The context menu that appears when clicking the post actions button, which
@@ -299,7 +303,7 @@
 		role="link"
 		onclick={clickPost}
 		style:border-bottom={postpage || noborder ? "none" : `1px solid var(--surface-0)`}
-		bind:this={element}
+		bind:this={content}
 	>
 		<!-- Poster's profile picture -->
 		<div class="profile">
