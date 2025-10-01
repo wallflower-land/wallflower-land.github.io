@@ -9,6 +9,7 @@
 	import ImagePicker from "../../../components/util/ImagePicker.svelte";
 	import Page from "../../../components/layout/Page.svelte";
 	import AnyPost from "../../../components/post/AnyPost.svelte";
+	import { POST_BODY_CHARACTER_LIMIT } from "../../../api/constants";
 
 	let { data }: { data: { postid: PostId } } = $props();
 	let postid = $derived(data.postid);
@@ -65,7 +66,7 @@
 	});
 
 	function checkLength(event: Event) {
-		if (replyBody.length >= 144) {
+		if (replyBody.length >= POST_BODY_CHARACTER_LIMIT) {
 			event.preventDefault();
 		}
 	}
@@ -76,7 +77,9 @@
 
 	let parents: HTMLElement[] = $state([]);
 	let parentContainer: HTMLElement | null = $state(null);
-	let height = $derived.by(() => `calc(100dvh + ${parentContainer?.getBoundingClientRect().height ?? 0}px)`);
+	let height = $derived.by(
+		() => `calc(100dvh + ${parentContainer?.getBoundingClientRect().height ?? 0}px)`,
+	);
 
 	let replyLineHeight = $state(`0px`);
 	let replyLine: HTMLElement | null = $state(null);
@@ -92,7 +95,11 @@
 			{#await parentChain then parentChain}
 				<div class="parents" bind:this={parentContainer}>
 					{#each parentChain as parent, index}
-						<AnyPost bind:element={parents[index]} post={parent} noborder={index === parents.length - 1} />
+						<AnyPost
+							bind:element={parents[index]}
+							post={parent}
+							noborder={index === parents.length - 1}
+						/>
 					{/each}
 				</div>
 
@@ -147,7 +154,11 @@
 
 						<ImageCarousel bind:images editable />
 
-						<CharacterLimitMeter display={characterLimitStyle} limit={144} bind:text={replyBody} />
+						<CharacterLimitMeter
+							display={characterLimitStyle}
+							limit={POST_BODY_CHARACTER_LIMIT}
+							bind:text={replyBody}
+						/>
 					</div>
 				</div>
 			{/if}

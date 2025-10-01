@@ -8,12 +8,9 @@ initializeApp({
 const db = getFirestore();
 
 async function init() {
-	console.log("Updating posts");
-	const posts = await db.collection("posts").get();
-	console.log(`Fetched posts: ${posts}`);
+	const posts = await db.collection("posts").where("type", "==", "rating").get();
 	posts.forEach(doc => {
-		console.log(`Updating doc ${doc.data().id}`);
-		doc.ref.update({ deletionStatus: "none" });
+		doc.ref.update({ completionStatus: "finished" });
 	});
 }
 

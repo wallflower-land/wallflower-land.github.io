@@ -16,7 +16,14 @@
 		type Post,
 	} from "../../api/postapi";
 	import { getFile } from "../../api/storageapi";
-	import { didReport, getUserFromId, reportPost, unreportPost, updateUser, user } from "../../api/userapi.svelte";
+	import {
+		didReport,
+		getUserFromId,
+		reportPost,
+		unreportPost,
+		updateUser,
+		user,
+	} from "../../api/userapi.svelte";
 	import CommentIcon from "../icons/CommentIcon.svelte";
 	import DotMenuIcon from "../icons/DotMenuIcon.svelte";
 	import EyeIcon from "../icons/EyeIcon.svelte";
@@ -38,17 +45,13 @@
 		post,
 		postpage = false,
 		noborder = false,
+		element = $bindable(),
 	}: {
 		post: Post;
 		postpage?: boolean;
 		noborder?: boolean;
+		element?: HTMLElement;
 	} = $props();
-
-	let content: HTMLElement | null = $state(null);
-
-	export function element(): HTMLElement | null {
-		return content;
-	}
 
 	/**
 	 * The context menu that appears when clicking the post actions button, which
@@ -303,7 +306,7 @@
 		role="link"
 		onclick={clickPost}
 		style:border-bottom={postpage || noborder ? "none" : `1px solid var(--surface-0)`}
-		bind:this={content}
+		bind:this={element}
 	>
 		<!-- Poster's profile picture -->
 		<div class="profile">
@@ -381,7 +384,13 @@
 				{#if post.type === "rating"}
 					{#await books[0] then book}
 						{#await poster then poster}
-							<Rating isbn={book.isbn} rating={post.rating} review={post.body} user={poster} />
+							<Rating
+								completionStatus={post.completionStatus}
+								isbn={book.isbn}
+								rating={post.rating}
+								review={post.body}
+								user={poster}
+							/>
 						{/await}
 					{/await}
 				{:else if post.type === "general"}
@@ -391,7 +400,12 @@
 				{:else if post.type === "update"}
 					{#await books[0] then book}
 						{#await poster then poster}
-							<BookUpdate updateType={post.updateType} body={post.body} isbn={book.isbn} user={poster} />
+							<BookUpdate
+								updateType={post.updateType}
+								body={post.body}
+								isbn={book.isbn}
+								user={poster}
+							/>
 						{/await}
 					{/await}
 				{/if}
@@ -435,7 +449,10 @@
 					</button>
 				{:then commented}
 					<button onclick={goToPost} style:color={commented ? "var(--blue)" : "var(--surface-2)"}>
-						<CommentIcon stroke={commented ? "var(--blue)" : "var(--surface-2)"} style="width: 1rem;" />
+						<CommentIcon
+							stroke={commented ? "var(--blue)" : "var(--surface-2)"}
+							style="width: 1rem;"
+						/>
 						{#await comments}
 							0
 						{:then comments}
@@ -493,7 +510,12 @@
 	</section>
 {/if}
 
-<Notification message="Reported Post" undo={undoReport} undoMessage="Unreported Post" bind:this={reportNotification} />
+<Notification
+	message="Reported Post"
+	undo={undoReport}
+	undoMessage="Unreported Post"
+	bind:this={reportNotification}
+/>
 <Notification
 	message="Unreported Post"
 	undo={undoUnreport}

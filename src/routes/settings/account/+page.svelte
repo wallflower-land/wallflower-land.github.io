@@ -27,6 +27,8 @@
 		}
 	});
 
+	let params = new URLSearchParams(window.location.search);
+
 	let waiting = $state(false);
 
 	let email: string = $state("");
@@ -42,7 +44,9 @@
 		newPassword
 			? [
 					...passwordErrors(newPassword),
-					...(newPassword === oldPassword ? ["New password cannot be the same as old password."] : []),
+					...(newPassword === oldPassword
+						? ["New password cannot be the same as old password."]
+						: []),
 				]
 			: [],
 	);
@@ -60,11 +64,21 @@
 	let changePasswordError = $state("");
 	let changePasswordNotification: Notification;
 
+	$effect(() => {
+		if (!deleteAccountVisible) {
+			const url = new URL(window.location.href);
+			url.searchParams.delete("delete");
+			window.history.replaceState({}, "", url);
+		}
+	});
+
 	let changeEmailVisible = $state(false);
 	let changeAuthorVisible = $state(false);
 	let changePasswordVisible = $state(false);
-	let deleteAccountVisible = $state(false);
-	let usernameError = $derived(!deleteUsername || deleteUsername === user()?.username ? null : "Incorrect username");
+	let deleteAccountVisible = $state(params.has("delete"));
+	let usernameError = $derived(
+		!deleteUsername || deleteUsername === user()?.username ? null : "Incorrect username",
+	);
 	let deletePassword = $state("");
 	let confirmDeleteAccount = $state(false);
 	let canDeleteAccount = $derived(!usernameError && deleteUsername && confirmDeleteAccount);
@@ -136,11 +150,18 @@
 			</div>
 			<div class="section">
 				<span>Password</span>
-				<input placeholder="password" type="password" bind:value={emailPassword} enterkeyhint="done" />
+				<input
+					placeholder="password"
+					type="password"
+					bind:value={emailPassword}
+					enterkeyhint="done"
+				/>
 			</div>
 			<div class="buttons">
 				<button class="cancel" onclick={() => (changeEmailVisible = false)}>Cancel</button>
-				<button disabled={!email || !emailPassword} class="submit" onclick={submitChangeEmail}>Change</button>
+				<button disabled={!email || !emailPassword} class="submit" onclick={submitChangeEmail}>
+					Change
+				</button>
 			</div>
 			<button class="close" onclick={() => (changeEmailVisible = false)}>
 				<CloseIcon stroke="var(--red)" style="width: 1rem; height: 1rem;" />
@@ -154,7 +175,10 @@
 			<PasswordIcon style="width: 1.25rem; height: 1.25rem;" stroke="var(--text)" />
 			<span>Change Password</span>
 		</div>
-		<p>You can change your password any number of times. You will be asked to enter your current password first.</p>
+		<p>
+			You can change your password any number of times. You will be asked to enter your current password
+			first.
+		</p>
 	</button>
 
 	<Popup bind:visible={changePasswordVisible} onclose={resetChangePasswordInputs}>
@@ -237,7 +261,11 @@
 				>
 					Cancel
 				</button>
-				<button disabled={!canChangePassword || waiting} class="submit" onclick={submitChangePassword}>
+				<button
+					disabled={!canChangePassword || waiting}
+					class="submit"
+					onclick={submitChangePassword}
+				>
 					Change
 				</button>
 			</div>
@@ -267,22 +295,27 @@
 			{#if user()?.tags.includes("author")}
 				<span class="title">You are a verified author.</span>
 				<p>
-					Being a verified author gives you access to special author features in wallflower.land, and will display
-					an author icon on your profile.
+					Being a verified author gives you access to special author features in wallflower.land,
+					and will display an author icon on your profile.
 				</p>
 			{:else}
 				<span class="title">Request Author Verification</span>
 				<p>
-					Being a verified author gives you access to special author features in wallflower.land, and will display
-					an author icon on your profile.
+					Being a verified author gives you access to special author features in wallflower.land,
+					and will display an author icon on your profile.
 				</p>
-				<p>Only published authors can receive author verification. Independent publishing is included.</p>
+				<p>
+					Only published authors can receive author verification. Independent publishing is
+					included.
+				</p>
 				{#if user()?.requestedAuthorVerification}
 					<button class="unrequest become-author" onclick={unrequestAuthorVerification}>
 						Unrequest Author Verification
 					</button>
 				{:else}
-					<button class="request become-author" onclick={requestAuthorVerification}>Request Verification</button>
+					<button class="request become-author" onclick={requestAuthorVerification}>
+						Request Verification
+					</button>
 				{/if}
 			{/if}
 			<button class="close" onclick={() => (changeAuthorVisible = false)}>
@@ -297,7 +330,10 @@
 			<WrenchIcon style="width: 1rem; height: 1rem;" stroke="var(--text)" />
 			<span>Become a moderator</span>
 		</div>
-		<p>Wallflower is powered by volunteering moderators who keep Wallflower content safe, relevant, and accessible.</p>
+		<p>
+			Wallflower is powered by volunteering moderators who keep Wallflower content safe, relevant, and
+			accessible.
+		</p>
 	</a>
 
 	<!-- Become a developer -->
@@ -306,7 +342,10 @@
 			<DeveloperIcon style="width: 1.25rem; height: 1.25rem;" stroke="var(--text)" />
 			<span>Become a developer</span>
 		</div>
-		<p>Wallflower is a non-profit organization powered by volunteers. Paying positions are currently not available.</p>
+		<p>
+			Wallflower is a non-profit organization powered by volunteers. Paying positions are currently not
+			available.
+		</p>
 	</a>
 
 	<!-- Delete account -->
@@ -334,7 +373,12 @@
 			{/if}
 			<div class="section">
 				<span>Password</span>
-				<input placeholder="password" type="password" bind:value={deletePassword} enterkeyhint="done" />
+				<input
+					placeholder="password"
+					type="password"
+					bind:value={deletePassword}
+					enterkeyhint="done"
+				/>
 			</div>
 			<p class="confirm-delete">
 				<input type="checkbox" bind:checked={confirmDeleteAccount} />
@@ -342,7 +386,9 @@
 			</p>
 			<div class="buttons">
 				<button class="cancel" onclick={() => (deleteAccountVisible = false)}>Cancel</button>
-				<button disabled={!canDeleteAccount} class="delete" onclick={submitDeleteAccount}>Delete</button>
+				<button disabled={!canDeleteAccount} class="delete" onclick={submitDeleteAccount}>
+					Delete
+				</button>
 			</div>
 			<button class="close" onclick={() => (deleteAccountVisible = false)}>
 				<CloseIcon stroke="var(--red)" style="width: 1rem; height: 1rem;" />

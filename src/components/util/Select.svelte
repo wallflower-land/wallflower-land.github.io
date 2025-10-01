@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang="ts" generics="Option extends string">
 	import type { HTMLAttributes } from "svelte/elements";
 	import RightArrowIcon from "../icons/RightArrowIcon.svelte";
 	import { haptic } from "ios-haptics";
@@ -6,10 +6,12 @@
 	let {
 		options,
 		value = $bindable(),
+		format = value => value.charAt(0).toUpperCase() + value.substring(1),
 		...rest
 	}: {
-		options: string[];
-		value?: string;
+		options: Option[];
+		value: Option;
+		format?: (value: Option) => string;
 	} & HTMLAttributes<HTMLDivElement> = $props();
 
 	let expanded = $state(false);
@@ -27,7 +29,7 @@
 		expanded = !expanded;
 	}
 
-	function clickOption(option: string) {
+	function clickOption(option: Option) {
 		return function () {
 			haptic();
 			value = option;
@@ -40,7 +42,7 @@
 
 <div {...rest} class="select" bind:this={optionsElement}>
 	<button class="value" onclick={toggle}>
-		{value}
+		{format(value)}
 		<RightArrowIcon
 			stroke="var(--subtext-1)"
 			style="width: 1rem; height: 1rem; rotate: {expanded ? '90deg' : '0deg'}; transition: rotate 0.2s;"
@@ -49,7 +51,7 @@
 	<div class={{ options: true, expanded }}>
 		{#each options as option}
 			<button class="option" onclick={clickOption(option)}>
-				{option}
+				{format(option)}
 			</button>
 		{/each}
 	</div>
@@ -108,7 +110,6 @@
 	}
 
 	button {
-		text-transform: capitalize;
 		width: 100%;
 		text-align: left;
 		padding: 0.5rem 1rem 0.5rem 1rem;

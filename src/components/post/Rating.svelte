@@ -11,11 +11,13 @@
 		rating,
 		review,
 		user,
+		completionStatus,
 	}: {
 		isbn: ISBN;
 		rating: number;
 		review: string;
 		user: User;
+		completionStatus: string;
 	} = $props();
 
 	let book = getBook(isbn);
@@ -24,8 +26,18 @@
 <div>
 	{#await book then book}
 		<p class="rating-line">
-			{user.displayName} rated
-			<i>{book?.title}</i>
+			{user.displayName}
+			{#if completionStatus !== "old"}
+				{completionStatus}
+				<i>{book?.title}</i>
+				and
+			{/if}
+			rated
+			{#if completionStatus !== "old"}
+				it
+			{:else}
+				<i>{book?.title}</i>
+			{/if}
 			<span>{rating} / 10</span>
 			:
 		</p>

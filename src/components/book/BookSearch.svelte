@@ -84,17 +84,25 @@
 		<div class="section">
 			<div class="add-book-buttons">
 				{#if types.includes("search")}
-					<button disabled={bookSearchType === "search"} onclick={() => (bookSearchType = "search")}>
+					<button
+						disabled={bookSearchType === "search"}
+						onclick={() => (bookSearchType = "search")}
+					>
 						Search
 					</button>
 				{/if}
 				{#if types.includes("current")}
-					<button disabled={bookSearchType === "current"} onclick={() => (bookSearchType = "current")}>
+					<button
+						disabled={bookSearchType === "current"}
+						onclick={() => (bookSearchType = "current")}
+					>
 						Current
 					</button>
 				{/if}
 				{#if types.includes("list")}
-					<button disabled={bookSearchType === "list"} onclick={() => (bookSearchType = "list")}>List</button>
+					<button disabled={bookSearchType === "list"} onclick={() => (bookSearchType = "list")}>
+						List
+					</button>
 				{/if}
 			</div>
 

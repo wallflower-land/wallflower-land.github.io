@@ -11,6 +11,7 @@
 	import ImagePicker from "../../../components/util/ImagePicker.svelte";
 	import ImageCarousel from "../../../components/util/ImageCarousel.svelte";
 	import type { FileId } from "../../../api/storageapi";
+	import { POST_BODY_CHARACTER_LIMIT } from "../../../api/constants";
 
 	let { data }: { data: { type: PostType } } = $props();
 	let type = $derived(data.type);
@@ -27,6 +28,7 @@
 	let body: string = $state("");
 	let rating: string | null = $state(null);
 	let updateType = $state("start");
+	let completionStatus: "finished" | "abandoned" | "old" = $state("finished");
 	let chosenBooks: Book[] = $state([]);
 
 	async function uploadPost() {
@@ -35,8 +37,14 @@
 		const chosenIsbns = chosenBooks.map(book => book.isbn);
 
 		let object = { type, body, books: chosenIsbns };
-		if (rating !== null) object = Object.assign(object, { rating: Number(rating) });
-		if (type === "update") object = Object.assign(object, { updateType });
+		if (type === "rating") {
+			object = Object.assign(object, { rating: Number(rating) });
+			if (completionStatus === "abandoned" || completionStatus === "finished") {
+				object = Object.assign(object, { completionStatus });
+			}
+		} else if (type === "update") {
+			object = Object.assign(object, { updateType });
+		}
 
 		const promises: Promise<unknown>[] = [post(object)];
 
@@ -75,17 +83,25 @@
 			</div>
 
 			<div class="section">
-				<h2>Mark as finished?</h2>
-				<button
-					class={["mark-as-finished", markAsFinished && "finished"]}
-					onclick={() => (markAsFinished = !markAsFinished)}
-				>
-					{markAsFinished ? "Yes" : "No"}
-				</button>
+				<h2>Completion Status</h2>
+				<Select
+					options={["finished", "abandoned", "old"]}
+					bind:value={completionStatus}
+					format={value =>
+						({
+							finished: "Finished",
+							abandoned: "Abandoned",
+							old: "I read this before using wallflower.land",
+						})[value]}
+				/>
 			</div>
 		{:else if type === "update"}
 			<h2 class="body-name">Update Type</h2>
-			<Select options={["start", "finish", "abandon"]} bind:value={updateType} style="margin-bottom: 1rem;" />
+			<Select
+				options={["start", "finish", "abandon"]}
+				bind:value={updateType}
+				style="margin-bottom: 1rem;"
+			/>
 
 			<BookSearch title="Choose a book" bind:books={chosenBooks} />
 		{/if}
@@ -109,8 +125,13 @@
 				{/await}
 			{:else}
 				<div class="text-container">
-					<textarea maxlength="144" id="body" bind:value={body} enterkeyhint="done"></textarea>
-					<CharacterLimitMeter limit={144} bind:text={body} />
+					<textarea
+						maxlength={POST_BODY_CHARACTER_LIMIT}
+						id="body"
+						bind:value={body}
+						enterkeyhint="done"
+					></textarea>
+					<CharacterLimitMeter limit={POST_BODY_CHARACTER_LIMIT} bind:text={body} />
 				</div>
 			{/if}
 		</div>
@@ -127,7 +148,9 @@
 		/>
 		<ImageCarousel bind:images editable style="box-shadow: 0px 0px 0.5rem black;" />
 
-		<label class={["add-image", images.length >= 10 && "disabled"]} for="add-post-images">Add Images</label>
+		<label class={["add-image", images.length >= 10 && "disabled"]} for="add-post-images">
+			Add Images
+		</label>
 
 		<button onclick={uploadPost} class="post-button" disabled={!canPost}>Post</button>
 	</div>
@@ -187,26 +210,6 @@
 
 	.text-container {
 		position: relative;
-	}
-
-	.mark-as-finished {
-		padding-top: 0.5rem;
-		padding-bottom: 0.5rem;
-		border-radius: 0.5rem;
-		box-shadow: 0px 0px 0.5rem var(--box-shadow);
-		transition: scale 0.1s;
-
-		&:hover {
-			scale: 105%;
-		}
-
-		&:not(.finished) {
-			background-image: linear-gradient(to bottom right, var(--pink), var(--red));
-		}
-
-		&.finished {
-			background-image: linear-gradient(to bottom right, var(--green), var(--teal));
-		}
 	}
 
 	.post-button {

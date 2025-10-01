@@ -72,6 +72,7 @@ export type Post<T extends PostType = PostType> = {
 	updateType: T extends "update" ? UpdateType : never;
 	parent: T extends "reply" ? PostId : never;
 	deletionStatus: "none" | "deleted" | "removed";
+	completionStatus: T extends "rating" ? "old" | "finished" | "abandoned" : never;
 };
 
 let { db } = firebase();
@@ -382,6 +383,6 @@ export function didShare(post: Post): boolean {
 export async function didComment(post: Post): Promise<boolean> {
 	return user()
 		? (await getDocs(query(collection(db, "posts"), where("parent", "==", post.id), where("poster", "==", user()!.id))))
-				.docs.length > 0
+			.docs.length > 0
 		: false;
 }

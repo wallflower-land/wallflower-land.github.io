@@ -36,12 +36,12 @@
 	<p>
 		The Wallflower team, the legal owner of wallflower.land, is a non-profit organization originally
 		created by
-		<Link href="/@vi">@vi</Link>
+		<Link href="/@vi" />
 		as a passion project in college. The name
 		<i>Wallflower</i>
 		comes from
-		<Link href="/@vi">@vi</Link>'s favorite book
-		<Link href="/book/9780671027346"><i>The Perks of Being a Wallflower</i></Link>
+		<Link href="/@vi" />'s favorite book
+		<Link href="/book/9780671027346" />
 		by Stephen Chbosky.
 	</p>
 	<p>
@@ -53,8 +53,8 @@
 	<h2>Team &amp; Values</h2>
 	<p>
 		Wallflower is still led by its original creator,
-		<Link href="/@vi">@vi</Link>, a nonbinary reader, writer, and college student. Wallflower will always
-		support kindness, acceptance, diversity, equity, and inclusion.
+		<Link href="/@vi" />, a nonbinary reader, writer, and college student. Wallflower will always support
+		kindness, acceptance, diversity, equity, and inclusion.
 	</p>
 	<p>Currently, Wallflower has no other team members.</p>
 	<p>
@@ -84,44 +84,6 @@
 		content will be reviewed and a secondary, more thorough judgement will be passed to you.
 	</p>
 
-	<!-- Rules -->
-	<h2>Rules</h2>
-	<p>
-		The following rules apply to all users of wallflower.land. Failure to comply with <i>all</i>
-		of these rules may get your posts deleted, your account flagged, or your account banned.
-	</p>
-
-	<ul>
-		<li>
-			<b>I: Anti-Discrimination -</b>
-			No content posted to wallflower.land can discriminate, insult or exclude
-			<i>anyone</i>
-			based on race, ethnicity, gender, sex, sexual orientation, or religion.
-		</li>
-		<li>
-			<b>II: Relevant Content -</b>
-			All content posted to wallflower.land
-			<i>must</i>
-			relate to books, novels, literature, reading, writing, authors, poets, or wallflower.land itself.
-		</li>
-		<li>
-			<b>III: Honorable Reporting -</b>
-			All posts and accounts reported as rule-breaking must be done so in good faith, under genuine belief
-			that the given post or account violates one or more wallflower.land rules.
-		</li>
-		<li>
-			<b>IV: Constructive Criticism -</b>
-			All criticism, particularly to individuals or groups posted to wallflower.land, must be constructive
-			instead of blatantly insulting or hateful.
-		</li>
-		<li>
-			<b>V: Innocent Intent -</b>
-			All wallflower.land users are required to use the site with innocent and honorable intent. Attempts
-			to break wallflower.land, hack other user's accounts, or in any way use the platform beyond its intended
-			use, will result in a ban.
-		</li>
-	</ul>
-
 	<!-- Legal -->
 	<h2>Legal</h2>
 	<p>
@@ -135,17 +97,17 @@
 		Wallflower is licensed as <i>all rights reserved</i>
 		, meaning you are legally not allowed to use, copy, or distribute its code without explicit authorization
 		from its creator,
-		<Link href="/profile/vi">@vi</Link>.
+		<Link href="/@vi" />.
 	</p>
 
 	<p>
-		You are free to contact <Link href="/profile/vi">@vi</Link>
+		You are free to contact <Link href="/@vi" />
 		to ask for permission to use Wallflower's code for some specific circumstance. You can email me
 		<i>personally</i>
 		at
-		<Link href="mailto:vi@wallflower.land">vi@wallflower.land</Link>. I don't bite, I promise.
-		Alternatively, you can reach out to
-		<Link href="mailto:staff@wallflower.land">staff@wallflower.land</Link>
+		<Link href="mailto:vi@wallflower.land" />. I don't bite, I promise. Alternatively, you can reach out
+		to
+		<Link href="mailto:staff@wallflower.land" />
 		and it'll make its way to me.
 	</p>
 </Page>
@@ -199,19 +161,5 @@
 		color: var(--subtext-1);
 		margin-bottom: -0.5rem;
 		margin-top: 0.5rem;
-	}
-
-	ul {
-		margin-left: 1rem;
-
-		li {
-			color: var(--overlay-1);
-			margin-bottom: 0.5rem;
-
-			b {
-				font-weight: normal;
-				color: var(--subtext-1);
-			}
-		}
 	}
 </style>
